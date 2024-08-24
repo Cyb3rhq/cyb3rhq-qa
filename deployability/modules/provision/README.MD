@@ -28,13 +28,13 @@ To use this module, you should use a Debian-based system, we recommend using Ubu
 	 source {venv directory}/bin/activate
 	```
 
-3. Clone the `wazuh-qa` repository:
+3. Clone the `cyb3rhq-qa` repository:
 
 	Navigate to the project directory and switch to the project branch:
 
 	```bash
-   git clone https://github.com/wazuh/wazuh-qa.git
-	cd wazuh-qa
+   git clone https://github.com/cyb3rhq/cyb3rhq-qa.git
+	cd cyb3rhq-qa
 	git checkout {project-branch}
 	```
 
@@ -46,7 +46,7 @@ To use this module, you should use a Debian-based system, we recommend using Ubu
 
 5. Install the JobFlow engine and its launcher:
 
-	While in wazuh-qa:
+	While in cyb3rhq-qa:
 
 	```bash
 	cd modules
@@ -59,7 +59,7 @@ To use this module, you should use a Debian-based system, we recommend using Ubu
 
       It is required to create a fixture (YAML file) where the infrastructure, provisioning, and tests to be executed is declared.
 
-      >Note: You can find some fixture examples in '[deployability/modules/jobflow/examples/](https://github.com/wazuh/wazuh-qa/tree/master/deployability/modules/jobflow/examples)'
+      >Note: You can find some fixture examples in '[deployability/modules/jobflow/examples/](https://github.com/cyb3rhq/cyb3rhq-qa/tree/master/deployability/modules/jobflow/examples)'
 
       Example:
 
@@ -166,11 +166,11 @@ To use this module, you should use a Debian-based system, we recommend using Ubu
 
 #### B. Direct execution
 
-To execute the Allocation module without installing the JobFlow engine, you can use the launcher ('[module/provision/main.py](https://github.com/wazuh/wazuh-qa/tree/master/deployability/modules/provision/main.py)'):
+To execute the Allocation module without installing the JobFlow engine, you can use the launcher ('[module/provision/main.py](https://github.com/cyb3rhq/cyb3rhq-qa/tree/master/deployability/modules/provision/main.py)'):
 
 1. Execution
 
-  While in wazuh-qa/deployability
+  While in cyb3rhq-qa/deployability
 
   ```bash
   python3 module/provision/main.py --inventory-manager { inventory .yaml} --install "{'component': '{component}', 'type': '{type}', 'version': '{version}'}"
@@ -228,26 +228,26 @@ It requires an infrastructure on which to perform its actions.
 
 The module is composed of:
 
-- Launcher ('[/wazuh-qa/deployability/modules/provision/main.py](https://github.com/wazuh/wazuh-qa/tree/master/deployability/modules/provision/main.py)')
+- Launcher ('[/cyb3rhq-qa/deployability/modules/provision/main.py](https://github.com/cyb3rhq/cyb3rhq-qa/tree/master/deployability/modules/provision/main.py)')
   Entry point for the workflow or the user who wishes to execute a provision.
 
-- Parameter validator ('[/wazuh-qa/deployability/modules/provision/models.py](https://github.com/wazuh/wazuh-qa/tree/master/deployability/modules/provision/models.py)')
+- Parameter validator ('[/cyb3rhq-qa/deployability/modules/provision/models.py](https://github.com/cyb3rhq/cyb3rhq-qa/tree/master/deployability/modules/provision/models.py)')
   Validator for parameters entered by the JobFlow engine or the user.
 
-- Module functions ('[/wazuh-qa/deployability/modules/provision/provision.py](https://github.com/wazuh/wazuh-qa/tree/master/deployability/modules/provision/provision.py)')
+- Module functions ('[/cyb3rhq-qa/deployability/modules/provision/provision.py](https://github.com/cyb3rhq/cyb3rhq-qa/tree/master/deployability/modules/provision/provision.py)')
   Module-specific functions responsible for triggering the provision.
 
-- Component type categorizer ('[/wazuh-qa/deployability/modules/provision/component_type.py](https://github.com/wazuh/wazuh-qa/tree/master/deployability/modules/provision/component_type.py)')
+- Component type categorizer ('[/cyb3rhq-qa/deployability/modules/provision/component_type.py](https://github.com/cyb3rhq/cyb3rhq-qa/tree/master/deployability/modules/provision/component_type.py)')
   Allows obtaining and expanding data based on initially received parameters.
 
-- Executor ('[/wazuh-qa/deployability/modules/provision/actions.py](https://github.com/wazuh/wazuh-qa/tree/master/deployability/modules/provision/actions.py)')
+- Executor ('[/cyb3rhq-qa/deployability/modules/provision/actions.py](https://github.com/cyb3rhq/cyb3rhq-qa/tree/master/deployability/modules/provision/actions.py)')
   Executes the provision using Actions in the generic module.
 
-- Utils ('[/wazuh-qa/deployability/modules/provision/utils.py](https://github.com/wazuh/wazuh-qa/tree/master/deployability/modules/provision/utils.py)')
+- Utils ('[/cyb3rhq-qa/deployability/modules/provision/utils.py](https://github.com/cyb3rhq/cyb3rhq-qa/tree/master/deployability/modules/provision/utils.py)')
   Enables reading and changing the format of YAML files to executable formats.
 
 
-![image](https://github.com/wazuh/wazuh-qa/assets/2949519/326c1198-79a9-4098-9a52-d35c7065d629)
+![image](https://github.com/cyb3rhq/cyb3rhq-qa/assets/2949519/326c1198-79a9-4098-9a52-d35c7065d629)
 
 
 [Provision.drawio.zip](https://github.com/user-attachments/files/15788313/Provision.drawio.zip)
@@ -255,4 +255,4 @@ The module is composed of:
 
 ### License
 
-WAZUH Copyright (C) 2015 Wazuh Inc. (License GPLv2)
+CYB3RHQ Copyright (C) 2015 Cyb3rhq Inc. (License GPLv2)

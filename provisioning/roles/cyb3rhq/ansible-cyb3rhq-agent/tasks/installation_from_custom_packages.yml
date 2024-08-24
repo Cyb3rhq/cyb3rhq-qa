@@ -1,0 +1,77 @@
+---
+  - name: Install Cyb3rhq Agent from .deb packages
+    apt:
+      deb: "{{ cyb3rhq_custom_packages_installation_agent_deb_url }}"
+      state: present
+    when:
+      - ansible_os_family|lower == "debian"
+      - cyb3rhq_custom_packages_installation_agent_enabled
+
+  - name: Install Cyb3rhq Agent from .rpm packages | yum
+    yum:
+      name: "{{ cyb3rhq_custom_packages_installation_agent_rpm_url }}"
+      state: present
+    when:
+      - ansible_os_family|lower == "redhat"
+      - cyb3rhq_custom_packages_installation_agent_enabled
+      - not (ansible_distribution|lower == "centos" and ansible_distribution_major_version >= "8")
+      - not (ansible_distribution|lower == "redhat" and ansible_distribution_major_version >= "8")
+
+  - name: Install Cyb3rhq Agent from .rpm packages | dnf
+    dnf:
+      name: "{{ cyb3rhq_custom_packages_installation_agent_rpm_url }}"
+      state: present
+      disable_gpg_check: True
+
+    when:
+      - ansible_os_family|lower == "redhat"
+      - cyb3rhq_custom_packages_installation_agent_enabled
+      - (ansible_distribution|lower == "centos" and ansible_distribution_major_version >= "8") or
+        (ansible_distribution|lower == "redhat" and ansible_distribution_major_version >= "8")
+
+# MacOS
+
+  - name: Install MacOS agent from pkg | custom macos pkg
+    become: true
+    shell: installer -pkg cyb3rhq-* -target /
+    args:
+      chdir: /Users/vagrant
+    when: ansible_os_family == "Darwin"
+
+# Solaris
+  - name: Install Solaris 10 cyb3rhq agent custom package
+    become: true
+    shell: pkgadd -d cyb3rhq*
+    environment:
+      PATH: "/opt/python3/bin/:/usr/sbin:/usr/bin:/usr/sbin/:/opt/csw/gnu/:/usr/sfw/bin/:/opt/csw/bin/"
+    args:
+      chdir: "/export/home/vagrant"
+    when:
+      - ansible_os_family == 'Solaris'
+      - cyb3rhq_custom_packages_installation_agent_solaris_10_url is defined
+
+  - name: Install Solaris 11 cyb3rhq agent custom package
+    become: true
+    shell: pkg install -g cyb3rhq* cyb3rhq-agent
+    environment:
+      PATH: "/opt/python3/bin/:/usr/sbin:/usr/bin:/usr/sbin/:/opt/csw/gnu/:/usr/sfw/bin/:/opt/csw/bin/"
+    args:
+      chdir: "/export/home/vagrant"
+    when:
+      - ansible_os_family == 'Solaris'
+      - cyb3rhq_custom_packages_installation_agent_solaris_11_url is defined
+
+# Windows
+  - name: Donwload Windows agent msi
+    win_get_url:
+      url: "{{ cyb3rhq_custom_packages_installation_agent_msi_url }}"
+      dest: "{{cyb3rhq_winagent_config.download_dir}}{{cyb3rhq_winagent_package_name_generic}}"
+    when:
+      - ansible_os_family == "Windows"
+
+  - name: Install Cyb3rhq Agent from .msi packages | custom win_package
+    win_package:
+      path: "{{cyb3rhq_winagent_config.download_dir}}{{cyb3rhq_winagent_package_name_generic}}"
+      state: present
+    when:
+      - ansible_os_family == "Windows"

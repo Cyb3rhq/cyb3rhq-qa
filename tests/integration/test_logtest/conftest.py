@@ -1,21 +1,21 @@
-# Copyright (C) 2015-2021, Wazuh Inc.
-# Created by Wazuh, Inc. <info@wazuh.com>.
+# Copyright (C) 2015-2021, Cyb3rhq Inc.
+# Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 # This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 import pytest
 
-from wazuh_testing.logcollector import LOG_COLLECTOR_GLOBAL_TIMEOUT
-from wazuh_testing.logtest import callback_logtest_started
-from wazuh_testing.tools.services import control_service
-from wazuh_testing.tools.monitoring import FileMonitor
-from wazuh_testing.tools.file import truncate_file
-from wazuh_testing.tools import LOG_FILE_PATH
+from cyb3rhq_testing.logcollector import LOG_COLLECTOR_GLOBAL_TIMEOUT
+from cyb3rhq_testing.logtest import callback_logtest_started
+from cyb3rhq_testing.tools.services import control_service
+from cyb3rhq_testing.tools.monitoring import FileMonitor
+from cyb3rhq_testing.tools.file import truncate_file
+from cyb3rhq_testing.tools import LOG_FILE_PATH
 
 
 @pytest.fixture(scope='module')
 def restart_required_logtest_daemons():
-    """Wazuh logtests daemons handler."""
-    required_logtest_daemons = ['wazuh-analysisd', 'wazuh-db']
+    """Cyb3rhq logtests daemons handler."""
+    required_logtest_daemons = ['cyb3rhq-analysisd', 'cyb3rhq-db']
 
     for daemon in required_logtest_daemons:
         control_service('stop', daemon=daemon)

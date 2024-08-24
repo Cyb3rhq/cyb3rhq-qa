@@ -1,14 +1,14 @@
 import os
 
 import pytest
-from wazuh_testing import T_10, T_20, TEMPLATE_DIR, TEST_CASES_DIR, global_parameters
-from wazuh_testing.modules.aws import event_monitor, local_internal_options  # noqa: F401
-from wazuh_testing.modules.aws.db_utils import (
+from cyb3rhq_testing import T_10, T_20, TEMPLATE_DIR, TEST_CASES_DIR, global_parameters
+from cyb3rhq_testing.modules.aws import event_monitor, local_internal_options  # noqa: F401
+from cyb3rhq_testing.modules.aws.db_utils import (
     get_s3_db_row,
     s3_db_exists,
     table_exists_or_has_values,
 )
-from wazuh_testing.tools.configuration import (
+from cyb3rhq_testing.tools.configuration import (
     get_test_cases_data,
     load_configuration_template,
 )
@@ -35,18 +35,18 @@ configurations = load_configuration_template(
 @pytest.mark.tier(level=0)
 @pytest.mark.parametrize('configuration, metadata', zip(configurations, configuration_metadata), ids=case_ids)
 def test_path(
-    configuration, metadata, load_wazuh_basic_configuration, set_wazuh_configuration, clean_s3_cloudtrail_db,
-    configure_local_internal_options_function, truncate_monitored_files, restart_wazuh_function, file_monitoring
+    configuration, metadata, load_cyb3rhq_basic_configuration, set_cyb3rhq_configuration, clean_s3_cloudtrail_db,
+    configure_local_internal_options_function, truncate_monitored_files, restart_cyb3rhq_function, file_monitoring
 ):
     """
     description: Only logs within a path are processed.
     test_phases:
         - setup:
-            - Load Wazuh light configuration.
+            - Load Cyb3rhq light configuration.
             - Apply ossec.conf configuration changes according to the configuration template and use case.
             - Apply custom settings in local_internal_options.conf.
-            - Truncate wazuh logs.
-            - Restart wazuh-manager service to apply configuration changes.
+            - Truncate cyb3rhq logs.
+            - Restart cyb3rhq-manager service to apply configuration changes.
         - test:
             - Check in the ossec.log that a line has appeared calling the module with correct parameters.
             - If a path that does not exist was specified, make sure that a message is displayed in the ossec.log
@@ -54,10 +54,10 @@ def test_path(
             - Check the command was called with the correct parameters.
             - Check the database was created and updated accordingly.
         - teardown:
-            - Truncate wazuh logs.
+            - Truncate cyb3rhq logs.
             - Restore initial configuration, both ossec.conf and local_internal_options.conf.
             - Delete the uploaded file.
-    wazuh_min_version: 4.6.0
+    cyb3rhq_min_version: 4.6.0
     parameters:
         - configuration:
             type: dict
@@ -65,10 +65,10 @@ def test_path(
         - metadata:
             type: dict
             brief: Get metadata from the module.
-        - load_wazuh_basic_configuration:
+        - load_cyb3rhq_basic_configuration:
             type: fixture
-            brief: Load basic wazuh configuration.
-        - set_wazuh_configuration:
+            brief: Load basic cyb3rhq configuration.
+        - set_cyb3rhq_configuration:
             type: fixture
             brief: Apply changes to the ossec.conf configuration.
         - clean_s3_cloudtrail_db:
@@ -79,10 +79,10 @@ def test_path(
             brief: Apply changes to the local_internal_options.conf configuration.
         - truncate_monitored_files:
             type: fixture
-            brief: Truncate wazuh logs.
-        - restart_wazuh_daemon_function:
+            brief: Truncate cyb3rhq logs.
+        - restart_cyb3rhq_daemon_function:
             type: fixture
-            brief: Restart the wazuh service.
+            brief: Restart the cyb3rhq service.
         - file_monitoring:
             type: fixture
             brief: Handle the monitoring of a specified file.

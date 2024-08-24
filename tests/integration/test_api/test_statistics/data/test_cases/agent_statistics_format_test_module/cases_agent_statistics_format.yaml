@@ -1,13 +1,13 @@
 - name: remoted_endpoint
   description: remoted statistics endpoint
   configuration_parameters:
-    ENDPOINT: wazuh-remoted
+    ENDPOINT: cyb3rhq-remoted
   metadata:
-    endpoint: wazuh-remoted
+    endpoint: cyb3rhq-remoted
 
 - name: analysisd_endpoint
   description: analysisd statistics endpoint
   configuration_parameters:
-    ENDPOINT: wazuh-analysisd
+    ENDPOINT: cyb3rhq-analysisd
   metadata:
-    endpoint: wazuh-analysisd
+    endpoint: cyb3rhq-analysisd

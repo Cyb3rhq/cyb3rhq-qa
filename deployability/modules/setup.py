@@ -1,5 +1,5 @@
-# Copyright (C) 2015, Wazuh Inc.
-# Created by Wazuh, Inc. <info@wazuh.com>.
+# Copyright (C) 2015, Cyb3rhq Inc.
+# Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 # This program is a free software; you can redistribute it and/or modify it under the terms of GPLv2
 import json
 import os
@@ -31,10 +31,10 @@ scripts_list = ['engine=jobflow.__main__:main']
 setup(
     name='jobflow',
     version=get_version(),
-    description='Wazuh testing utilities to help programmers automate deployment tests',
-    url='https://github.com/wazuh',
-    author='Wazuh',
-    author_email='hello@wazuh.com',
+    description='Cyb3rhq testing utilities to help programmers automate deployment tests',
+    url='https://github.com/cyb3rhq',
+    author='Cyb3rhq',
+    author_email='hello@cyb3rhq.com',
     license='GPLv2',
     packages=['jobflow'],
     package_dir={'jobflow': 'jobflow'},

@@ -10,8 +10,8 @@
 
     - name: Restart manager
       include_role:
-        name: manage_wazuh
-        tasks_from: restart_wazuh.yaml
+        name: manage_cyb3rhq
+        tasks_from: restart_cyb3rhq.yaml
       vars:
         os: linux
 

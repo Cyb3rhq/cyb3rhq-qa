@@ -1,6 +1,6 @@
 '''
-copyright: Copyright (C) 2015-2023, Wazuh Inc.
-           Created by Wazuh, Inc. <info@wazuh.com>.
+copyright: Copyright (C) 2015-2023, Cyb3rhq Inc.
+           Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
            This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 type: system
 brief: sys
@@ -11,14 +11,14 @@ components:
     - manager
     - agent
 daemons:
-    - wazuh-authd
-    - wazuh-agentd
+    - cyb3rhq-authd
+    - cyb3rhq-agentd
 os_platform:
     - linux
 os_version:
     - Debian Buster
 references:
-    - https://documentation.wazuh.com/current/user-manual/registering/agent-enrollment.html
+    - https://documentation.cyb3rhq.com/current/user-manual/registering/agent-enrollment.html
 '''
 
 import os
@@ -29,10 +29,10 @@ import time
 
 from system import restart_cluster
 from system.test_cluster.test_agent_groups.common import register_agent
-from wazuh_testing import T_10, T_30
-from wazuh_testing.tools import WAZUH_PATH, LOG_FILE_PATH
-from wazuh_testing.tools.system import HostManager
-from wazuh_testing.tools.system_monitoring import HostMonitor
+from cyb3rhq_testing import T_10, T_30
+from cyb3rhq_testing.tools import CYB3RHQ_PATH, LOG_FILE_PATH
+from cyb3rhq_testing.tools.system import HostManager
+from cyb3rhq_testing.tools.system_monitoring import HostMonitor
 
 
 inventory_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
@@ -44,13 +44,13 @@ agent_conf_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'
 messages_path = os.path.join(local_path, 'data/messages.yml')
 tmp_path = os.path.join(local_path, 'tmp')
 
-test_infra_managers = ['wazuh-master', 'wazuh-worker1', 'wazuh-worker2']
-workers = ['wazuh-worker1', 'wazuh-worker2']
+test_infra_managers = ['cyb3rhq-master', 'cyb3rhq-worker1', 'cyb3rhq-worker2']
+workers = ['cyb3rhq-worker1', 'cyb3rhq-worker2']
 test_infra_agents = []
 
 number_agents = 40
 for number_agent in range(number_agents):
-    test_infra_agents.append(f'wazuh-agent{number_agent+1}')
+    test_infra_agents.append(f'cyb3rhq-agent{number_agent+1}')
 
 pytestmark = [pytest.mark.cluster, pytest.mark.big_cluster_40_agents_env]
 
@@ -74,7 +74,7 @@ def configure_environment():
 def stop_gracefully_all_agents():
     threads = []
     for agent in test_infra_agents:
-        thread = threading.Thread(target=host_manager.run_command, args=(agent, f'{WAZUH_PATH}/bin/wazuh-control stop'))
+        thread = threading.Thread(target=host_manager.run_command, args=(agent, f'{CYB3RHQ_PATH}/bin/cyb3rhq-control stop'))
         thread.start()
         threads.append(thread)
     for thread in threads:
@@ -84,7 +84,7 @@ def stop_gracefully_all_agents():
 def test_shut_down_message_gracefully_stopped_agent(configure_environment, stop_gracefully_all_agents):
     '''
         description: Checking shutdown message when socket is closed.
-        wazuh_min_version: 4.6.0
+        cyb3rhq_min_version: 4.6.0
         parameters:
             - configure_environment:
                 type: function
@@ -109,5 +109,5 @@ def test_shut_down_message_gracefully_stopped_agent(configure_environment, stop_
         if 'HC_SHUTDOWN' in line:
             shutdown_messages += 1
     matches = re.findall(r"Disconnected", host_manager.run_command(test_infra_managers[0],
-                                                                   f'{WAZUH_PATH}/bin/agent_control -l'))
+                                                                   f'{CYB3RHQ_PATH}/bin/agent_control -l'))
     assert len(matches) == number_agents == shutdown_messages

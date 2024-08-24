@@ -1,14 +1,14 @@
 '''
-copyright: Copyright (C) 2015-2022, Wazuh Inc.
+copyright: Copyright (C) 2015-2022, Cyb3rhq Inc.
 
-           Created by Wazuh, Inc. <info@wazuh.com>.
+           Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 
            This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 type: integration
 
 brief: Agents can be upgraded remotely. This upgrade is performed by the manager which
-        sends each registered agent a WPK (Wazuh signed package) file that contains the files
+        sends each registered agent a WPK (Cyb3rhq signed package) file that contains the files
         needed to upgrade the agent to the new version. These tests ensure, on the manager side,
         that the WPK upgrade works correctly.
 
@@ -19,10 +19,10 @@ targets:
     - manager
 
 daemons:
-    - wazuh-monitord
-    - wazuh-remoted
-    - wazuh-modulesd
-    - wazuh-db
+    - cyb3rhq-monitord
+    - cyb3rhq-remoted
+    - cyb3rhq-modulesd
+    - cyb3rhq-db
 
 os_platform:
     - linux
@@ -43,7 +43,7 @@ os_version:
     - Windows Server 2016
 
 references:
-    - https://documentation.wazuh.com/current/user-manual/agents/remote-upgrading/upgrading-agent.html
+    - https://documentation.cyb3rhq.com/current/user-manual/agents/remote-upgrading/upgrading-agent.html
 
 pytest_args:
     - wpk_version: Specify the version to upgrade
@@ -58,22 +58,22 @@ import time
 import hashlib
 import requests
 
-from wazuh_testing.tools import WAZUH_PATH, LOG_FILE_PATH, UPGRADE_PATH, get_version
-from wazuh_testing.tools.configuration import load_wazuh_configurations
-from wazuh_testing.tools.agent_simulator import Sender, Injector
-from wazuh_testing.tools.services import control_service
-from wazuh_testing.tools.file import truncate_file
-from wazuh_testing.tools.monitoring import FileMonitor
-from wazuh_testing import global_parameters
-from wazuh_testing.tools.sockets import WazuhSocket
+from cyb3rhq_testing.tools import CYB3RHQ_PATH, LOG_FILE_PATH, UPGRADE_PATH, get_version
+from cyb3rhq_testing.tools.configuration import load_cyb3rhq_configurations
+from cyb3rhq_testing.tools.agent_simulator import Sender, Injector
+from cyb3rhq_testing.tools.services import control_service
+from cyb3rhq_testing.tools.file import truncate_file
+from cyb3rhq_testing.tools.monitoring import FileMonitor
+from cyb3rhq_testing import global_parameters
+from cyb3rhq_testing.tools.sockets import Cyb3rhqSocket
 
 pytestmark = [pytest.mark.linux, pytest.mark.tier(level=0), pytest.mark.server]
 
-UPGRADE_SOCKET = os.path.join(WAZUH_PATH, 'queue', 'tasks', 'upgrade')
-TASK_SOCKET = os.path.join(WAZUH_PATH, 'queue', 'tasks', 'task')
+UPGRADE_SOCKET = os.path.join(CYB3RHQ_PATH, 'queue', 'tasks', 'upgrade')
+TASK_SOCKET = os.path.join(CYB3RHQ_PATH, 'queue', 'tasks', 'task')
 SERVER_ADDRESS = 'localhost'
 WPK_REPOSITORY_4x = global_parameters.wpk_package_path[0]
-WPK_REPOSITORY_3x = 'packages.wazuh.com/wpk/'
+WPK_REPOSITORY_3x = 'packages.cyb3rhq.com/wpk/'
 CRYPTO = "aes"
 CHUNK_SIZE = 16384
 TASK_TIMEOUT = '15m'
@@ -81,8 +81,8 @@ global valid_sha1_list
 valid_sha1_list = {}
 
 
-upgrade_socket = WazuhSocket(UPGRADE_SOCKET)
-task_socket = WazuhSocket(TASK_SOCKET)
+upgrade_socket = Cyb3rhqSocket(UPGRADE_SOCKET)
+task_socket = Cyb3rhqSocket(TASK_SOCKET)
 time_until_registration_key_avaible = 40
 time_until_ask_upgrade_result = 30
 max_upgrade_result_status_retries = 30
@@ -786,8 +786,8 @@ params = [case['params'] for case in cases]
 metadata = [case['metadata'] for case in cases]
 
 test_data_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data')
-configurations_path = os.path.join(test_data_path, 'wazuh_manager_conf.yaml')
-configurations = load_wazuh_configurations(configurations_path, __name__, params=params, metadata=metadata)
+configurations_path = os.path.join(test_data_path, 'cyb3rhq_manager_conf.yaml')
+configurations = load_cyb3rhq_configurations(configurations_path, __name__, params=params, metadata=metadata)
 
 # List where the agents objects will be stored
 agents = []
@@ -795,8 +795,8 @@ agents = []
 
 @pytest.fixture(scope="session")
 def set_debug_mode():
-    local_int_conf_path = os.path.join(WAZUH_PATH, 'etc', 'local_internal_options.conf')
-    debug_line = 'wazuh_modules.debug=2\n'
+    local_int_conf_path = os.path.join(CYB3RHQ_PATH, 'etc', 'local_internal_options.conf')
+    debug_line = 'cyb3rhq_modules.debug=2\n'
     with open(local_int_conf_path, 'r') as local_file_read:
         lines = local_file_read.readlines()
         for line in lines:
@@ -875,7 +875,7 @@ def get_sha_list(metadata):
         protocol = 'http://' if metadata.get('message_params').get('use_http') else 'https://'
 
     # Generating file name
-    wpk_file = "wazuh_agent_{0}_linux_{1}.wpk".format(agent_version, architecture)
+    wpk_file = "cyb3rhq_agent_{0}_linux_{1}.wpk".format(agent_version, architecture)
     wpk_url = protocol + wpk_repo + "linux/" + architecture + "/" + wpk_file
 
     wpk_file_path = os.path.join(UPGRADE_PATH, wpk_file)
@@ -922,7 +922,7 @@ def remove_current_wpk():
             raise Exception(f'Failed to remove {filename} file')
 
 
-@pytest.mark.skip(reason="Blocked by issue wazuh-qa#2203, when is fixed we can enable this test again")
+@pytest.mark.skip(reason="Blocked by issue cyb3rhq-qa#2203, when is fixed we can enable this test again")
 def test_wpk_manager(remove_current_wpk, set_debug_mode, get_configuration, configure_environment,
                      restart_service, configure_agents):
     '''
@@ -930,7 +930,7 @@ def test_wpk_manager(remove_current_wpk, set_debug_mode, get_configuration, conf
                  with different scenarios containing agents already updated, agents that
                  can not be updated, repository not reachable, disconnected agents, etc.
 
-    wazuh_min_version: 4.2.0
+    cyb3rhq_min_version: 4.2.0
 
     tier: 0
 
@@ -946,7 +946,7 @@ def test_wpk_manager(remove_current_wpk, set_debug_mode, get_configuration, conf
             brief: Configure a custom environment for testing.
         - restart_service:
             type: fixture
-            brief: Restart Wazuh manager.
+            brief: Restart Cyb3rhq manager.
         - configure_agents:
             type: fixture
             brief: Configure all simulated agents.

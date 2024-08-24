@@ -14,12 +14,12 @@ To use this module, you should use a Debian-based system, we recommend using Ubu
 	source {venv directory}/bin/activate
 	```
 
-2. Clone the `wazuh-qa` repository:
+2. Clone the `cyb3rhq-qa` repository:
 
 	Navigate to the project directory and switch to the project branch:
 
 	```bash
-	cd wazuh-qa
+	cd cyb3rhq-qa
 	git checkout {project-branch}
 	```
 
@@ -31,7 +31,7 @@ To use this module, you should use a Debian-based system, we recommend using Ubu
 
 4. Install the JobFlow engine library and its launcher:
 
-	While in wazuh-qa:
+	While in cyb3rhq-qa:
 
 	```bash
 	cd modules
@@ -72,8 +72,8 @@ To use this module, you should use a Debian-based system, we recommend using Ubu
                   - agent: "{working-dir}/agent-{agent}/inventory.yaml"
                 - tests: "install,register,stop"
                 - component: "agent"
-                - wazuh-version: "4.7.1"
-                - wazuh-revision: "40709"
+                - cyb3rhq-version: "4.7.1"
+                - cyb3rhq-revision: "40709"
           depends-on:
             - "provision-install-{agent}"
             - "provision-manager"
@@ -95,8 +95,8 @@ To use this module, you should use a Debian-based system, we recommend using Ubu
                   - manager: "{working-dir}/manager-{manager-os}/inventory.yaml"
                 - tests: "uninstall"
                 - component: "agent"
-                - wazuh-version: "4.7.1"
-                - wazuh-revision: "40709"
+                - cyb3rhq-version: "4.7.1"
+                - cyb3rhq-revision: "40709"
           depends-on:
             - "run-agent-tests-{agent}"
             - "provision-uninstall-{agent}"
@@ -115,7 +115,7 @@ To use this module, you should use a Debian-based system, we recommend using Ubu
                 - modules/provision/main.py
                 - inventory-manager: "{working-dir}/manager-{manager-os}/inventory.yaml"
                 - install:
-                  - component: wazuh-manager
+                  - component: cyb3rhq-manager
                     type: package
           depends-on:
             - "allocate-manager"
@@ -156,7 +156,7 @@ To use this module, you should use a Debian-based system, we recommend using Ubu
                 - inventory-agent: "{working-dir}/agent-{agent}/inventory.yaml"
                 - inventory-manager: "{working-dir}/manager-{manager-os}/inventory.yaml"
                 - install:
-                  - component: wazuh-agent
+                  - component: cyb3rhq-agent
                     type: package
                   - component: curl
           depends-on:
@@ -178,7 +178,7 @@ To use this module, you should use a Debian-based system, we recommend using Ubu
                 - inventory-agent: "{working-dir}/agent-{agent}/inventory.yaml"
                 - inventory-manager: "{working-dir}/manager-{manager-os}/inventory.yaml"
                 - uninstall:
-                  - component: wazuh-agent
+                  - component: cyb3rhq-agent
                     type: package
           depends-on:
             - "provision-install-{agent}"
@@ -260,7 +260,7 @@ To use this module, you should use a Debian-based system, we recommend using Ubu
 Its function is to allow the ordered and structured execution in steps of allocation, provision, and testing.
 
 `The JobFlow engine` receives instructions through a `YAML document`, the structure of which can be exemplified in tests found in:
-`wazuh-qa/deployability/modules/jobflow/examples`
+`cyb3rhq-qa/deployability/modules/jobflow/examples`
 
 **In these tests**:
 	- Tasks: define the steps.
@@ -293,8 +293,8 @@ tasks:
             - agent: "{working-dir}/agent-{agent}/inventory.yaml"
           - tests: "install,register,stop"
           - component: "agent"
-          - wazuh-version: "4.7.1"
-          - wazuh-revision: "40709"
+          - cyb3rhq-version: "4.7.1"
+          - cyb3rhq-revision: "40709"
     depends-on:
       - "provision-install-{agent}"
       - "provision-manager"
@@ -309,7 +309,7 @@ This launcher receives the parameters, sets up the test logs, and proceeds with 
 
 The parameters sent from the launcher are processed by deployability/modules/jobflow/models.py, which checks the nature of the parameters sent and filters out incorrect parameters.
 
-![image](https://github.com/wazuh/wazuh-qa/assets/2949519/ee6231c2-9c97-4d9b-8c7d-af1cdce92d28)
+![image](https://github.com/cyb3rhq/cyb3rhq-qa/assets/2949519/ee6231c2-9c97-4d9b-8c7d-af1cdce92d28)
 
 These are then sent to `deployability/modules/jobflow/jobflow_processor.py`, where using `deployability/modules/schemas`, instructions in YAML are received and the schema of the instructions is checked.
 
@@ -320,4 +320,4 @@ The commands are executed in the JobFlowProcessor of the same file, which also h
 
 ### License
 
-WAZUH Copyright (C) 2015 Wazuh Inc.  (License GPLv2)
+CYB3RHQ Copyright (C) 2015 Cyb3rhq Inc.  (License GPLv2)

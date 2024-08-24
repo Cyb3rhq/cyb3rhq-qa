@@ -1,13 +1,13 @@
 '''
-copyright: Copyright (C) 2015-2022, Wazuh Inc.
+copyright: Copyright (C) 2015-2022, Cyb3rhq Inc.
 
-           Created by Wazuh, Inc. <info@wazuh.com>.
+           Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 
            This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 type: integration
 
-brief: These tests will check if the 'wazuh-authd' daemon correctly responds to the enrollment requests
+brief: These tests will check if the 'cyb3rhq-authd' daemon correctly responds to the enrollment requests
        messages respecting the valid option values used in the force configuration block.
 
 components:
@@ -19,8 +19,8 @@ targets:
     - manager
 
 daemons:
-    - wazuh-authd
-    - wazuh-db
+    - cyb3rhq-authd
+    - cyb3rhq-db
 
 os_platform:
     - linux
@@ -44,9 +44,9 @@ import os
 import time
 import pytest
 
-from wazuh_testing.tools.configuration import load_wazuh_configurations
-from wazuh_testing.tools.file import read_yaml
-from wazuh_testing.authd import create_authd_request, validate_authd_response, validate_authd_logs, \
+from cyb3rhq_testing.tools.configuration import load_cyb3rhq_configurations
+from cyb3rhq_testing.tools.file import read_yaml
+from cyb3rhq_testing.authd import create_authd_request, validate_authd_response, validate_authd_logs, \
                                 AUTHD_KEY_REQUEST_TIMEOUT
 
 
@@ -56,7 +56,7 @@ configurations_path = os.path.join(data_path, 'template_configuration.yaml')
 tests_path = os.path.join(data_path, 'test_cases', 'valid_config')
 
 # Configurations
-configurations = load_wazuh_configurations(configurations_path, __name__)
+configurations = load_cyb3rhq_configurations(configurations_path, __name__)
 local_internal_options = {'authd.debug': '2'}
 
 # Tests
@@ -72,7 +72,7 @@ for file in os.listdir(tests_path):
 log_monitor_paths = []
 
 receiver_sockets_params = [(('localhost', 1515), 'AF_INET', 'SSL_TLSv1_2')]
-monitored_sockets_params = [('wazuh-authd', None, True), ('wazuh-db', None, True)]
+monitored_sockets_params = [('cyb3rhq-authd', None, True), ('cyb3rhq-db', None, True)]
 receiver_sockets, monitored_sockets, log_monitors = None, None, None  # Set in the fixtures
 
 
@@ -100,7 +100,7 @@ def test_authd_force_options(get_current_test_case, configure_local_internal_opt
     description:
         Checks that every input message in authd port generates the adequate output.
 
-    wazuh_min_version:
+    cyb3rhq_min_version:
         4.3.0
 
     tier: 0
@@ -123,7 +123,7 @@ def test_authd_force_options(get_current_test_case, configure_local_internal_opt
             brief: Handle the monitoring of a specified file.
         - restart_authd_function:
             type: fixture
-            brief: stops the wazuh-authd daemon.
+            brief: stops the cyb3rhq-authd daemon.
         - wait_for_authd_startup_function:
             type: fixture
             brief: Waits until Authd is accepting connections.

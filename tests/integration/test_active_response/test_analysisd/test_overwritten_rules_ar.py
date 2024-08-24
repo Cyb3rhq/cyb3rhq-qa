@@ -1,7 +1,7 @@
 '''
-copyright: Copyright (C) 2015-2022, Wazuh Inc.
+copyright: Copyright (C) 2015-2022, Cyb3rhq Inc.
 
-           Created by Wazuh, Inc. <info@wazuh.com>.
+           Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 
            This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 
@@ -19,7 +19,7 @@ components:
     - manager
 
 daemons:
-    - wazuh-analysisd
+    - cyb3rhq-analysisd
 
 os_platform:
     - linux
@@ -44,7 +44,7 @@ os_version:
     - Red Hat 6
 
 references:
-    - https://documentation.wazuh.com/current/user-manual/capabilities/active-response/#active-response
+    - https://documentation.cyb3rhq.com/current/user-manual/capabilities/active-response/#active-response
 
 tags:
     - ar_analysisd
@@ -53,11 +53,11 @@ import os
 import pytest
 import time
 
-from wazuh_testing.processes import check_if_daemons_are_running, run_local_command_printing_output
-from wazuh_testing.tools.configuration import load_configuration_template, get_test_cases_data
-from wazuh_testing.tools.file import remove_file
-from wazuh_testing import T_5
-from wazuh_testing.tools import CUSTOM_RULES_PATH, LOCAL_RULES_PATH, ACTIVE_RESPONSE_BINARY_PATH
+from cyb3rhq_testing.processes import check_if_daemons_are_running, run_local_command_printing_output
+from cyb3rhq_testing.tools.configuration import load_configuration_template, get_test_cases_data
+from cyb3rhq_testing.tools.file import remove_file
+from cyb3rhq_testing import T_5
+from cyb3rhq_testing.tools import CUSTOM_RULES_PATH, LOCAL_RULES_PATH, ACTIVE_RESPONSE_BINARY_PATH
 
 pytestmark = [pytest.mark.tier(level=1), pytest.mark.server]
 
@@ -74,10 +74,10 @@ cases_path = os.path.join(TEST_CASES_PATH, 'cases_overwritten_rules.yaml')
 custom_rule = os.path.join(RULES_PATH, '0270-web_appsec_rules_edit.xml')
 local_rules = os.path.join(RULES_PATH, 'local_rules.xml')
 custom_ar_script = os.path.join(CUSTOM_AR_SCRIPT_PATH, 'custom-ar.sh')
-wazuh_ar_script = os.path.join(ACTIVE_RESPONSE_BINARY_PATH, 'custom-ar.sh')
+cyb3rhq_ar_script = os.path.join(ACTIVE_RESPONSE_BINARY_PATH, 'custom-ar.sh')
 output_custom_ar_script = '/tmp/file-ar.txt'
 source_path = [custom_rule, local_rules, custom_ar_script]
-destination_path = [f"{CUSTOM_RULES_PATH}/0270-web_appsec_rules_edit.xml", LOCAL_RULES_PATH, wazuh_ar_script]
+destination_path = [f"{CUSTOM_RULES_PATH}/0270-web_appsec_rules_edit.xml", LOCAL_RULES_PATH, cyb3rhq_ar_script]
 file_to_monitor = '/tmp/file_to_monitor.log'
 
 # Test configurations
@@ -97,8 +97,8 @@ def clean_AR_file():
 @pytest.mark.parametrize("new_file_path", [file_to_monitor], ids=[''])
 @pytest.mark.parametrize('configuration, metadata', zip(configurations, configuration_metadata), ids=case_ids)
 def test_overwritten_rules_ar(configuration, metadata, source_path, destination_path, new_file_path,
-                              create_file, set_wazuh_configuration, copy_file, truncate_monitored_files,
-                              restart_wazuh_function, clean_AR_file):
+                              create_file, set_cyb3rhq_configuration, copy_file, truncate_monitored_files,
+                              restart_cyb3rhq_function, clean_AR_file):
     '''
     description: Check if active response works correctly for the following cases:
         - An active response is triggered when an event matches with a rule.
@@ -108,20 +108,20 @@ def test_overwritten_rules_ar(configuration, metadata, source_path, destination_
 
     test_phases:
         - setup:
-            - Copy custom rule and active response files to Wazuh paths.
+            - Copy custom rule and active response files to Cyb3rhq paths.
             - Create a new file which will be monitored with logcollector.
-            - Set wazuh configuration. Add active_response, command and localfile blocks.
-            - Clean logs files and restart wazuh to apply the configuration.
+            - Set cyb3rhq configuration. Add active_response, command and localfile blocks.
+            - Clean logs files and restart cyb3rhq to apply the configuration.
         - test:
             - Add a custom log in a monitored file to generate an event that triggers a rule that trigger an AR.
             - Check if the active response has been triggered (checking if a file has been created).
-            - Check that wazuh-analysisd is running (it has not been crashed).
+            - Check that cyb3rhq-analysisd is running (it has not been crashed).
         - teardown:
             - Remove generated file when triggering the active response.
-            - Restart initial wazuh configuration.
+            - Restart initial cyb3rhq configuration.
             - Remove generated and custom copied files.
 
-    wazuh_min_version: 4.3.5
+    cyb3rhq_min_version: 4.3.5
 
     parameters:
         - configuration:
@@ -141,33 +141,33 @@ def test_overwritten_rules_ar(configuration, metadata, source_path, destination_
             brief: File path to create.
         - create_file:
             type: fixture
-            brief: Create a file to be monitored by Wazuh.
-        - set_wazuh_configuration:
+            brief: Create a file to be monitored by Cyb3rhq.
+        - set_cyb3rhq_configuration:
             type: fixture
-            brief:  Set Wazuh custom configuration.
+            brief:  Set Cyb3rhq custom configuration.
         - copy_file:
             type: fixture
             brief:  Copy file from source to destination.
         - truncate_monitored_files:
             type: fixture
-            brief:  Truncate wazuh log files.
-        - restart_wazuh_function:
+            brief:  Truncate cyb3rhq log files.
+        - restart_cyb3rhq_function:
             type: fixture
-            brief: restart Wazuh.
+            brief: restart Cyb3rhq.
         - clean_AR_file:
             type: fixture
             brief: Clean generated AR file.
 
     assertions:
         - Check that the AR is triggered.
-        - Check that wazuh-analysisd daemon does not crash.
+        - Check that cyb3rhq-analysisd daemon does not crash.
 
     input_description:
         - The `configuration_overwritten_rules` file provides the module configuration for this test.
         - The `cases_overwritten_rules` file provides the test cases.
     '''
-    # Set all permissions for wazuh to be able to use the custom active response
-    os.chmod(wazuh_ar_script, 0o777)
+    # Set all permissions for cyb3rhq to be able to use the custom active response
+    os.chmod(cyb3rhq_ar_script, 0o777)
 
     # Write a line in a monitored file with logcollector for generating an event that matches with a custom rule
     cmd = "echo '{}' >> '{}'".format(metadata['log_sample'], file_to_monitor)
@@ -179,6 +179,6 @@ def test_overwritten_rules_ar(configuration, metadata, source_path, destination_
     # Checking if AR works properly
     assert os.path.exists(output_custom_ar_script), "The active response has not been triggered"
 
-    # Check that wazuh-analysisd is running and has not crashed
-    assert check_if_daemons_are_running(['wazuh-analysisd'])[0], 'wazuh-analysisd daemon is not running. ' \
+    # Check that cyb3rhq-analysisd is running and has not crashed
+    assert check_if_daemons_are_running(['cyb3rhq-analysisd'])[0], 'cyb3rhq-analysisd daemon is not running. ' \
                                                                  'Maybe it has crashed'

@@ -1,11 +1,11 @@
 '''
-copyright: Copyright (C) 2015-2022, Wazuh Inc.
-           Created by Wazuh, Inc. <info@wazuh.com>.
+copyright: Copyright (C) 2015-2022, Cyb3rhq Inc.
+           Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
            This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 type: integration
 
-brief: The 'wazuh-remoted' program is the server side daemon that communicates with the agents.
+brief: The 'cyb3rhq-remoted' program is the server side daemon that communicates with the agents.
        Specifically, these tests will check that the manager can communicate correctly with the
        agent to ask for its information.
 
@@ -18,7 +18,7 @@ targets:
     - manager
 
 daemons:
-    - wazuh-remoted
+    - cyb3rhq-remoted
 
 os_platform:
     - linux
@@ -35,8 +35,8 @@ os_version:
     - Ubuntu Bionic
 
 references:
-    - https://documentation.wazuh.com/current/user-manual/reference/ossec-conf/remote.html
-    - https://documentation.wazuh.com/current/user-manual/agents/agent-life-cycle.html
+    - https://documentation.cyb3rhq.com/current/user-manual/reference/ossec-conf/remote.html
+    - https://documentation.cyb3rhq.com/current/user-manual/agents/agent-life-cycle.html
 
 tags:
     - remoted
@@ -46,11 +46,11 @@ from time import sleep
 
 import pytest
 
-import wazuh_testing.remote as rd
-import wazuh_testing.tools.agent_simulator as ag
-from wazuh_testing.tools.configuration import load_wazuh_configurations
-from wazuh_testing.tools.sockets import send_request
-from wazuh_testing.tools import REMOTED_SOCKET_PATH
+import cyb3rhq_testing.remote as rd
+import cyb3rhq_testing.tools.agent_simulator as ag
+from cyb3rhq_testing.tools.configuration import load_cyb3rhq_configurations
+from cyb3rhq_testing.tools.sockets import send_request
+from cyb3rhq_testing.tools import REMOTED_SOCKET_PATH
 
 
 # Marks
@@ -58,7 +58,7 @@ pytestmark = pytest.mark.tier(level=0)
 
 # Configuration
 test_data_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data')
-configurations_path = os.path.join(test_data_path, 'wazuh_request_agent_info.yaml')
+configurations_path = os.path.join(test_data_path, 'cyb3rhq_request_agent_info.yaml')
 
 parameters = [
     {'PROTOCOL': 'udp,tcp'}
@@ -81,7 +81,7 @@ test_case = {
 
 timeout_remoted_socket = 15
 
-configurations = load_wazuh_configurations(configurations_path, __name__, params=parameters, metadata=metadata)
+configurations = load_cyb3rhq_configurations(configurations_path, __name__, params=parameters, metadata=metadata)
 config_ids = [x['PROTOCOL'] for x in parameters]
 
 # Utils
@@ -107,7 +107,7 @@ def test_request(get_configuration, configure_environment, remove_shared_files,
                  As the test has nothing to do with shared configuration files, we removed those rootcheck txt files
                  from default agent group to reduce the time required by the test to make the checks.
 
-    wazuh_min_version: 4.2.0
+    cyb3rhq_min_version: 4.2.0
 
     tier: 0
 
@@ -117,7 +117,7 @@ def test_request(get_configuration, configure_environment, remove_shared_files,
             brief: Get configurations from the module.
         - configure_environment:
             type: fixture
-            brief: Configure a custom environment for testing. Restart Wazuh is needed for applying the configuration.
+            brief: Configure a custom environment for testing. Restart Cyb3rhq is needed for applying the configuration.
         - remove_shared_files:
             type: fixture
             brief: Temporary removes txt files from default agent group shared files.
@@ -135,8 +135,8 @@ def test_request(get_configuration, configure_environment, remove_shared_files,
         - Verify that the expected answer is in the response.
 
     input_description: A configuration template (test_request_agent_info) is contained in an external YAML file,
-                       (wazuh_request_agent_info.yaml). That template is combined with different test cases defined
-                       in the module. Those include configuration settings for the 'wazuh-remoted' daemon and agents
+                       (cyb3rhq_request_agent_info.yaml). That template is combined with different test cases defined
+                       in the module. Those include configuration settings for the 'cyb3rhq-remoted' daemon and agents
                        info.
 
     expected_output:
@@ -154,7 +154,7 @@ def test_request(get_configuration, configure_environment, remove_shared_files,
     agents = [ag.Agent(manager_address, "aes", os="debian8", version="4.2.0") for _ in range(len(protocols))]
     for agent, protocol in zip(agents, protocols):
         # Wait until remoted has loaded the new agent key
-        rd.wait_to_remoted_key_update(wazuh_log_monitor)
+        rd.wait_to_remoted_key_update(cyb3rhq_log_monitor)
 
         if "disconnected" not in command_request:
             sender, injector = ag.connect(agent, manager_address, protocol)
@@ -164,7 +164,7 @@ def test_request(get_configuration, configure_environment, remove_shared_files,
 
         msg_request = f'{agent.id} {command_request}'
 
-        response = send_request(msg_request, wazuh_socket=REMOTED_SOCKET_PATH)
+        response = send_request(msg_request, cyb3rhq_socket=REMOTED_SOCKET_PATH)
 
         assert expected_answer in response, "Remoted unexpected answer"
 

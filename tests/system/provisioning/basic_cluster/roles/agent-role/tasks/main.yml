@@ -24,12 +24,12 @@
 
 - name: "Get agent package"
   ansible.builtin.get_url:
-    url: "https://{{package_repository}}.wazuh.com/{{repository}}/apt/pool/main/w/wazuh-agent/wazuh-agent_{{package_version}}-{{package_revision}}_amd64.deb"
-    dest: /tmp/wazuh-agent.deb
+    url: "https://{{package_repository}}.cyb3rhq.com/{{repository}}/apt/pool/main/w/cyb3rhq-agent/cyb3rhq-agent_{{package_version}}-{{package_revision}}_amd64.deb"
+    dest: /tmp/cyb3rhq-agent.deb
 
 - name: "Install agent package"
   ansible.builtin.apt:
-    deb: /tmp/wazuh-agent.deb
+    deb: /tmp/cyb3rhq-agent.deb
 
 - name: Copy ossec.conf file
   copy:
@@ -53,12 +53,12 @@
     mode: "0644"
     create: yes
 
-- name: Set Wazuh Manager IP
+- name: Set Cyb3rhq Manager IP
   lineinfile:
     path: /var/ossec/etc/ossec.conf
     regexp: '<address>(.*)</address>'
     line: "<address>{{ manager_hostname }}</address>"
     backrefs: yes
 
-- name: Restart Wazuh
-  command: /var/ossec/bin/wazuh-control restart
+- name: Restart Cyb3rhq
+  command: /var/ossec/bin/cyb3rhq-control restart

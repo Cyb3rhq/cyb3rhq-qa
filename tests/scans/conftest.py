@@ -1,5 +1,5 @@
 DEFAULT_REFERENCE = 'master'
-DEFAULT_REPOSITORY = 'wazuh'
+DEFAULT_REPOSITORY = 'cyb3rhq'
 
 
 def pytest_addoption(parser):

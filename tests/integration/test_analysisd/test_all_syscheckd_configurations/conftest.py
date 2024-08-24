@@ -1,5 +1,5 @@
-# Copyright (C) 2015-2021, Wazuh Inc.
-# Created by Wazuh, Inc. <info@wazuh.com>.
+# Copyright (C) 2015-2021, Cyb3rhq Inc.
+# Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 # This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 import json
@@ -9,9 +9,9 @@ import time
 from collections import defaultdict
 
 import pytest
-from wazuh_testing.analysis import callback_fim_alert
-from wazuh_testing.tools import WAZUH_LOGS_PATH
-from wazuh_testing.tools.monitoring import wait_mtime
+from cyb3rhq_testing.analysis import callback_fim_alert
+from cyb3rhq_testing.tools import CYB3RHQ_LOGS_PATH
+from cyb3rhq_testing.tools.monitoring import wait_mtime
 
 
 @pytest.fixture(scope='module')
@@ -29,7 +29,7 @@ def generate_events_and_alerts(request):
             ...
         }
     """
-    alerts_json = os.path.join(WAZUH_LOGS_PATH, 'alerts', 'alerts.json')
+    alerts_json = os.path.join(CYB3RHQ_LOGS_PATH, 'alerts', 'alerts.json')
     test_cases = getattr(request.module, 'test_cases')
     socket_controller = getattr(request.module, 'receiver_sockets')[0]
     events = defaultdict(dict)

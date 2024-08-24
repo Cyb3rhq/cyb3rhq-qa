@@ -3,7 +3,8 @@ __pycache__
 .pytest_cache
 
 venv
-wazuh_testing.egg-info
+.venv
+cyb3rhq_testing.egg-info
 dist
 deployability/modules/build
 deployability/modules/jobflow.egg-info
@@ -53,13 +54,13 @@ Temporary Items
 # Ignore all local history of files
 .history
 
-# Wazuh tools installation files
-deps/wazuh_testing/build/
-deps/wazuh_testing/dist/
-deps/wazuh_testing/wazuh_testing.egg-info/
+# Cyb3rhq tools installation files
+deps/cyb3rhq_testing/build/
+deps/cyb3rhq_testing/dist/
+deps/cyb3rhq_testing/cyb3rhq_testing.egg-info/
 
 # SearchUI package-lock
-deps/wazuh_testing/wazuh_testing/qa_docs/Search-UI/package-lock.json
+deps/cyb3rhq_testing/cyb3rhq_testing/qa_docs/Search-UI/package-lock.json
 
 # GCP tests configuration file
 tests/integration/test_gcloud/data/configuration.yaml

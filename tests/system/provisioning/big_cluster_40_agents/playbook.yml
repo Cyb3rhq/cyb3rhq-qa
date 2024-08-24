@@ -50,78 +50,78 @@
         networks:
           - name: "{{ docker_network }}"
       with_items:
-        - { name: "wazuh-agent1"}
-        - { name: "wazuh-agent2"}
-        - { name: "wazuh-agent3"}
-        - { name: "wazuh-agent4"}
-        - { name: "wazuh-agent5"}
-        - { name: "wazuh-agent6"}
-        - { name: "wazuh-agent7"}
-        - { name: "wazuh-agent8"}
-        - { name: "wazuh-agent9"}
-        - { name: "wazuh-agent10"}
-        - { name: "wazuh-agent11"}
-        - { name: "wazuh-agent12"}
-        - { name: "wazuh-agent13"}
-        - { name: "wazuh-agent14"}
-        - { name: "wazuh-agent15"}
-        - { name: "wazuh-agent16"}
-        - { name: "wazuh-agent17"}
-        - { name: "wazuh-agent18"}
-        - { name: "wazuh-agent19"}
-        - { name: "wazuh-agent20"}
-        - { name: "wazuh-agent21"}
-        - { name: "wazuh-agent22"}
-        - { name: "wazuh-agent23"}
-        - { name: "wazuh-agent24"}
-        - { name: "wazuh-agent25"}
-        - { name: "wazuh-agent26"}
-        - { name: "wazuh-agent27"}
-        - { name: "wazuh-agent28"}
-        - { name: "wazuh-agent29"}
-        - { name: "wazuh-agent30"}
-        - { name: "wazuh-agent31"}
-        - { name: "wazuh-agent32"}
-        - { name: "wazuh-agent33"}
-        - { name: "wazuh-agent34"}
-        - { name: "wazuh-agent35"}
-        - { name: "wazuh-agent36"}
-        - { name: "wazuh-agent37"}
-        - { name: "wazuh-agent38"}
-        - { name: "wazuh-agent39"}
-        - { name: "wazuh-agent40"}
+        - { name: "cyb3rhq-agent1"}
+        - { name: "cyb3rhq-agent2"}
+        - { name: "cyb3rhq-agent3"}
+        - { name: "cyb3rhq-agent4"}
+        - { name: "cyb3rhq-agent5"}
+        - { name: "cyb3rhq-agent6"}
+        - { name: "cyb3rhq-agent7"}
+        - { name: "cyb3rhq-agent8"}
+        - { name: "cyb3rhq-agent9"}
+        - { name: "cyb3rhq-agent10"}
+        - { name: "cyb3rhq-agent11"}
+        - { name: "cyb3rhq-agent12"}
+        - { name: "cyb3rhq-agent13"}
+        - { name: "cyb3rhq-agent14"}
+        - { name: "cyb3rhq-agent15"}
+        - { name: "cyb3rhq-agent16"}
+        - { name: "cyb3rhq-agent17"}
+        - { name: "cyb3rhq-agent18"}
+        - { name: "cyb3rhq-agent19"}
+        - { name: "cyb3rhq-agent20"}
+        - { name: "cyb3rhq-agent21"}
+        - { name: "cyb3rhq-agent22"}
+        - { name: "cyb3rhq-agent23"}
+        - { name: "cyb3rhq-agent24"}
+        - { name: "cyb3rhq-agent25"}
+        - { name: "cyb3rhq-agent26"}
+        - { name: "cyb3rhq-agent27"}
+        - { name: "cyb3rhq-agent28"}
+        - { name: "cyb3rhq-agent29"}
+        - { name: "cyb3rhq-agent30"}
+        - { name: "cyb3rhq-agent31"}
+        - { name: "cyb3rhq-agent32"}
+        - { name: "cyb3rhq-agent33"}
+        - { name: "cyb3rhq-agent34"}
+        - { name: "cyb3rhq-agent35"}
+        - { name: "cyb3rhq-agent36"}
+        - { name: "cyb3rhq-agent37"}
+        - { name: "cyb3rhq-agent38"}
+        - { name: "cyb3rhq-agent39"}
+        - { name: "cyb3rhq-agent40"}
 
 
-- name: Wazuh Master
-  hosts: wazuh-master
+- name: Cyb3rhq Master
+  hosts: cyb3rhq-master
   vars:
-    master_hostname: "wazuh-master"
+    master_hostname: "cyb3rhq-master"
   vars_files:
     - ./vars/configurations.yml
   roles:
     - name: "roles/master-role"
 
-- name: Wazuh Worker1
-  hosts: wazuh-worker1
+- name: Cyb3rhq Worker1
+  hosts: cyb3rhq-worker1
   vars:
-    worker_name: wazuh-worker1
+    worker_name: cyb3rhq-worker1
   vars_files:
     - ./vars/configurations.yml
   roles:
     - name: "roles/worker-role"
 
-- name: Wazuh Worker2
-  hosts: wazuh-worker2
+- name: Cyb3rhq Worker2
+  hosts: cyb3rhq-worker2
   vars:
-    worker_name: wazuh-worker2
+    worker_name: cyb3rhq-worker2
   vars_files:
     - ./vars/configurations.yml
   roles:
     - name: "roles/worker-role"
 
-- name: Wazuh Agents
+- name: Cyb3rhq Agents
   hosts: agents
   vars:
-    manager_hostname: wazuh-master
+    manager_hostname: cyb3rhq-master
   roles:
     - name: "roles/agent-role"

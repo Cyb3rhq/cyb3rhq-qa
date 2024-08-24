@@ -1,7 +1,7 @@
 '''
-copyright: Copyright (C) 2015-2022, Wazuh Inc.
+copyright: Copyright (C) 2015-2022, Cyb3rhq Inc.
 
-           Created by Wazuh, Inc. <info@wazuh.com>.
+           Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 
            This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 
@@ -11,7 +11,7 @@ brief: File Integrity Monitoring (FIM) system watches selected files and trigger
        files are modified. Specifically, these tests will check if FIM events generated contain only
        the 'check_' fields specified in the configuration when using the 'check_all' attribute along
        with other 'check_' attributes.
-       The FIM capability is managed by the 'wazuh-syscheckd' daemon, which checks configured
+       The FIM capability is managed by the 'cyb3rhq-syscheckd' daemon, which checks configured
        files for changes to the checksums, permissions, and ownership.
 
 components:
@@ -23,7 +23,7 @@ targets:
     - agent
 
 daemons:
-    - wazuh-syscheckd
+    - cyb3rhq-syscheckd
 
 os_platform:
     - windows
@@ -39,8 +39,8 @@ os_version:
     - Windows XP
 
 references:
-    - https://documentation.wazuh.com/current/user-manual/capabilities/file-integrity/index.html
-    - https://documentation.wazuh.com/current/user-manual/reference/ossec-conf/syscheck.html#windows-registry
+    - https://documentation.cyb3rhq.com/current/user-manual/capabilities/file-integrity/index.html
+    - https://documentation.cyb3rhq.com/current/user-manual/reference/ossec-conf/syscheck.html#windows-registry
 
 pytest_args:
     - fim_mode:
@@ -58,14 +58,14 @@ import os
 import sys
 
 import pytest
-from wazuh_testing import global_parameters
-from wazuh_testing.fim import CHECK_GROUP, CHECK_MTIME, CHECK_OWNER, CHECK_PERM, \
+from cyb3rhq_testing import global_parameters
+from cyb3rhq_testing.fim import CHECK_GROUP, CHECK_MTIME, CHECK_OWNER, CHECK_PERM, \
     CHECK_SHA256SUM, CHECK_SIZE, CHECK_MD5SUM, CHECK_SHA1SUM, CHECK_SUM, CHECK_ALL, \
     CHECK_TYPE, LOG_FILE_PATH, REQUIRED_REG_VALUE_ATTRIBUTES, KEY_WOW64_32KEY, \
     KEY_WOW64_64KEY, REQUIRED_REG_KEY_ATTRIBUTES, generate_params, registry_value_cud, \
     registry_key_cud
-from wazuh_testing.tools.configuration import load_wazuh_configurations, check_apply_test
-from wazuh_testing.tools.monitoring import FileMonitor
+from cyb3rhq_testing.tools.configuration import load_cyb3rhq_configurations, check_apply_test
+from cyb3rhq_testing.tools.monitoring import FileMonitor
 
 # Marks
 
@@ -90,7 +90,7 @@ test_regs = [os.path.join(key, sub_key_1),
              ]
 
 test_data_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data')
-wazuh_log_monitor = FileMonitor(LOG_FILE_PATH)
+cyb3rhq_log_monitor = FileMonitor(LOG_FILE_PATH)
 
 key_all_attrs = REQUIRED_REG_KEY_ATTRIBUTES[CHECK_ALL]
 value_all_attrs = REQUIRED_REG_VALUE_ATTRIBUTES[CHECK_ALL]
@@ -123,9 +123,9 @@ conf_params = {'WINDOWS_REGISTRY_1': test_regs[0],
                'WINDOWS_REGISTRY_6': test_regs[5]
                }
 
-configurations_path = os.path.join(test_data_path, 'wazuh_check_all.yaml')
+configurations_path = os.path.join(test_data_path, 'cyb3rhq_check_all.yaml')
 p, m = generate_params(extra_params=conf_params, modes=['scheduled'])
-configurations = load_wazuh_configurations(configurations_path, __name__, params=p, metadata=m)
+configurations = load_cyb3rhq_configurations(configurations_path, __name__, params=p, metadata=m)
 
 
 # Fixtures
@@ -165,7 +165,7 @@ def get_configuration(request):
 def test_checkers(key, subkey, arch, key_attrs, value_attrs, tags_to_apply, triggers_modification,
                   get_configuration, configure_environment, restart_syscheckd, wait_for_fim_start):
     '''
-    description: Check if the 'wazuh-syscheckd' daemon adds in the generated events the 'check_' specified in
+    description: Check if the 'cyb3rhq-syscheckd' daemon adds in the generated events the 'check_' specified in
                  the configuration. These checks are attributes indicating that a monitored registry entry has
                  been modified. For example, if 'check_all=yes' and 'check_sum=no' are set for the same entry,
                  'syscheck' must send an event containing every possible 'check_' except the checksums.
@@ -175,7 +175,7 @@ def test_checkers(key, subkey, arch, key_attrs, value_attrs, tags_to_apply, trig
                  will verify that the FIM events generated contain only the fields of the 'checks' specified for
                  the monitored keys/values.
 
-    wazuh_min_version: 4.2.0
+    cyb3rhq_min_version: 4.2.0
 
     tier: 1
 
@@ -217,8 +217,8 @@ def test_checkers(key, subkey, arch, key_attrs, value_attrs, tags_to_apply, trig
     assertions:
         - Verify that the FIM events generated contain only the 'check_' fields specified in the configuration.
 
-    input_description: Different test cases are contained in an external YAML file (wazuh_check_all.yaml)
-                       which includes configuration settings for the 'wazuh-syscheckd' daemon. Those are
+    input_description: Different test cases are contained in an external YAML file (cyb3rhq_check_all.yaml)
+                       which includes configuration settings for the 'cyb3rhq-syscheckd' daemon. Those are
                        combined with the testing registry keys to be monitored defined in the module.
 
     expected_output:
@@ -231,9 +231,9 @@ def test_checkers(key, subkey, arch, key_attrs, value_attrs, tags_to_apply, trig
     check_apply_test(tags_to_apply, get_configuration['tags'])
 
     # Test registry keys.
-    registry_key_cud(key, subkey, wazuh_log_monitor, arch=arch, min_timeout=global_parameters.default_timeout,
+    registry_key_cud(key, subkey, cyb3rhq_log_monitor, arch=arch, min_timeout=global_parameters.default_timeout,
                      options=key_attrs, triggers_event_modified=triggers_modification, time_travel=True)
 
     # Test registry values.
-    registry_value_cud(key, subkey, wazuh_log_monitor, min_timeout=global_parameters.default_timeout,
+    registry_value_cud(key, subkey, cyb3rhq_log_monitor, min_timeout=global_parameters.default_timeout,
                        options=value_attrs, triggers_event_modified=triggers_modification, time_travel=True)

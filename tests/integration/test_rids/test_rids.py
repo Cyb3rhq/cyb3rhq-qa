@@ -1,7 +1,7 @@
 '''
-copyright: Copyright (C) 2015-2022, Wazuh Inc.
+copyright: Copyright (C) 2015-2022, Cyb3rhq Inc.
 
-           Created by Wazuh, Inc. <info@wazuh.com>.
+           Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 
            This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 
@@ -19,8 +19,8 @@ targets:
     - manager
 
 daemons:
-    - wazuh-remoted
-    - wazuh-agentd
+    - cyb3rhq-remoted
+    - cyb3rhq-agentd
 
 os_platform:
     - linux
@@ -37,12 +37,12 @@ os_version:
     - Ubuntu Bionic
 
 references:
-    - https://github.com/wazuh/wazuh/blob/master/src/os_crypto/shared/msgs.c
-    - https://documentation.wazuh.com/current/user-manual/reference/internal-options.html#remoted
-    - https://github.com/wazuh/wazuh/blob/master/src/config/remote-config.c
-    - https://github.com/wazuh/wazuh/pull/459
-    - https://github.com/wazuh/wazuh/issues/6112
-    - https://github.com/wazuh/wazuh/pull/7746
+    - https://github.com/cyb3rhq/cyb3rhq/blob/master/src/os_crypto/shared/msgs.c
+    - https://documentation.cyb3rhq.com/current/user-manual/reference/internal-options.html#remoted
+    - https://github.com/cyb3rhq/cyb3rhq/blob/master/src/config/remote-config.c
+    - https://github.com/cyb3rhq/cyb3rhq/pull/459
+    - https://github.com/cyb3rhq/cyb3rhq/issues/6112
+    - https://github.com/cyb3rhq/cyb3rhq/pull/7746
 
 tags:
     - rids
@@ -52,14 +52,14 @@ import time
 
 import psutil
 import pytest
-from wazuh_testing.tools import WAZUH_PATH
-from wazuh_testing.tools.agent_simulator import Sender, Injector, create_agents
-from wazuh_testing.tools.configuration import load_wazuh_configurations
-from wazuh_testing.tools.services import control_service
+from cyb3rhq_testing.tools import CYB3RHQ_PATH
+from cyb3rhq_testing.tools.agent_simulator import Sender, Injector, create_agents
+from cyb3rhq_testing.tools.configuration import load_cyb3rhq_configurations
+from cyb3rhq_testing.tools.services import control_service
 
 pytestmark = [pytest.mark.linux, pytest.mark.tier(level=0), pytest.mark.server]
 
-RIDS_DIR = os.path.join(WAZUH_PATH, 'queue', 'rids')
+RIDS_DIR = os.path.join(CYB3RHQ_PATH, 'queue', 'rids')
 
 SERVER_ADDRESS = 'localhost'
 CRYPTO = 'aes'
@@ -91,8 +91,8 @@ params = [{} for x in range(0, len(metadata))]
 
 test_data_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                               'data')
-configurations_path = os.path.join(test_data_path, 'wazuh_manager_conf.yaml')
-configurations = load_wazuh_configurations(configurations_path, __name__,
+configurations_path = os.path.join(test_data_path, 'cyb3rhq_manager_conf.yaml')
+configurations = load_cyb3rhq_configurations(configurations_path, __name__,
                                            params=params, metadata=metadata)
 
 
@@ -124,7 +124,7 @@ def create_injectors(agents):
 
 def get_remoted_pid():
     for process in psutil.process_iter():
-        if process.name() == 'wazuh-remoted':
+        if process.name() == 'cyb3rhq-remoted':
             return process.pid
     return None
 
@@ -132,7 +132,7 @@ def get_remoted_pid():
 def set_recv_counter_flush(new_recv_counter):
     new_content = ''
 
-    internal_options = os.path.join(WAZUH_PATH, 'etc', 'internal_options.conf')
+    internal_options = os.path.join(CYB3RHQ_PATH, 'etc', 'internal_options.conf')
 
     with open(internal_options, 'r') as f:
         lines = f.readlines()
@@ -153,7 +153,7 @@ def test_rids(get_configuration, configure_environment, restart_service):
                  to be able to communicate with the manager. Then, it stops the agents' listening and checks if RIDS is
                  closed(when it`s needed).
 
-    wazuh_min_version: 4.2.0
+    cyb3rhq_min_version: 4.2.0
 
     tier: 0
 
@@ -173,7 +173,7 @@ def test_rids(get_configuration, configure_environment, restart_service):
         - Verify that every agent rid is closed.
 
     input_description: Some metadata is defined in the module. These include some configurations stored in
-                       the 'wazuh_manager_conf.yaml'.
+                       the 'cyb3rhq_manager_conf.yaml'.
 
     expected_output:
         - The `rids_for_agent_open` boolean variable with `True` when RIDS should be `opened`.

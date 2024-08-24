@@ -1,11 +1,11 @@
-# Copyright (C) 2015-2022, Wazuh Inc.
-# Created by Wazuh, Inc. <info@wazuh.com>.
+# Copyright (C) 2015-2022, Cyb3rhq Inc.
+# Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 # This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 import json
 
 import pytest
 
-from wazuh_testing import global_parameters
+from cyb3rhq_testing import global_parameters
 
 
 def pytest_addoption(parser):

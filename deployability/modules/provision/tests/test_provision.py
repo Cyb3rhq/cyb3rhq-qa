@@ -1,5 +1,5 @@
-# Copyright (C) 2015, Wazuh Inc.
-# Created by Wazuh, Inc. <info@wazuh.com>.
+# Copyright (C) 2015, Cyb3rhq Inc.
+# Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 # This program is a free software; you can redistribute it and/or modify it under the terms of GPLv2
 """Unit Tests for the Provision class"""
 
@@ -253,9 +253,9 @@ def test_provision_get_deps_ips_fail(logger_mock: MagicMock, provision_mock: Pro
 
 @pytest.mark.parametrize('logger_mock, provision_mock, component_name, dependencies',
                          [({'logger_to_patch': 'modules.provision.provision.logger'}, {},
-                           'wazuh-agent', {'manager': 'wazuh-manager'}),
+                           'cyb3rhq-agent', {'manager': 'cyb3rhq-manager'}),
                            ({'logger_to_patch': 'modules.provision.provision.logger'}, {},
-                           'wazuh-manager', {'other': 'other'})],
+                           'cyb3rhq-manager', {'other': 'other'})],
                           indirect=['provision_mock', 'logger_mock'])
 def test_provision_validate_component_deps(logger_mock: MagicMock, provision_mock: Provision, component_name: str,
                                            dependencies: dict):
@@ -289,6 +289,6 @@ def test_provision_validate_component_deps_fail(provision_mock: Provision):
     provision_mock : Provision
         provision fixture defined in conftest.py.
     """
-    component = ComponentInfo(component='wazuh-agent', type='type_1', dependencies={'other': 'other'})
-    with pytest.raises(ValueError, match='Dependency IP is required to install Wazuh Agent.'):
+    component = ComponentInfo(component='cyb3rhq-agent', type='type_1', dependencies={'other': 'other'})
+    with pytest.raises(ValueError, match='Dependency IP is required to install Cyb3rhq Agent.'):
         provision_mock._Provision__validate_component_deps(component)

@@ -1,9 +1,9 @@
 '''
-copyright: Copyright (C) 2015-2023, Wazuh Inc.
-            Created by Wazuh, Inc. <info@wazuh.com>.
+copyright: Copyright (C) 2015-2023, Cyb3rhq Inc.
+            Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
             This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 type: system
-brief: Wazuh manager handles agent groups.
+brief: Cyb3rhq manager handles agent groups.
         If a group is deleted from a master cluster, there will be an instance where the agents require a
         resynchronization (syncreq).
         If the group is deleted from a worker cluster, the cluster master will take care of reestablishing the
@@ -16,14 +16,14 @@ components:
     - manager
     - agent
 daemons:
-    - wazuh-authd
-    - wazuh-agentd
+    - cyb3rhq-authd
+    - cyb3rhq-agentd
 os_platform:
     - linux
 os_version:
     - Debian Buster
 references:
-    - https://documentation.wazuh.com/current/user-manual/registering/agent-enrollment.html
+    - https://documentation.cyb3rhq.com/current/user-manual/registering/agent-enrollment.html
 '''
 
 import json
@@ -31,20 +31,20 @@ import os
 import pytest
 import time
 from time import time as current_time
-from wazuh_testing import T_025, T_1, T_5, T_10
-from wazuh_testing.tools.system import HostManager
+from cyb3rhq_testing import T_025, T_1, T_5, T_10
+from cyb3rhq_testing.tools.system import HostManager
 from system import (assign_agent_to_new_group, create_new_agent_group, delete_agent_group, execute_wdb_query,
                     restart_cluster)
-from wazuh_testing.tools.configuration import get_test_cases_data
+from cyb3rhq_testing.tools.configuration import get_test_cases_data
 from system.test_cluster.test_agent_groups.common import register_agent
 
 pytestmark = [pytest.mark.cluster, pytest.mark.enrollment_cluster_env]
 
-test_infra_hosts = ['wazuh-master', 'wazuh-worker1', 'wazuh-worker2', 'wazuh-agent1', 'wazuh-agent2']
-test_infra_managers = ['wazuh-master', 'wazuh-worker1', 'wazuh-worker2']
-test_infra_agents = ['wazuh-agent1', 'wazuh-agent2']
+test_infra_hosts = ['cyb3rhq-master', 'cyb3rhq-worker1', 'cyb3rhq-worker2', 'cyb3rhq-agent1', 'cyb3rhq-agent2']
+test_infra_managers = ['cyb3rhq-master', 'cyb3rhq-worker1', 'cyb3rhq-worker2']
+test_infra_agents = ['cyb3rhq-agent1', 'cyb3rhq-agent2']
 groups = ['group_master', 'group_worker1', 'group_worker2']
-workers = ['wazuh-worker1', 'wazuh-worker2']
+workers = ['cyb3rhq-worker1', 'cyb3rhq-worker2']
 groups_created = []
 query = "global 'sql select name, group_sync_status from agent;'"
 
@@ -106,13 +106,13 @@ def wait_end_initial_syncreq():
         result = execute_wdb_query(query, test_infra_hosts[0], host_manager)
 
 
-@pytest.mark.parametrize('target_node', ['wazuh-master', 'wazuh-worker1', 'wazuh-worker2'])
+@pytest.mark.parametrize('target_node', ['cyb3rhq-master', 'cyb3rhq-worker1', 'cyb3rhq-worker2'])
 @pytest.mark.parametrize('metadata', t1_configuration_metadata, ids=t1_case_ids)
 def test_group_sync_status(metadata, target_node, clean_environment, group_creation_and_assignation,
                            wait_end_initial_syncreq):
     '''
-    description: Delete a group folder in wazuh server cluster and check group_sync status in 2 times.
-    wazuh_min_version: 4.4.0
+    description: Delete a group folder in cyb3rhq server cluster and check group_sync status in 2 times.
+    cyb3rhq_min_version: 4.4.0
     metadata:
         - metadata:
             type: list
@@ -132,7 +132,7 @@ def test_group_sync_status(metadata, target_node, clean_environment, group_creat
             brief: Wait until syncreqs related with the test-environment setting get neutralized
     assertions:
         - Verify that group_sync status changes according the trigger.
-        - Verify same conditions creating and assigning groups from all wazuh-manager clusters (Master and Workers)
+        - Verify same conditions creating and assigning groups from all cyb3rhq-manager clusters (Master and Workers)
     input_description: Different use cases are found in the test module and include parameters.
     expected_output:
         - If the group-folder is deleted from master cluster, it is expected to find a

@@ -1,5 +1,5 @@
 ---
-wazuh-manager:
+cyb3rhq-manager:
   description: Enable IPv6 in remoted and authd
   sections:
   - section: remote

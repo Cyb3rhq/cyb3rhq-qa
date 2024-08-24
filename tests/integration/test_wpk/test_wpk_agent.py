@@ -1,14 +1,14 @@
 '''
-copyright: Copyright (C) 2015-2022, Wazuh Inc.
+copyright: Copyright (C) 2015-2022, Cyb3rhq Inc.
 
-           Created by Wazuh, Inc. <info@wazuh.com>.
+           Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 
            This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 type: integration
 
 brief: Agents can be upgraded remotely. This upgrade is performed by the manager which
-        sends each registered agent a WPK (Wazuh signed package) file that contains the files
+        sends each registered agent a WPK (Cyb3rhq signed package) file that contains the files
         needed to upgrade the agent to the new version. These tests ensure, on the agent side,
         that the WPK upgrade works correctly.
 
@@ -19,8 +19,8 @@ targets:
     - agent
 
 daemons:
-    - wazuh-authd
-    - wazuh-remoted
+    - cyb3rhq-authd
+    - cyb3rhq-remoted
 
 os_platform:
     - linux
@@ -41,7 +41,7 @@ os_version:
     - Windows Server 2016
 
 references:
-    - https://documentation.wazuh.com/current/user-manual/agents/remote-upgrading/upgrading-agent.html
+    - https://documentation.cyb3rhq.com/current/user-manual/agents/remote-upgrading/upgrading-agent.html
 
 pytest_args:
     - wpk_version: Specify the version to upgrade
@@ -60,17 +60,17 @@ import subprocess
 import yaml
 import json
 
-from wazuh_testing import tools
-from wazuh_testing.tools.monitoring import make_callback, FileMonitor
+from cyb3rhq_testing import tools
+from cyb3rhq_testing.tools.monitoring import make_callback, FileMonitor
 from datetime import datetime
-from wazuh_testing.tools import WAZUH_PATH, get_version, get_service
-from wazuh_testing.tools.authd_sim import AuthdSimulator
-from wazuh_testing.tools.configuration import load_wazuh_configurations
-from wazuh_testing.tools.file import truncate_file, count_file_lines
-from wazuh_testing.tools.remoted_sim import RemotedSimulator
-from wazuh_testing.tools.services import control_service
-from wazuh_testing.agent import callback_detect_upgrade_ack_event, callback_upgrade_module_up, callback_exit_cleaning
-from wazuh_testing import global_parameters
+from cyb3rhq_testing.tools import CYB3RHQ_PATH, get_version, get_service
+from cyb3rhq_testing.tools.authd_sim import AuthdSimulator
+from cyb3rhq_testing.tools.configuration import load_cyb3rhq_configurations
+from cyb3rhq_testing.tools.file import truncate_file, count_file_lines
+from cyb3rhq_testing.tools.remoted_sim import RemotedSimulator
+from cyb3rhq_testing.tools.services import control_service
+from cyb3rhq_testing.agent import callback_detect_upgrade_ack_event, callback_upgrade_module_up, callback_exit_cleaning
+from cyb3rhq_testing import global_parameters
 
 
 pytestmark = [pytest.mark.linux, pytest.mark.darwin, pytest.mark.win32,
@@ -83,15 +83,15 @@ upgrade_result_folder = 'var/upgrade' if sys_platform != "Windows" else 'upgrade
 
 DEFAULT_UPGRADE_SCRIPT = 'upgrade.sh' if sys_platform != "Windows" else 'upgrade.bat'
 
-CLIENT_KEYS_PATH = os.path.join(WAZUH_PATH, folder, 'client.keys')
-SERVER_KEY_PATH = os.path.join(WAZUH_PATH, folder, 'manager.key')
-SERVER_CERT_PATH = os.path.join(WAZUH_PATH, folder, 'manager.cert')
-UPGRADE_RESULT_PATH = os.path.join(WAZUH_PATH, upgrade_result_folder, 'upgrade_result')
+CLIENT_KEYS_PATH = os.path.join(CYB3RHQ_PATH, folder, 'client.keys')
+SERVER_KEY_PATH = os.path.join(CYB3RHQ_PATH, folder, 'manager.key')
+SERVER_CERT_PATH = os.path.join(CYB3RHQ_PATH, folder, 'manager.cert')
+UPGRADE_RESULT_PATH = os.path.join(CYB3RHQ_PATH, upgrade_result_folder, 'upgrade_result')
 CRYPTO = "aes"
 SERVER_ADDRESS = 'localhost'
 PROTOCOL = "tcp"
-mark_skip_agentLinux = pytest.mark.skipif(get_service() == 'wazuh-agent' and
-                                          sys_platform == 'Linux', reason="It will be blocked by wazuh/wazuh#9763")
+mark_skip_agentLinux = pytest.mark.skipif(get_service() == 'cyb3rhq-agent' and
+                                          sys_platform == 'Linux', reason="It will be blocked by cyb3rhq/cyb3rhq#9763")
 
 if not global_parameters.wpk_version:
     raise Exception("The WPK package version must be defined by parameter. See README.md")
@@ -232,8 +232,8 @@ def load_tests(path):
 
 test_data_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                               'data')
-configurations_path = os.path.join(test_data_path, 'wazuh_agent_conf.yaml')
-configurations = load_wazuh_configurations(configurations_path, __name__,
+configurations_path = os.path.join(test_data_path, 'cyb3rhq_agent_conf.yaml')
+configurations = load_cyb3rhq_configurations(configurations_path, __name__,
                                            params=params,
                                            metadata=test_metadata)
 
@@ -242,7 +242,7 @@ remoted_simulator = None
 
 def callback_agent_req(id_req):
     msg = '#! req {id_req}'
-    return make_callback(pattern=msg, prefix=r'.*wazuh-agentd.*')
+    return make_callback(pattern=msg, prefix=r'.*cyb3rhq-agentd.*')
 
 
 @pytest.fixture(scope="module", params=configurations)
@@ -281,7 +281,7 @@ def start_agent(request, get_configuration):
 
     control_service('stop')
     agent_auth_pat = 'bin' if sys_platform != "Windows" else ''
-    subprocess.call([f'{WAZUH_PATH}/{agent_auth_pat}/agent-auth', '-m',
+    subprocess.call([f'{CYB3RHQ_PATH}/{agent_auth_pat}/agent-auth', '-m',
                     SERVER_ADDRESS])
     control_service('start')
 
@@ -310,22 +310,22 @@ def download_wpk(get_configuration):
     wpk_file_path = ''
     # Generating file name
     if current_plaform == "windows":
-        wpk_file = "wazuh_agent_{0}_{1}.wpk".format(agent_version,
+        wpk_file = "cyb3rhq_agent_{0}_{1}.wpk".format(agent_version,
                                                     current_plaform)
         wpk_url = protocol + wpk_repo + "windows/" + wpk_file
-        wpk_file_path = os.path.join(WAZUH_PATH, 'tmp', wpk_file)
+        wpk_file_path = os.path.join(CYB3RHQ_PATH, 'tmp', wpk_file)
     elif current_plaform == "darwin":
-        wpk_file = "wazuh_agent_{0}_macos_{1}.wpk"\
+        wpk_file = "cyb3rhq_agent_{0}_macos_{1}.wpk"\
                 .format(agent_version, architecture)
         wpk_url = protocol + wpk_repo \
             + "macos/" + architecture + "/pkg/" + wpk_file
-        wpk_file_path = os.path.join(WAZUH_PATH, 'var', wpk_file)
+        wpk_file_path = os.path.join(CYB3RHQ_PATH, 'var', wpk_file)
     else:
-        wpk_file = "wazuh_agent_{0}_linux_{1}.wpk"\
+        wpk_file = "cyb3rhq_agent_{0}_linux_{1}.wpk"\
                 .format(agent_version, architecture)
         wpk_url = protocol + wpk_repo \
             + "linux/" + architecture + "/" + wpk_file
-        wpk_file_path = os.path.join(WAZUH_PATH, 'var', wpk_file)
+        wpk_file_path = os.path.join(CYB3RHQ_PATH, 'var', wpk_file)
     try:
         result = requests.get(wpk_url)
     except requests.exceptions.RequestException:
@@ -361,20 +361,20 @@ def prepare_agent_version(get_configuration):
             except ValueError:
                 pass
             time.sleep(time_to_sleep_until_backup)
-            backup_path = os.path.join(WAZUH_PATH, 'backup')
-            subprocess.call(['robocopy', backup_path, WAZUH_PATH,
+            backup_path = os.path.join(CYB3RHQ_PATH, 'backup')
+            subprocess.call(['robocopy', backup_path, CYB3RHQ_PATH,
                              '/E', '/IS', '/NFL', '/NDL', '/NJH',
                              '/NP', '/NS', '/NC'])
         else:
             # We should change initial version to match expected
             backup_file_start = f'backup_{metadata["initial_version"]}_[' \
                                 f'{datetime.strftime(datetime.now(), "%m-%d-%Y")}'
-            backups_files = [x for x in sorted(os.listdir(os.path.join(WAZUH_PATH,
+            backups_files = [x for x in sorted(os.listdir(os.path.join(CYB3RHQ_PATH,
                                                'backup')))
                              if backup_file_start in x]
 
             if len(backups_files) > 0:
-                subprocess.call(['tar', 'xzf', f'{WAZUH_PATH}/backup/'
+                subprocess.call(['tar', 'xzf', f'{CYB3RHQ_PATH}/backup/'
                                  f'{backups_files[-1]}', '-C', '/'])
             else:
                 raise Exception('Expected initial version for test does not match'
@@ -389,17 +389,17 @@ def prepare_agent_version(get_configuration):
         except ValueError:
             pass
         time.sleep(time_to_sleep_until_backup)
-        backup_path = os.path.join(WAZUH_PATH, 'backup')
-        subprocess.call(['robocopy', backup_path, WAZUH_PATH,
+        backup_path = os.path.join(CYB3RHQ_PATH, 'backup')
+        subprocess.call(['robocopy', backup_path, CYB3RHQ_PATH,
                          '/E', '/IS', '/NFL', '/NDL', '/NJH', '/NP', '/NS', '/NC'])
     else:
         backup_file_start = f'backup_{metadata["initial_version"]}_[' \
                             f'{datetime.strftime(datetime.now(), "%m-%d-%Y")}'
-        backups_files = [x for x in sorted(os.listdir(os.path.join(WAZUH_PATH,
+        backups_files = [x for x in sorted(os.listdir(os.path.join(CYB3RHQ_PATH,
                                                                    'backup')))
                          if backup_file_start in x]
         if len(backups_files) > 0:
-            subprocess.call(['tar', 'xzf', f'{WAZUH_PATH}/backup/{backups_files[-1]}',
+            subprocess.call(['tar', 'xzf', f'{CYB3RHQ_PATH}/backup/{backups_files[-1]}',
                             '-C', '/'])
 
 
@@ -410,7 +410,7 @@ def test_wpk_agent(get_configuration, prepare_agent_version, download_wpk,
     description: Upgrade the agent by WPK package, checking
                  the expected messages are correct.
 
-    wazuh_min_version: 4.2.0
+    cyb3rhq_min_version: 4.2.0
 
     tier: 0
 
@@ -452,7 +452,7 @@ def test_wpk_agent(get_configuration, prepare_agent_version, download_wpk,
     metadata = get_configuration['metadata']
     expected = metadata['results']
 
-    # Extract initial Wazuh Agent version
+    # Extract initial Cyb3rhq Agent version
     assert get_version() == metadata["initial_version"], \
            'Initial version does not match Expected for agent'
 
@@ -489,22 +489,22 @@ def test_wpk_agent(get_configuration, prepare_agent_version, download_wpk,
         else:
             truncate_file(tools.LOG_FILE_PATH)
 
-        wazuh_log_monitor = FileMonitor(tools.LOG_FILE_PATH)
+        cyb3rhq_log_monitor = FileMonitor(tools.LOG_FILE_PATH)
 
         if metadata['simulate_rollback']:
 
             if sys_platform not in ['win32', 'Windows']:
-                wazuh_log_monitor.start(timeout=timeout_agent_exit,
+                cyb3rhq_log_monitor.start(timeout=timeout_agent_exit,
                                         error_message="Error agentd not stopped",
                                         callback=callback_exit_cleaning())
 
-            wazuh_log_monitor.start(timeout=timeout_upgrade_module_start,
+            cyb3rhq_log_monitor.start(timeout=timeout_upgrade_module_start,
                                     error_message="Upgrade module did not start",
                                     callback=callback_upgrade_module_up())
 
             remoted_simulator.change_default_listener = True
 
-        event = wazuh_log_monitor.start(timeout=timeout_ack_response, error_message='ACK event not received',
+        event = cyb3rhq_log_monitor.start(timeout=timeout_ack_response, error_message='ACK event not received',
                                                    callback=callback_detect_upgrade_ack_event).result()
         result = event['parameters']
 

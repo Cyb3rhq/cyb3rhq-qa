@@ -1,7 +1,7 @@
 '''
-copyright: Copyright (C) 2015-2022, Wazuh Inc.
+copyright: Copyright (C) 2015-2022, Cyb3rhq Inc.
 
-           Created by Wazuh, Inc. <info@wazuh.com>.
+           Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 
            This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 
@@ -21,10 +21,10 @@ targets:
     - manager
 
 daemons:
-    - wazuh-apid
-    - wazuh-analysisd
-    - wazuh-syscheckd
-    - wazuh-db
+    - cyb3rhq-apid
+    - cyb3rhq-analysisd
+    - cyb3rhq-syscheckd
+    - cyb3rhq-db
 
 os_platform:
     - linux
@@ -41,8 +41,8 @@ os_version:
     - Ubuntu Bionic
 
 references:
-    - https://documentation.wazuh.com/current/user-manual/api/getting-started.html
-    - https://documentation.wazuh.com/current/user-manual/api/reference.html#tag/Security
+    - https://documentation.cyb3rhq.com/current/user-manual/api/getting-started.html
+    - https://documentation.cyb3rhq.com/current/user-manual/api/reference.html#tag/Security
     - https://en.wikipedia.org/wiki/Role-based_access_control
 
 tags:
@@ -50,7 +50,7 @@ tags:
 '''
 import requests
 import pytest
-from wazuh_testing.api import get_security_resource_information
+from cyb3rhq_testing.api import get_security_resource_information
 
 # Marks
 pytestmark = [pytest.mark.server]
@@ -107,7 +107,7 @@ def test_remove_rule(set_security_resources, get_api_details):
     description: Check if relationships between security resources stay the same
                  after removing the linked rule.
 
-    wazuh_min_version: 4.2.0
+    cyb3rhq_min_version: 4.2.0
 
     tier: 0
 
@@ -161,7 +161,7 @@ def test_remove_policy(set_security_resources, get_api_details):
     description: Check if relationships between security resources stay the same
                  after removing the linked policy.
 
-    wazuh_min_version: 4.2.0
+    cyb3rhq_min_version: 4.2.0
 
     tier: 0
 
@@ -215,7 +215,7 @@ def test_remove_user(set_security_resources, get_api_details):
     description: Check if relationships between security resources stay the same
                  after removing the linked user.
 
-    wazuh_min_version: 4.2.0
+    cyb3rhq_min_version: 4.2.0
 
     tier: 0
 
@@ -269,7 +269,7 @@ def test_remove_role(set_security_resources, get_api_details):
     description: Check if relationships between security resources stay the same
                  after removing the linked role.
 
-    wazuh_min_version: 4.2.0
+    cyb3rhq_min_version: 4.2.0
 
     tier: 0
 

@@ -1,7 +1,7 @@
 '''
-copyright: Copyright (C) 2015-2022, Wazuh Inc.
+copyright: Copyright (C) 2015-2022, Cyb3rhq Inc.
 
-           Created by Wazuh, Inc. <info@wazuh.com>.
+           Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 
            This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 
@@ -22,8 +22,8 @@ components:
     - manager
 
 daemons:
-    - wazuh-agentd
-    - wazuh-remoted
+    - cyb3rhq-agentd
+    - cyb3rhq-remoted
 
 os_platform:
     - linux
@@ -76,7 +76,7 @@ def test_keep_alives(get_report):
     This test ensures that ACK and keep alive does not overcome the specified maximum. The condition is checked using
     the agentd statistics data and the keep-alives received by the manager in the logs file.
 
-    wazuh_min_version: 4.4.0
+    cyb3rhq_min_version: 4.4.0
 
     parameters:
         - get_report:
@@ -95,11 +95,11 @@ def test_keep_alives(get_report):
         - None
     '''
     # Agent
-    assert get_report['agents']['wazuh-agentd']['max_diff_ack_keep_alive'] < MAX_DIFFERENCE_ACK_KEEP_ALIVE, \
+    assert get_report['agents']['cyb3rhq-agentd']['max_diff_ack_keep_alive'] < MAX_DIFFERENCE_ACK_KEEP_ALIVE, \
         f"Some agents keep alive interval surpassed {MAX_DIFFERENCE_ACK_KEEP_ALIVE} seconds maximun"
 
     # Manager
-    keep_alives = get_report['managers']['wazuh-remoted']['keep_alives']
+    keep_alives = get_report['managers']['cyb3rhq-remoted']['keep_alives']
 
     max_differences = [keep_alives[agent]['max_difference'] for agent in keep_alives.keys()]
     assert max(max_differences) < MAX_DIFFERENCE_ACK_KEEP_ALIVE, \

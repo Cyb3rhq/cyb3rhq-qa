@@ -1,0 +1,92 @@
+-
+  name: Not existing agent
+  description: Check messages from not registered agents.
+  test_case:
+    -
+      input: 'agent 004 syscheck delete '
+      output: err Agent not found
+      stage: Syscheck query to a non-existing agent
+-
+  name: Agents OS table sys_osinfo
+  description: It checks the commands get and set
+  test_case:
+    -
+      input: agent 000 sql DELETE FROM sys_osinfo
+      output: ok []
+      stage: agent sys_osinfo cleaning sys_osinfo table
+    -
+      input: agent 000 osinfo get
+      output: ok []
+      stage: agent sys_osinfo checking table is empty
+    -
+      input: agent 000 osinfo set 0|2021/04/08 10:00:00|focal|x86_64|Ubuntu|20.04.2 LTS (Focal Fossa)|focal|20|04|1|ubuntu|Linux|5.4.0-70-generic|#78-Ubuntu SMP Thu Apr 08 10:00:00 UTC 2021|1|2|NULL
+      output: ok
+      stage: agent sys_osinfo set information
+    -
+      input: agent 000 osinfo get
+      output: ok [{"scan_id":0,"scan_time":"2021/04/08 10:00:00","hostname":"focal","architecture":"x86_64","os_name":"Ubuntu","os_version":"20.04.2 LTS (Focal Fossa)","os_codename":"focal","os_major":"20","os_minor":"04","os_patch":"2","os_build":"1","os_platform":"ubuntu","sysname":"Linux","release":"5.4.0-70-generic","version":"#78-Ubuntu SMP Thu Apr 08 10:00:00 UTC 2021","os_release":"1","checksum":"legacy","reference":"54d5344c8f49eae38d81651495227c5080755b45"}]
+      stage: agent sys_osinfo getting information
+    -
+      input: agent 000 sql DELETE FROM sys_osinfo
+      output: ok []
+      stage: agent sys_osinfo cleaning sys_osinfo table
+    -
+      input: agent 000 osinfo get
+      output: ok []
+      stage: agent sys_osinfo checking table is empty
+-
+  name: "Agents Packages/Hotfixes tables: sys_programs and sys_hotfixes"
+  description: It checks the commands get packages and get hotfixes
+  test_case:
+    -
+      input: agent 003 package save 0|2021/04/07 22:00:00|deb|test_deb_pkg|optional|utils|7490|Cyb3rhq cyb3rhq@cyb3rhq.com|1715177135|1.0.0|amd64|NULL|NULL|Test package|NULL|1
+      output: ok
+      stage: agent sys_programs adding dummy package
+    -
+      input: agent 003 package save 0|2021/04/07 22:00:00|rpm|test_rpm_pkg|optional|utils|7490|Cyb3rhq cyb3rhq@cyb3rhq.com|1715177135|1.0.0|amd64|NULL|NULL|Test package|NULL|1
+      output: ok
+      stage: agent sys_programs adding dummy package
+    -
+      input: agent 003 sql select count(*) from sys_programs
+      output: ok [{"count(*)":2}]
+      stage: agent sys_programs count packages added
+    -
+      input: agent 003 package get
+      output: ok {"status":"NOT_SYNCED"}
+      stage: agent sys_programs getting not synced packages attempt
+    -
+      input: agent 003 hotfix save 0|0|KB2980293|legacy
+      output: ok
+      stage: agent sys_hotfixes adding dummy hotfix
+    -
+      input: agent 003 hotfix save 0|0|KB2980294|legacy
+      output: ok
+      stage: agent sys_hotfixes adding dummy hotfix
+    -
+      input: agent 003 hotfix save 0|0|KB2980295|legacy
+      output: ok
+      stage: agent sys_hotfixes adding dummy hotfix
+    -
+      input: agent 003 sql SELECT count(*) FROM sys_hotfixes
+      output: ok [{"count(*)":3}]
+      stage: agent sys_hotfixes count hotfixes added
+    -
+      input: agent 003 hotfix get
+      output: ok {"status":"NOT_SYNCED"}
+      stage: agent sys_programs getting not synced packages attempt
+    -
+      input: agent 003 sql UPDATE sync_info SET last_attempt = 1, last_completion = 1 where component = "syscollector-hotfixes"
+      output: ok []
+      stage: agent sync_info set synced
+    -
+      input: agent 003 hotfix get
+      output: ['due {"hotfix":"KB2980293"}','due {"hotfix":"KB2980294"}','due {"hotfix":"KB2980295"}','ok {"status":"SUCCESS"}']
+      stage: agent sys_hotfixes getting hotfixes
+    -
+      input: agent 003 sql UPDATE sync_info SET last_attempt = 1, last_completion = 1 where component = "syscollector-packages"
+      output: ok []
+      stage: agent sync_info set synced
+    -
+      input: agent 003 package get
+      output: ['due {"name":"test_deb_pkg","version":"1.0.0","architecture":"amd64","vendor":"Cyb3rhq cyb3rhq@cyb3rhq.com","format":"deb","item_id":"1","description":"Test package","location":"","size":7490,"install_time":"1715177135"}', 'due {"name":"test_rpm_pkg","version":"1.0.0","architecture":"amd64","vendor":"Cyb3rhq cyb3rhq@cyb3rhq.com","format":"rpm","item_id":"1","description":"Test package","location":"","size":7490,"install_time":"1715177135"}', 'ok {"status":"SUCCESS"}']
+      stage: agent sys_programs getting not all packages

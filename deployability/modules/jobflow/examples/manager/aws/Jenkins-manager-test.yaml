@@ -47,11 +47,11 @@ tasks:
         args:
           - modules/testing/main.py
           - targets:
-            - wazuh-1: "{working-dir}/manager-linux-ubuntu-20.04-amd64/inventory.yaml"
+            - cyb3rhq-1: "{working-dir}/manager-linux-ubuntu-20.04-amd64/inventory.yaml"
           - tests: "install,restart,stop,uninstall"
           - component: "manager"
-          - wazuh-version: "4.7.4"
-          - wazuh-revision: "40717"
+          - cyb3rhq-version: "4.7.4"
+          - cyb3rhq-revision: "40717"
           - live: True
     depends-on:
       - "allocate-manager-linux-ubuntu-20.04-amd64"

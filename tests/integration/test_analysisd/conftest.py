@@ -1,5 +1,5 @@
-# Copyright (C) 2015-2021, Wazuh Inc.
-# Created by Wazuh, Inc. <info@wazuh.com>.
+# Copyright (C) 2015-2021, Cyb3rhq Inc.
+# Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 # This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 import shutil
@@ -7,17 +7,17 @@ import os
 
 import pytest
 
-from wazuh_testing.tools import (ALERT_FILE_PATH, LOG_FILE_PATH,
-                                 WAZUH_UNIX_USER, WAZUH_UNIX_GROUP,
+from cyb3rhq_testing.tools import (ALERT_FILE_PATH, LOG_FILE_PATH,
+                                 CYB3RHQ_UNIX_USER, CYB3RHQ_UNIX_GROUP,
                                  CUSTOM_RULES_PATH, ANALYSISD_DAEMON)
-from wazuh_testing.tools.file import truncate_file
-from wazuh_testing.tools.services import control_service, check_daemon_status
-from wazuh_testing.tools.monitoring import FileMonitor
+from cyb3rhq_testing.tools.file import truncate_file
+from cyb3rhq_testing.tools.services import control_service, check_daemon_status
+from cyb3rhq_testing.tools.monitoring import FileMonitor
 
 
 @pytest.fixture(scope='module')
 def configure_local_rules(get_configuration, request):
-    """Configure a custom rule in local_rules.xml for testing. Restart Wazuh is needed for applying the
+    """Configure a custom rule in local_rules.xml for testing. Restart Cyb3rhq is needed for applying the
     configuration. """
 
     # save current configuration
@@ -49,7 +49,7 @@ def wait_for_analysisd_startup(request):
 @pytest.fixture(scope='module')
 def configure_custom_rules(request):
     """Configure a syscollector custom rules for testing.
-    Restarting wazuh-analysisd is required to apply this changes.
+    Restarting cyb3rhq-analysisd is required to apply this changes.
     """
     data_dir = getattr(request.module, 'TEST_RULES_PATH')
     data_file = getattr(request.module, 'rule_file')
@@ -58,7 +58,7 @@ def configure_custom_rules(request):
 
     # copy custom rule with specific privileges
     shutil.copy(source_rule, target_rule)
-    shutil.chown(target_rule, WAZUH_UNIX_USER, WAZUH_UNIX_GROUP)
+    shutil.chown(target_rule, CYB3RHQ_UNIX_USER, CYB3RHQ_UNIX_GROUP)
 
     yield
 
@@ -84,7 +84,7 @@ def restart_analysisd():
 @pytest.fixture()
 def prepare_custom_rules_file(request, metadata):
     """Configure a syscollector custom rules for testing.
-    Restarting wazuh-analysisd is required to apply this changes.
+    Restarting cyb3rhq-analysisd is required to apply this changes.
     """
     data_dir = getattr(request.module, 'RULES_SAMPLE_PATH')
     source_rule = os.path.join(data_dir, metadata['rules_file'])
@@ -92,7 +92,7 @@ def prepare_custom_rules_file(request, metadata):
 
     # copy custom rule with specific privileges
     shutil.copy(source_rule, target_rule)
-    shutil.chown(target_rule, WAZUH_UNIX_USER, WAZUH_UNIX_GROUP)
+    shutil.chown(target_rule, CYB3RHQ_UNIX_USER, CYB3RHQ_UNIX_GROUP)
 
     yield
 

@@ -1,13 +1,13 @@
 '''
-copyright: Copyright (C) 2015-2022, Wazuh Inc.
+copyright: Copyright (C) 2015-2022, Cyb3rhq Inc.
 
-           Created by Wazuh, Inc. <info@wazuh.com>.
+           Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 
            This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 type: integration
 
-brief: The 'wazuh-logcollector' daemon monitors configured files and commands for new log messages.
+brief: The 'cyb3rhq-logcollector' daemon monitors configured files and commands for new log messages.
        Specifically, these tests will check if the logcollector monitors the files that match
        the path set in the 'location' tag. The paths used will check several special situations
        that can occur when monitoring log files. Log data collection is the real-time process
@@ -25,7 +25,7 @@ targets:
     - manager
 
 daemons:
-    - wazuh-logcollector
+    - cyb3rhq-logcollector
 
 os_platform:
     - linux
@@ -46,8 +46,8 @@ os_version:
     - Windows Server 2016
 
 references:
-    - https://documentation.wazuh.com/current/user-manual/capabilities/log-data-collection/index.html
-    - https://documentation.wazuh.com/current/user-manual/reference/ossec-conf/localfile.html#location
+    - https://documentation.cyb3rhq.com/current/user-manual/capabilities/log-data-collection/index.html
+    - https://documentation.cyb3rhq.com/current/user-manual/reference/ossec-conf/localfile.html#location
 
 tags:
     - logcollector_location
@@ -59,10 +59,10 @@ import tempfile
 import ast
 
 import pytest
-from wazuh_testing import logcollector
-from wazuh_testing.tools import LOG_FILE_PATH
-from wazuh_testing.tools.configuration import load_wazuh_configurations
-from wazuh_testing.tools.monitoring import FileMonitor
+from cyb3rhq_testing import logcollector
+from cyb3rhq_testing.tools import LOG_FILE_PATH
+from cyb3rhq_testing.tools.configuration import load_cyb3rhq_configurations
+from cyb3rhq_testing.tools.monitoring import FileMonitor
 
 # Marks
 
@@ -77,116 +77,116 @@ temp_dir = tempfile.gettempdir()
 
 file_structure = [
     {
-        'folder_path': os.path.join(temp_dir, 'wazuh-testing'),
+        'folder_path': os.path.join(temp_dir, 'cyb3rhq-testing'),
         'filename': ['test.txt', 'foo.txt', 'bar.log', 'test.yaml', 'ñ.txt', 'Testing white spaces', 'test.log',
                      'c1test.txt', 'c2test.txt', 'c3test.txt', fr'file.log-%Y-%m-%d'],
         'content': f'Content of testing_file\n'
     },
     {
-        'folder_path':  os.path.join(temp_dir, 'wazuh-testing', 'depth1'),
+        'folder_path':  os.path.join(temp_dir, 'cyb3rhq-testing', 'depth1'),
         'filename': ['depth_test.txt'],
         'content': f'Content of testing_file\n'
     },
     {
-        'folder_path': os.path.join(temp_dir, 'wazuh-testing', 'depth1', 'depth2'),
+        'folder_path': os.path.join(temp_dir, 'cyb3rhq-testing', 'depth1', 'depth2'),
         'filename': ['depth_test.txt'],
         'content': f'Content of testing_file\n'
     },
     {
-        'folder_path': os.path.join(temp_dir, 'wazuh-testing', 'duplicated'),
+        'folder_path': os.path.join(temp_dir, 'cyb3rhq-testing', 'duplicated'),
         'filename': ['duplicated.txt'],
         'content': f'Content of testing_file\n'
     },
     {
-        'folder_path': os.path.join(temp_dir, 'wazuh-testing', 'multiple-logs'),
+        'folder_path': os.path.join(temp_dir, 'cyb3rhq-testing', 'multiple-logs'),
         'filename': [],
         'content': f'Content of testing_file\n'
     }
 ]
 
 parameters = [
-    {'LOCATION': os.path.join(temp_dir, 'wazuh-testing', 'depth1', 'test.txt'), 'LOG_FORMAT': 'syslog'},
-    {'LOCATION': os.path.join(temp_dir, 'wazuh-testing', 'depth1', ' depth_test.txt'), 'LOG_FORMAT': 'syslog'},
-    {'LOCATION': os.path.join(temp_dir, 'wazuh-testing', 'depth1', 'depth2', 'depth_test.txt'),
+    {'LOCATION': os.path.join(temp_dir, 'cyb3rhq-testing', 'depth1', 'test.txt'), 'LOG_FORMAT': 'syslog'},
+    {'LOCATION': os.path.join(temp_dir, 'cyb3rhq-testing', 'depth1', ' depth_test.txt'), 'LOG_FORMAT': 'syslog'},
+    {'LOCATION': os.path.join(temp_dir, 'cyb3rhq-testing', 'depth1', 'depth2', 'depth_test.txt'),
      'LOG_FORMAT': 'syslog'},
-    {'LOCATION': os.path.join(temp_dir, 'wazuh-testing', 'non-existent.txt'), 'LOG_FORMAT': 'syslog'},
-    {'LOCATION': os.path.join(temp_dir, 'wazuh-testing', '*'), 'LOG_FORMAT': 'syslog'},
-    {'LOCATION': os.path.join(temp_dir, 'wazuh-testing', 'Testing white spaces'), 'LOG_FORMAT': 'syslog'},
-    {'LOCATION': os.path.join(temp_dir, 'wazuh-testing', 'test.*'), 'LOG_FORMAT': 'syslog'},
-    {'LOCATION': os.path.join(temp_dir, 'wazuh-testing', 'c*test.txt'), 'LOG_FORMAT': 'syslog'},
-    {'LOCATION': os.path.join(temp_dir, 'wazuh-testing', 'duplicated', 'duplicated.txt'),
-     'LOG_FORMAT': 'syslog', 'PATH_2': os.path.join(temp_dir, 'wazuh-testing', 'duplicated', 'duplicated.txt')},
-    {'LOCATION': os.path.join(temp_dir, 'wazuh-testing', r'file.log-%Y-%m-%d'), 'LOG_FORMAT': 'syslog'},
-    {'LOCATION': os.path.join(temp_dir, 'wazuh-testing', 'multiple-logs', '*'), 'LOG_FORMAT': 'syslog'}
+    {'LOCATION': os.path.join(temp_dir, 'cyb3rhq-testing', 'non-existent.txt'), 'LOG_FORMAT': 'syslog'},
+    {'LOCATION': os.path.join(temp_dir, 'cyb3rhq-testing', '*'), 'LOG_FORMAT': 'syslog'},
+    {'LOCATION': os.path.join(temp_dir, 'cyb3rhq-testing', 'Testing white spaces'), 'LOG_FORMAT': 'syslog'},
+    {'LOCATION': os.path.join(temp_dir, 'cyb3rhq-testing', 'test.*'), 'LOG_FORMAT': 'syslog'},
+    {'LOCATION': os.path.join(temp_dir, 'cyb3rhq-testing', 'c*test.txt'), 'LOG_FORMAT': 'syslog'},
+    {'LOCATION': os.path.join(temp_dir, 'cyb3rhq-testing', 'duplicated', 'duplicated.txt'),
+     'LOG_FORMAT': 'syslog', 'PATH_2': os.path.join(temp_dir, 'cyb3rhq-testing', 'duplicated', 'duplicated.txt')},
+    {'LOCATION': os.path.join(temp_dir, 'cyb3rhq-testing', r'file.log-%Y-%m-%d'), 'LOG_FORMAT': 'syslog'},
+    {'LOCATION': os.path.join(temp_dir, 'cyb3rhq-testing', 'multiple-logs', '*'), 'LOG_FORMAT': 'syslog'}
 ]
 
 metadata = [
-    {'location': os.path.join(temp_dir, 'wazuh-testing', 'depth1', 'test.txt'),
-     'files': [os.path.join(temp_dir, 'wazuh-testing', 'depth1', 'test.txt')],
+    {'location': os.path.join(temp_dir, 'cyb3rhq-testing', 'depth1', 'test.txt'),
+     'files': [os.path.join(temp_dir, 'cyb3rhq-testing', 'depth1', 'test.txt')],
      'log_format': 'syslog', 'file_type': 'single_file'},
-    {'location': os.path.join(temp_dir, 'wazuh-testing', 'depth1', ' depth_test.txt'),
-     'files': [os.path.join(temp_dir, 'wazuh-testing', 'depth1', ' depth_test.txt')],
+    {'location': os.path.join(temp_dir, 'cyb3rhq-testing', 'depth1', ' depth_test.txt'),
+     'files': [os.path.join(temp_dir, 'cyb3rhq-testing', 'depth1', ' depth_test.txt')],
      'log_format': 'syslog', 'file_type': 'single_file'},
-    {'location': os.path.join(temp_dir, 'wazuh-testing', 'depth1', 'depth2', 'depth_test.txt'),
-     'files': [os.path.join(temp_dir, 'wazuh-testing', 'depth1', 'depth2', 'depth_test.txt')],
+    {'location': os.path.join(temp_dir, 'cyb3rhq-testing', 'depth1', 'depth2', 'depth_test.txt'),
+     'files': [os.path.join(temp_dir, 'cyb3rhq-testing', 'depth1', 'depth2', 'depth_test.txt')],
      'log_format': 'syslog', 'file_type': 'single_file'},
-    {'location': os.path.join(temp_dir, 'wazuh-testing', 'non-existent.txt'),
-     'files': [os.path.join(temp_dir, 'wazuh-testing', 'non-existent.txt')],
+    {'location': os.path.join(temp_dir, 'cyb3rhq-testing', 'non-existent.txt'),
+     'files': [os.path.join(temp_dir, 'cyb3rhq-testing', 'non-existent.txt')],
      'log_format': 'syslog', 'file_type': 'non_existent_file'},
-    {'location': os.path.join(temp_dir, 'wazuh-testing', '*'),
-     'files': [os.path.join(temp_dir, 'wazuh-testing', 'foo.txt'),
-               os.path.join(temp_dir, 'wazuh-testing', 'bar.log'),
-               os.path.join(temp_dir, 'wazuh-testing', 'test.yaml'),
-               os.path.join(temp_dir, 'wazuh-testing', 'ñ.txt')],
+    {'location': os.path.join(temp_dir, 'cyb3rhq-testing', '*'),
+     'files': [os.path.join(temp_dir, 'cyb3rhq-testing', 'foo.txt'),
+               os.path.join(temp_dir, 'cyb3rhq-testing', 'bar.log'),
+               os.path.join(temp_dir, 'cyb3rhq-testing', 'test.yaml'),
+               os.path.join(temp_dir, 'cyb3rhq-testing', 'ñ.txt')],
      'log_format': 'syslog', 'file_type': 'wildcard_file'},
-    {'location': os.path.join(temp_dir, 'wazuh-testing', 'Testing white spaces'),
-     'files': [os.path.join(temp_dir, 'wazuh-testing', 'Testing white spaces')], 'log_format': 'syslog',
+    {'location': os.path.join(temp_dir, 'cyb3rhq-testing', 'Testing white spaces'),
+     'files': [os.path.join(temp_dir, 'cyb3rhq-testing', 'Testing white spaces')], 'log_format': 'syslog',
      'file_type': 'single_file'},
-    {'location': os.path.join(temp_dir, 'wazuh-testing', 'test.*'),
-     'files': [os.path.join(temp_dir, 'wazuh-testing', 'test.txt'),
-               os.path.join(temp_dir, 'wazuh-testing', 'test.log')],
+    {'location': os.path.join(temp_dir, 'cyb3rhq-testing', 'test.*'),
+     'files': [os.path.join(temp_dir, 'cyb3rhq-testing', 'test.txt'),
+               os.path.join(temp_dir, 'cyb3rhq-testing', 'test.log')],
      'log_format': 'syslog', 'file_type': 'wildcard_file'},
-    {'location': os.path.join(temp_dir, 'wazuh-testing', 'c*test.txt'),
-     'files': [os.path.join(temp_dir, 'wazuh-testing', 'c1test.txt'),
-               os.path.join(temp_dir, 'wazuh-testing', 'c2test.txt'),
-               os.path.join(temp_dir, 'wazuh-testing', 'c3test.txt')], 'log_format': 'syslog',
+    {'location': os.path.join(temp_dir, 'cyb3rhq-testing', 'c*test.txt'),
+     'files': [os.path.join(temp_dir, 'cyb3rhq-testing', 'c1test.txt'),
+               os.path.join(temp_dir, 'cyb3rhq-testing', 'c2test.txt'),
+               os.path.join(temp_dir, 'cyb3rhq-testing', 'c3test.txt')], 'log_format': 'syslog',
      'file_type': 'wildcard_file'},
-    {'location': os.path.join(temp_dir, 'wazuh-testing', 'duplicated', 'duplicated.txt'),
-     'files': [os.path.join(temp_dir, 'wazuh-testing', 'duplicated', 'duplicated.txt')],
-     'log_format': 'syslog', 'path_2': os.path.join(temp_dir, 'wazuh-testing', 'duplicated', 'duplicated.txt'),
+    {'location': os.path.join(temp_dir, 'cyb3rhq-testing', 'duplicated', 'duplicated.txt'),
+     'files': [os.path.join(temp_dir, 'cyb3rhq-testing', 'duplicated', 'duplicated.txt')],
+     'log_format': 'syslog', 'path_2': os.path.join(temp_dir, 'cyb3rhq-testing', 'duplicated', 'duplicated.txt'),
      'file_type': 'duplicated_file'},
-    {'location': os.path.join(temp_dir, 'wazuh-testing', r'file.log-%Y-%m-%d'),
-     'files': [os.path.join(temp_dir, 'wazuh-testing', r'file.log-%Y-%m-%d')], 'log_format': 'syslog',
+    {'location': os.path.join(temp_dir, 'cyb3rhq-testing', r'file.log-%Y-%m-%d'),
+     'files': [os.path.join(temp_dir, 'cyb3rhq-testing', r'file.log-%Y-%m-%d')], 'log_format': 'syslog',
      'file_type': 'single_file'},
-    {'location': os.path.join(temp_dir, 'wazuh-testing', 'multiple-logs', '*'),
-     'files': [os.path.join(temp_dir, 'wazuh-testing', 'multiple-logs', 'multiple')],
+    {'location': os.path.join(temp_dir, 'cyb3rhq-testing', 'multiple-logs', '*'),
+     'files': [os.path.join(temp_dir, 'cyb3rhq-testing', 'multiple-logs', 'multiple')],
      'log_format': 'syslog', 'file_type': 'multiple_logs'}
 ]
 
 if sys.platform != 'win32':
     for case in metadata:
-        if case['location'] == os.path.join(temp_dir, 'wazuh-testing', '*'):
+        if case['location'] == os.path.join(temp_dir, 'cyb3rhq-testing', '*'):
             for value in file_structure:
-                if value['folder_path'] == os.path.join(temp_dir, 'wazuh-testing'):
+                if value['folder_path'] == os.path.join(temp_dir, 'cyb3rhq-testing'):
                     value['filename'].append('テスト.txt')
                     value['filename'].append('ИСПЫТАНИЕ.txt')
                     value['filename'].append('测试.txt')
                     value['filename'].append('اختبار.txt')
-            case['files'].append(os.path.join(temp_dir, 'wazuh-testing', 'テスト.txt'))
-            case['files'].append(os.path.join(temp_dir, 'wazuh-testing', 'ИСПЫТАНИЕ.txt'))
-            case['files'].append(os.path.join(temp_dir, 'wazuh-testing', '测试.txt'))
-            case['files'].append(os.path.join(temp_dir, 'wazuh-testing', 'اختبار.txt'))
+            case['files'].append(os.path.join(temp_dir, 'cyb3rhq-testing', 'テスト.txt'))
+            case['files'].append(os.path.join(temp_dir, 'cyb3rhq-testing', 'ИСПЫТАНИЕ.txt'))
+            case['files'].append(os.path.join(temp_dir, 'cyb3rhq-testing', '测试.txt'))
+            case['files'].append(os.path.join(temp_dir, 'cyb3rhq-testing', 'اختبار.txt'))
 
 for value in file_structure:
-    if value['folder_path'] == os.path.join(temp_dir, 'wazuh-testing', 'multiple-logs'):
+    if value['folder_path'] == os.path.join(temp_dir, 'cyb3rhq-testing', 'multiple-logs'):
         for i in range(2000):
             value['filename'].append(f'multiple{i}.txt')
 
 
 # Configuration data
-configurations = load_wazuh_configurations(configurations_path, __name__, params=parameters, metadata=metadata)
+configurations = load_cyb3rhq_configurations(configurations_path, __name__, params=parameters, metadata=metadata)
 configuration_ids = [f"{x['LOCATION']}_{x['LOG_FORMAT']}" for x in parameters]
-wazuh_log_monitor = FileMonitor(LOG_FILE_PATH)
+cyb3rhq_log_monitor = FileMonitor(LOG_FILE_PATH)
 
 
 # Fixtures
@@ -220,14 +220,14 @@ def test_location(location_file_date, get_files_list, create_file_structure_modu
                   configure_environment, configure_local_internal_options_module, file_monitoring,
                   restart_logcollector):
     '''
-    description: Check if the 'wazuh-logcollector' monitors the log files specified in the 'location' tag.
+    description: Check if the 'cyb3rhq-logcollector' monitors the log files specified in the 'location' tag.
                  For this purpose, the test will create a testing log file, configure a 'localfile' section
                  to monitor it, and set the 'location' tag with different values, including wildcards, inexistent
                  or duplicated files (depending on the test case). The test also will check if the file limit is
                  working by specifying a path that contains a log number that exceeds that limit. Finally, the test
                  will verify that the expected events are generated for those special situations.
 
-    wazuh_min_version: 4.2.0
+    cyb3rhq_min_version: 4.2.0
 
     tier: 0
 
@@ -262,8 +262,8 @@ def test_location(location_file_date, get_files_list, create_file_structure_modu
         - Verify that the logcollector detects when the number of monitored log files exceeds the limit.
 
     input_description: A configuration template (test_location) is contained in an external YAML file
-                       (wazuh_location.yaml). That template is combined with different test cases defined
-                       in the module. Those include configuration settings for the 'wazuh-logcollector' daemon.
+                       (cyb3rhq_location.yaml). That template is combined with different test cases defined
+                       in the module. Those include configuration settings for the 'cyb3rhq-logcollector' daemon.
 
     expected_output:
         - r'Analyzing file.*'
@@ -302,9 +302,9 @@ def test_location(location_file_date, get_files_list, create_file_structure_modu
             log_callback = logcollector.callback_file_limit()
 
             try:
-                wazuh_log_monitor.start(timeout=logcollector.LOG_COLLECTOR_GLOBAL_TIMEOUT, callback=log_callback,
+                cyb3rhq_log_monitor.start(timeout=logcollector.LOG_COLLECTOR_GLOBAL_TIMEOUT, callback=log_callback,
                                         error_message=f"The expected 'File limit has been reached' "
                                                       f"message has not been produced")
             except Exception:
                 if sys.platform == 'sunos5':
-                    pytest.xfail(reason='Xfail due to issue: https://github.com/wazuh/wazuh/issues/10751')
+                    pytest.xfail(reason='Xfail due to issue: https://github.com/cyb3rhq/cyb3rhq/issues/10751')

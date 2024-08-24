@@ -5,17 +5,17 @@ from time import sleep
 from system import (ERR_MSG_CLIENT_KEYS_IN_MASTER_NOT_FOUND, check_agent_groups, check_keys_file,
                     create_new_agent_group, assign_agent_to_new_group, restart_cluster, execute_wdb_query, get_group_id,
                     delete_agent_group)
-from wazuh_testing import T_10
+from cyb3rhq_testing import T_10
 from system.test_cluster.test_agent_groups.common import register_agent
-from wazuh_testing.tools.configuration import get_test_cases_data
-from wazuh_testing.tools.system_monitoring import HostMonitor
-from wazuh_testing.tools.system import HostManager
+from cyb3rhq_testing.tools.configuration import get_test_cases_data
+from cyb3rhq_testing.tools.system_monitoring import HostMonitor
+from cyb3rhq_testing.tools.system import HostManager
 
 pytestmark = [pytest.mark.cluster, pytest.mark.enrollment_cluster_env]
 
 # Hosts
-test_infra_managers = ['wazuh-master', 'wazuh-worker1', 'wazuh-worker2']
-test_infra_agents = ['wazuh-agent1', 'wazuh-agent2']
+test_infra_managers = ['cyb3rhq-master', 'cyb3rhq-worker1', 'cyb3rhq-worker2']
+test_infra_agents = ['cyb3rhq-agent1', 'cyb3rhq-agent2']
 
 inventory_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
                               'provisioning', 'enrollment_cluster', 'inventory.yml')
@@ -69,12 +69,12 @@ def pre_configured_groups(target_node, group):
 # Tests
 @pytest.mark.parametrize('metadata', t1_configuration_metadata, ids=t1_case_ids)
 @pytest.mark.parametrize('group', ['group_test'])
-@pytest.mark.parametrize('target_node', ['wazuh-master', 'wazuh-worker1'])
+@pytest.mark.parametrize('target_node', ['cyb3rhq-master', 'cyb3rhq-worker1'])
 def test_remove_group(metadata, group, target_node, pre_configured_groups, clean_environment):
     '''
     description: Check that a group is completely deleted from all nodes when using different deletion methods, with the
                  exception of cases where the group folder is deleted on a worker node.
-    wazuh_min_version: 4.4.0
+    cyb3rhq_min_version: 4.4.0
     parameters:
         - metadata:
             type: dict
@@ -90,7 +90,7 @@ def test_remove_group(metadata, group, target_node, pre_configured_groups, clean
             brief: Create group, register and assign agent during the setup.
         - clean_environment:
             type: fixture
-            brief: Reset the wazuh log files at the start of the test. Remove all registered agents from master.
+            brief: Reset the cyb3rhq log files at the start of the test. Remove all registered agents from master.
     assertions:
         - Verify [Agent-groups send full] task finished when the group folder is removed in a worker node.
         - Verify group name is present in agent table when the group folder is removed in a worker node.

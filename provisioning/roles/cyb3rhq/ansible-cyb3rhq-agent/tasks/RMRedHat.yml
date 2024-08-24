@@ -1,0 +1,6 @@
+---
+- name: Remove Cyb3rhq repository (and clean up left-over metadata)
+  yum_repository:
+    name: cyb3rhq_repo
+    state: absent
+  changed_when: false

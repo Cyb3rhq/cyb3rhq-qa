@@ -1,6 +1,6 @@
-# wazuh-qa
+# cyb3rhq-qa
 
-Wazuh - Cluster provisioning
+Cyb3rhq - Cluster provisioning
 
 ## Setting up the provisioning
 

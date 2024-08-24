@@ -1,5 +1,5 @@
-# Copyright (C) 2015-2022, Wazuh Inc.
-# Created by Wazuh, Inc. <info@wazuh.com>.
+# Copyright (C) 2015-2022, Cyb3rhq Inc.
+# Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 # This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 import os
 import re
@@ -7,19 +7,19 @@ from os.path import join, dirname, abspath
 from time import time, sleep
 
 import pytest
-from wazuh_testing.tools import WAZUH_PATH, WAZUH_LOGS_PATH
-from wazuh_testing.tools.system_monitoring import HostMonitor
-from wazuh_testing.tools.system import HostManager
+from cyb3rhq_testing.tools import CYB3RHQ_PATH, CYB3RHQ_LOGS_PATH
+from cyb3rhq_testing.tools.system_monitoring import HostMonitor
+from cyb3rhq_testing.tools.system import HostManager
 
 
 pytestmark = [pytest.mark.cluster, pytest.mark.basic_cluster_env]
 
-master_host = 'wazuh-master'
-worker_host = 'wazuh-worker2'
-agent_host = 'wazuh-agent3'
+master_host = 'cyb3rhq-master'
+worker_host = 'cyb3rhq-worker2'
+agent_host = 'cyb3rhq-agent3'
 local_path = os.path.dirname(os.path.abspath(__file__))
 messages_path = os.path.join(local_path, 'data/messages.yml')
-script_path = os.path.join(re.sub(r'^.*?wazuh-qa', '/wazuh-qa', local_path), '../utils/get_wdb_agent.py')
+script_path = os.path.join(re.sub(r'^.*?cyb3rhq-qa', '/cyb3rhq-qa', local_path), '../utils/get_wdb_agent.py')
 
 tmp_path = os.path.join(local_path, 'tmp')
 managers_hosts = [master_host, worker_host]
@@ -30,9 +30,9 @@ time_to_sync = 20
 time_to_agent_reconnect = 180
 
 # Each file should exist in all hosts specified in 'hosts'.
-files = [{'path': join(WAZUH_PATH, 'queue', 'rids', '{id}'), 'hosts': managers_hosts},
-         {'path': join(WAZUH_PATH, 'queue', 'diff', '{name}'), 'hosts': [worker_host]},
-         {'path': join(WAZUH_PATH, 'queue', 'db', '{id}.db'), 'hosts': [worker_host]}]
+files = [{'path': join(CYB3RHQ_PATH, 'queue', 'rids', '{id}'), 'hosts': managers_hosts},
+         {'path': join(CYB3RHQ_PATH, 'queue', 'diff', '{name}'), 'hosts': [worker_host]},
+         {'path': join(CYB3RHQ_PATH, 'queue', 'db', '{id}.db'), 'hosts': [worker_host]}]
 
 queries = ['global sql select * from agent where id={id}',
            'global sql select * from belongs where id_agent={id}']
@@ -53,7 +53,7 @@ def agent_healthcheck(master_token):
                 if item['name'] == agent_host and item['manager'] == worker_host:
                     healthy = True
         elif time() > timeout:
-            raise TimeoutError("The agent 'wazuh-agent3' is not 'Active' yet.")
+            raise TimeoutError("The agent 'cyb3rhq-agent3' is not 'Active' yet.")
         sleep(while_time)
     sleep(time_to_sync)
 
@@ -62,9 +62,9 @@ def test_agent_files_deletion():
     """Check that when an agent is deleted, all its related files in managers are also removed."""
     # Clean ossec.log and cluster.log
     for hosts in managers_hosts:
-        host_manager.clear_file(host=hosts, file_path=os.path.join(WAZUH_LOGS_PATH, 'ossec.log'))
-        host_manager.clear_file(host=hosts, file_path=os.path.join(WAZUH_LOGS_PATH, 'cluster.log'))
-        host_manager.control_service(host=hosts, service='wazuh', state='restarted')
+        host_manager.clear_file(host=hosts, file_path=os.path.join(CYB3RHQ_LOGS_PATH, 'ossec.log'))
+        host_manager.clear_file(host=hosts, file_path=os.path.join(CYB3RHQ_LOGS_PATH, 'cluster.log'))
+        host_manager.control_service(host=hosts, service='cyb3rhq', state='restarted')
 
     # Get the token
     master_token = host_manager.get_api_token(master_host)
@@ -96,7 +96,7 @@ def test_agent_files_deletion():
     for host in managers_hosts:
         for query in queries:
             result = host_manager.run_command(host,
-                                              f"{WAZUH_PATH}/framework/python/bin/python3 "
+                                              f"{CYB3RHQ_PATH}/framework/python/bin/python3 "
                                               f"{script_path} '{query.format(id=agent_id)}'")
             assert result, f"This db query should have returned something in {host}, but it did not: {result}"
 
@@ -122,9 +122,9 @@ def test_agent_files_deletion():
     for host in managers_hosts:
         for query in queries:
             result = host_manager.run_command(host,
-                                              f"{WAZUH_PATH}/framework/python/bin/python3 "
+                                              f"{CYB3RHQ_PATH}/framework/python/bin/python3 "
                                               f"{script_path} '{query.format(id=agent_id)}'")
             assert not result, f"This db query should have not returned anything in {host}, but it did: {result}"
 
-    host_manager.control_service(host=agent_host, service='wazuh', state='restarted')
+    host_manager.control_service(host=agent_host, service='cyb3rhq', state='restarted')
     agent_healthcheck(master_token)

@@ -1,5 +1,5 @@
-# Copyright (C) 2015-2021, Wazuh Inc.
-# Created by Wazuh, Inc. <info@wazuh.com>.
+# Copyright (C) 2015-2021, Cyb3rhq Inc.
+# Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 # This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 from os.path import join, dirname, realpath
@@ -10,7 +10,7 @@ import requests
 from py.xml import html
 from yaml import safe_load
 
-from wazuh_testing.api import get_api_details_dict
+from cyb3rhq_testing.api import get_api_details_dict
 
 results = dict()
 configuration = safe_load(open(join(dirname(realpath(__file__)), 'data', 'configuration.yaml')))['configuration']
@@ -58,7 +58,7 @@ def api_healthcheck(request):
 
 
 def pytest_html_report_title(report):
-    report.title = 'Wazuh API performance tests'
+    report.title = 'Cyb3rhq API performance tests'
 
 
 # HTML report

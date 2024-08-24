@@ -1,16 +1,16 @@
 '''
-copyright: Copyright (C) 2015-2022, Wazuh Inc.
+copyright: Copyright (C) 2015-2022, Cyb3rhq Inc.
 
-           Created by Wazuh, Inc. <info@wazuh.com>.
+           Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 
            This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 type: integration
 
-brief: The 'wazuh-logtest' tool allows the testing and verification of rules and decoders against provided log examples
-       remotely inside a sandbox in 'wazuh-analysisd'. This functionality is provided by the manager, whose work
+brief: The 'cyb3rhq-logtest' tool allows the testing and verification of rules and decoders against provided log examples
+       remotely inside a sandbox in 'cyb3rhq-analysisd'. This functionality is provided by the manager, whose work
        parameters are configured in the ossec.conf file in the XML rule_test section. Test logs can be evaluated through
-       the 'wazuh-logtest' tool or by making requests via RESTful API. These tests will check if the logtest
+       the 'cyb3rhq-logtest' tool or by making requests via RESTful API. These tests will check if the logtest
        configuration is valid. Also checks rules, decoders, decoders, alerts matching logs correctly.
 
 components:
@@ -22,7 +22,7 @@ targets:
     - manager
 
 daemons:
-    - wazuh-analysisd
+    - cyb3rhq-analysisd
 
 os_platform:
     - linux
@@ -39,9 +39,9 @@ os_version:
     - Ubuntu Bionic
 
 references:
-    - https://documentation.wazuh.com/current/user-manual/reference/tools/wazuh-logtest.html
-    - https://documentation.wazuh.com/current/user-manual/capabilities/wazuh-logtest/index.html
-    - https://documentation.wazuh.com/current/user-manual/reference/daemons/wazuh-analysisd.html
+    - https://documentation.cyb3rhq.com/current/user-manual/reference/tools/cyb3rhq-logtest.html
+    - https://documentation.cyb3rhq.com/current/user-manual/capabilities/cyb3rhq-logtest/index.html
+    - https://documentation.cyb3rhq.com/current/user-manual/reference/daemons/cyb3rhq-analysisd.html
 
 tags:
     - logtest_configuration
@@ -49,22 +49,22 @@ tags:
 import os
 import pytest
 
-from wazuh_testing import global_parameters
-from wazuh_testing.logtest import (callback_logtest_started, callback_logtest_disabled, callback_configuration_error)
-from wazuh_testing.tools import LOG_FILE_PATH
-from wazuh_testing.tools.configuration import load_wazuh_configurations
-from wazuh_testing.tools.monitoring import FileMonitor
+from cyb3rhq_testing import global_parameters
+from cyb3rhq_testing.logtest import (callback_logtest_started, callback_logtest_disabled, callback_configuration_error)
+from cyb3rhq_testing.tools import LOG_FILE_PATH
+from cyb3rhq_testing.tools.configuration import load_cyb3rhq_configurations
+from cyb3rhq_testing.tools.monitoring import FileMonitor
 
 # Marks
 pytestmark = [pytest.mark.linux, pytest.mark.tier(level=0), pytest.mark.server]
 
 # Configurations
 test_data_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data')
-configurations_path = os.path.join(test_data_path, 'wazuh_conf.yaml')
-configurations = load_wazuh_configurations(configurations_path, __name__)
+configurations_path = os.path.join(test_data_path, 'cyb3rhq_conf.yaml')
+configurations = load_cyb3rhq_configurations(configurations_path, __name__)
 
 # Variables
-wazuh_log_monitor = FileMonitor(LOG_FILE_PATH)
+cyb3rhq_log_monitor = FileMonitor(LOG_FILE_PATH)
 
 
 # Fixture
@@ -75,13 +75,13 @@ def get_configuration(request):
 
 
 # Test
-def test_configuration_file(get_configuration, configure_environment, restart_wazuh):
+def test_configuration_file(get_configuration, configure_environment, restart_cyb3rhq):
     '''
-    description: Checks if `wazuh-logtest` works as expected under different predefined configurations that cause
-                 `wazuh-logtest` to start correctly, to be disabled, or to register an error. To do this, it checks
-                 some values in these configurations from 'wazuh_conf.yaml' file.
+    description: Checks if `cyb3rhq-logtest` works as expected under different predefined configurations that cause
+                 `cyb3rhq-logtest` to start correctly, to be disabled, or to register an error. To do this, it checks
+                 some values in these configurations from 'cyb3rhq_conf.yaml' file.
 
-    wazuh_min_version: 4.2.0
+    cyb3rhq_min_version: 4.2.0
 
     tier: 0
 
@@ -92,16 +92,16 @@ def test_configuration_file(get_configuration, configure_environment, restart_wa
         - configure_environment:
             type: fixture
             brief: Configure a custom environment for testing
-        - restart_wazuh:
+        - restart_cyb3rhq:
             type: fixture
-            brief: Restart wazuh, ossec.log and start a new monitor.
+            brief: Restart cyb3rhq, ossec.log and start a new monitor.
 
     assertions:
         - Verify that a valid configuration is loaded.
         - Verify that wrong loaded configurations lead to an error.
 
     input_description: Five test cases are defined in the module. These include some configurations stored in
-                       the 'wazuh_conf.yaml'.
+                       the 'cyb3rhq_conf.yaml'.
 
     expected_output:
         - r'.* Logtest started'
@@ -121,5 +121,5 @@ def test_configuration_file(get_configuration, configure_environment, restart_wa
     else:
         callback = callback_configuration_error
 
-    wazuh_log_monitor.start(timeout=global_parameters.default_timeout, callback=callback,
+    cyb3rhq_log_monitor.start(timeout=global_parameters.default_timeout, callback=callback,
                             error_message='Event not found')

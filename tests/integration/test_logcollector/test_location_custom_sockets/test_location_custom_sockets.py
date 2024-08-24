@@ -1,13 +1,13 @@
 '''
-copyright: Copyright (C) 2015-2022, Wazuh Inc.
+copyright: Copyright (C) 2015-2022, Cyb3rhq Inc.
 
-           Created by Wazuh, Inc. <info@wazuh.com>.
+           Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 
            This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 type: integration
 
-brief: The 'wazuh-logcollector' daemon monitors configured files and commands for new log messages.
+brief: The 'cyb3rhq-logcollector' daemon monitors configured files and commands for new log messages.
        Specifically, these tests will check if the logcollector redirects the events from a monitored
        log file specified in the 'location' tag to a custom socket defined in the 'socket' section and
        specified in the 'target' tag. Log data collection is the real-time process of making sense out
@@ -25,7 +25,7 @@ targets:
     - manager
 
 daemons:
-    - wazuh-logcollector
+    - cyb3rhq-logcollector
 
 os_platform:
     - linux
@@ -42,9 +42,9 @@ os_version:
     - Ubuntu Bionic
 
 references:
-    - https://documentation.wazuh.com/current/user-manual/capabilities/log-data-collection/index.html
-    - https://documentation.wazuh.com/current/user-manual/reference/ossec-conf/localfile.html#location
-    - https://documentation.wazuh.com/current/user-manual/reference/ossec-conf/localfile.html#target
+    - https://documentation.cyb3rhq.com/current/user-manual/capabilities/log-data-collection/index.html
+    - https://documentation.cyb3rhq.com/current/user-manual/reference/ossec-conf/localfile.html#location
+    - https://documentation.cyb3rhq.com/current/user-manual/reference/ossec-conf/localfile.html#target
 '''
 import pytest
 from os import path, unlink
@@ -54,22 +54,22 @@ from tempfile import gettempdir
 if platform != 'win32':
     from socket import AF_UNIX
 
-from wazuh_testing import global_parameters
-from wazuh_testing import logcollector as lg
-from wazuh_testing.tools import LOG_FILE_PATH, file
-from wazuh_testing.tools.configuration import load_wazuh_configurations
-from wazuh_testing.tools.monitoring import FileMonitor
-from wazuh_testing.tools.services import control_service
+from cyb3rhq_testing import global_parameters
+from cyb3rhq_testing import logcollector as lg
+from cyb3rhq_testing.tools import LOG_FILE_PATH, file
+from cyb3rhq_testing.tools.configuration import load_cyb3rhq_configurations
+from cyb3rhq_testing.tools.monitoring import FileMonitor
+from cyb3rhq_testing.tools.services import control_service
 
 # Marks
 pytestmark = [pytest.mark.linux, pytest.mark.tier(level=1)]
 
 # Configuration
-DAEMON_NAME = "wazuh-logcollector"
+DAEMON_NAME = "cyb3rhq-logcollector"
 test_data_path = path.join(path.dirname(path.realpath(__file__)), 'data')
-configurations_path = path.join(test_data_path, 'wazuh_location_custom_sockets_conf.yaml')
+configurations_path = path.join(test_data_path, 'cyb3rhq_location_custom_sockets_conf.yaml')
 temp_dir = gettempdir()
-log_test_path = path.join(temp_dir, 'wazuh-testing', 'test.log')
+log_test_path = path.join(temp_dir, 'cyb3rhq-testing', 'test.log')
 test_socket = None
 
 local_internal_options = {
@@ -98,14 +98,14 @@ metadata = [
 
 file_structure = [
     {
-        'folder_path': path.join(temp_dir, 'wazuh-testing'),
+        'folder_path': path.join(temp_dir, 'cyb3rhq-testing'),
         'filename': ['test.log'],
         'content': f"{metadata[0]['log_line']}",
         'size_kib': 10240
     }
 ]
 
-configurations = load_wazuh_configurations(configurations_path, __name__, params=parameters, metadata=metadata)
+configurations = load_cyb3rhq_configurations(configurations_path, __name__, params=parameters, metadata=metadata)
 configuration_ids = [f"target_{x['socket_name']}_mode_{x['mode']}" for x in metadata]
 
 
@@ -128,7 +128,7 @@ def restart_logcollector(get_configuration, request):
     control_service('stop', daemon=DAEMON_NAME)
     file.truncate_file(LOG_FILE_PATH)
     file_monitor = FileMonitor(LOG_FILE_PATH)
-    setattr(request.module, 'wazuh_log_monitor', file_monitor)
+    setattr(request.module, 'cyb3rhq_log_monitor', file_monitor)
     control_service('start', daemon=DAEMON_NAME)
 
 
@@ -166,20 +166,20 @@ def get_files_list():
     return file_structure
 
 
-@pytest.mark.xfail(reason='Expected error: https://github.com/wazuh/wazuh/issues/11186')
+@pytest.mark.xfail(reason='Expected error: https://github.com/cyb3rhq/cyb3rhq/issues/11186')
 @pytest.mark.parametrize("batch", batch_size, ids=[f"batch_{x}" for x in batch_size])
 def test_location_custom_sockets(get_local_internal_options, configure_local_internal_options,
                                  get_configuration, configure_environment, create_file_structure_module,
                                  batch, create_socket, restart_monitord, restart_logcollector):    
     '''
-    description: Check if the 'wazuh-logcollector' use custom sockets when the 'location' option is used.
+    description: Check if the 'cyb3rhq-logcollector' use custom sockets when the 'location' option is used.
                  For this purpose, the test will create a UNIX 'named socket' and add it to the configuration
                  through the 'socket' section and the 'target' tag of the 'localfile' section. After this,
                  the test will verify that logcollector is connected to that socket. Then, it will generate
                  event batches of increasing size, and they will be added to the testing log file. Finally,
-                 the test will verify that events are not dropped by analyzing the 'wazuh-logcollector.state' file.
+                 the test will verify that events are not dropped by analyzing the 'cyb3rhq-logcollector.state' file.
 
-    wazuh_min_version: 4.2.0
+    cyb3rhq_min_version: 4.2.0
 
     tier: 1
 
@@ -219,9 +219,9 @@ def test_location_custom_sockets(get_local_internal_options, configure_local_int
           than the value of 'logcollector.queue_size' and vice versa.
 
     input_description: A configuration template (test_location_custom_sockets) is contained in an external YAML
-                       file (wazuh_location_custom_sockets_conf.yaml). That template is combined with different
+                       file (cyb3rhq_location_custom_sockets_conf.yaml). That template is combined with different
                        test cases defined in the module. Those include configuration settings
-                       for the 'wazuh-logcollector' daemon.
+                       for the 'cyb3rhq-logcollector' daemon.
 
     expected_output:
         - r'Analyzing file.*'
@@ -234,7 +234,7 @@ def test_location_custom_sockets(get_local_internal_options, configure_local_int
 
     # Ensure that the log file is being analyzed
     callback_message = lg.callback_analyzing_file(file=config['location'])
-    wazuh_log_monitor.start(timeout=global_parameters.default_timeout,
+    cyb3rhq_log_monitor.start(timeout=global_parameters.default_timeout,
                             error_message=lg.GENERIC_CALLBACK_ERROR_COMMAND_MONITORING,
                             callback=callback_message)
 
@@ -245,7 +245,7 @@ def test_location_custom_sockets(get_local_internal_options, configure_local_int
     # Ensure that the logcollector is connected to the socket
     callback_message = lg.callback_socket_connected(socket_name=config['socket_name'],
                                                     socket_path=config['socket_path'])
-    wazuh_log_monitor.start(timeout=global_parameters.default_timeout,
+    cyb3rhq_log_monitor.start(timeout=global_parameters.default_timeout,
                             error_message=lg.GENERIC_CALLBACK_ERROR_COMMAND_MONITORING,
                             callback=callback_message)
 
@@ -285,21 +285,21 @@ def test_location_custom_sockets(get_local_internal_options, configure_local_int
         assert global_drops == interval_drops == 0, f"Event drops have been detected in batch {batch}."
 
 
-@pytest.mark.xfail(reason='Expected error: https://github.com/wazuh/wazuh/issues/11186')
+@pytest.mark.xfail(reason='Expected error: https://github.com/cyb3rhq/cyb3rhq/issues/11186')
 @pytest.mark.parametrize("batch", batch_size, ids=[f"batch_{x}" for x in batch_size])
 def test_location_custom_sockets_offline(get_local_internal_options, configure_local_internal_options,
                                          get_configuration, configure_environment, create_file_structure_module,
                                          batch, create_socket, restart_logcollector):
     '''
-    description: Check if the 'wazuh-logcollector' drops events when they are sent to a custom socket
+    description: Check if the 'cyb3rhq-logcollector' drops events when they are sent to a custom socket
                  that is unavailable. For this purpose, the test will create a UNIX 'named socket' and
                  add it to the configuration through the 'socket' section and the 'target' tag of the
                  'localfile' section. After this, the test will verify that logcollector is connected
                  to that socket. Then, it will close the socket and generate event batches of increasing
                  size that will be added to the testing log file. Finally, the test will verify that
-                 all events sent are dropped by analyzing the 'wazuh-logcollector.state' file.
+                 all events sent are dropped by analyzing the 'cyb3rhq-logcollector.state' file.
 
-    wazuh_min_version: 4.2.0
+    cyb3rhq_min_version: 4.2.0
 
     tier: 1
 
@@ -336,9 +336,9 @@ def test_location_custom_sockets_offline(get_local_internal_options, configure_l
         - Verify that all events from the monitored log file are dropped because the custom socket is closed.
 
     input_description: A configuration template (test_location_custom_sockets) is contained in an external YAML
-                       file (wazuh_location_custom_sockets_conf.yaml). That template is combined with different
+                       file (cyb3rhq_location_custom_sockets_conf.yaml). That template is combined with different
                        test cases defined in the module. Those include configuration settings
-                       for the 'wazuh-logcollector' daemon.
+                       for the 'cyb3rhq-logcollector' daemon.
 
     expected_output:
         - r'Analyzing file.*'
@@ -353,7 +353,7 @@ def test_location_custom_sockets_offline(get_local_internal_options, configure_l
 
     # Ensure that the log file is being analyzed
     callback_message = lg.callback_analyzing_file(file=config['location'])
-    wazuh_log_monitor.start(timeout=global_parameters.default_timeout,
+    cyb3rhq_log_monitor.start(timeout=global_parameters.default_timeout,
                             error_message=lg.GENERIC_CALLBACK_ERROR_COMMAND_MONITORING,
                             callback=callback_message)
 
@@ -364,7 +364,7 @@ def test_location_custom_sockets_offline(get_local_internal_options, configure_l
     # Ensure that the logcollector is connected to the socket
     callback_message = lg.callback_socket_connected(socket_name=config['socket_name'],
                                                     socket_path=config['socket_path'])
-    wazuh_log_monitor.start(timeout=global_parameters.default_timeout,
+    cyb3rhq_log_monitor.start(timeout=global_parameters.default_timeout,
                             error_message=lg.GENERIC_CALLBACK_ERROR_COMMAND_MONITORING,
                             callback=callback_message)
 
@@ -379,7 +379,7 @@ def test_location_custom_sockets_offline(get_local_internal_options, configure_l
     # Ensure that the socket is closed
     callback_message = lg.callback_socket_offline(socket_name=config['socket_name'],
                                                   socket_path=config['socket_path'])
-    wazuh_log_monitor.start(timeout=global_parameters.default_timeout,
+    cyb3rhq_log_monitor.start(timeout=global_parameters.default_timeout,
                             error_message=lg.GENERIC_CALLBACK_ERROR_COMMAND_MONITORING,
                             callback=callback_message)
 

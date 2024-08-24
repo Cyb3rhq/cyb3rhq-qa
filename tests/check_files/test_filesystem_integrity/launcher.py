@@ -3,22 +3,22 @@ import os
 import sys
 from tempfile import gettempdir
 
-from wazuh_testing.qa_ctl.configuration.config_instance import ConfigInstance
-from wazuh_testing.qa_ctl.configuration.config_generator import QACTLConfigGenerator
-from wazuh_testing.qa_ctl.provisioning.ansible import playbook_generator
-from wazuh_testing.tools.s3_package import get_production_package_url, get_last_production_package_url
-from wazuh_testing.tools.time import get_current_timestamp
-from wazuh_testing.tools import file
-from wazuh_testing.qa_ctl.provisioning import local_actions
-from wazuh_testing.tools import github_checks
-from wazuh_testing.tools.logging import Logging
-from wazuh_testing.tools.exceptions import QAValueError
-from wazuh_testing.qa_ctl import QACTL_LOGGER
-from wazuh_testing.tools.github_api_requests import WAZUH_QA_REPO
+from cyb3rhq_testing.qa_ctl.configuration.config_instance import ConfigInstance
+from cyb3rhq_testing.qa_ctl.configuration.config_generator import QACTLConfigGenerator
+from cyb3rhq_testing.qa_ctl.provisioning.ansible import playbook_generator
+from cyb3rhq_testing.tools.s3_package import get_production_package_url, get_last_production_package_url
+from cyb3rhq_testing.tools.time import get_current_timestamp
+from cyb3rhq_testing.tools import file
+from cyb3rhq_testing.qa_ctl.provisioning import local_actions
+from cyb3rhq_testing.tools import github_checks
+from cyb3rhq_testing.tools.logging import Logging
+from cyb3rhq_testing.tools.exceptions import QAValueError
+from cyb3rhq_testing.qa_ctl import QACTL_LOGGER
+from cyb3rhq_testing.tools.github_api_requests import CYB3RHQ_QA_REPO
 
-TMP_FILES = os.path.join(gettempdir(), 'wazuh_check_files')
-WAZUH_QA_FILES = os.path.join(TMP_FILES, 'wazuh-qa')
-CHECK_FILES_TEST_PATH = os.path.join(WAZUH_QA_FILES, 'tests', 'check_files', 'test_filesystem_integrity')
+TMP_FILES = os.path.join(gettempdir(), 'cyb3rhq_check_files')
+CYB3RHQ_QA_FILES = os.path.join(TMP_FILES, 'cyb3rhq-qa')
+CHECK_FILES_TEST_PATH = os.path.join(CYB3RHQ_QA_FILES, 'tests', 'check_files', 'test_filesystem_integrity')
 
 logger = Logging(QACTL_LOGGER)
 test_build_files = []
@@ -33,13 +33,13 @@ def get_parameters():
 
     parser.add_argument('--action', '-a', type=str, action='store', required=False, dest='test_action',
                         choices=['install', 'upgrade', 'uninstall'], default='install',
-                        help='Wazuh action to be carried out to check the check-files')
+                        help='Cyb3rhq action to be carried out to check the check-files')
 
     parser.add_argument('--os', '-o', type=str, action='store', required=False, dest='os_system',
                         choices=['centos_7', 'centos_8', 'ubuntu'], default='ubuntu')
 
-    parser.add_argument('--version', '-v', type=str, action='store', required=False, dest='wazuh_version',
-                        help='Wazuh installation and tests version.')
+    parser.add_argument('--version', '-v', type=str, action='store', required=False, dest='cyb3rhq_version',
+                        help='Cyb3rhq installation and tests version.')
 
     parser.add_argument('--debug', '-d', action='count', default=0, help='Run in debug mode. You can increase the debug'
                                                                          ' level with more [-d+]')
@@ -48,10 +48,10 @@ def get_parameters():
                         help='Persistent instance mode. Do not destroy the instances once the process has finished.')
 
     parser.add_argument('--qa-branch', type=str, action='store', required=False, dest='qa_branch', default='master',
-                        help='Set a custom wazuh-qa branch to download and run the tests files')
+                        help='Set a custom cyb3rhq-qa branch to download and run the tests files')
 
-    parser.add_argument('--target', '-t', type=str, action='store', required=False, dest='wazuh_target',
-                        choices=['manager', 'agent'], default='manager', help='Wazuh test target. manager or agent')
+    parser.add_argument('--target', '-t', type=str, action='store', required=False, dest='cyb3rhq_target',
+                        choices=['manager', 'agent'], default='manager', help='Cyb3rhq test target. manager or agent')
 
     parser.add_argument('--no-validation', action='store_true', help='Disable the script parameters validation.')
 
@@ -76,9 +76,9 @@ def set_environment(parameters):
     """
     set_logger(parameters)
 
-    # Download wazuh-qa repository to launch the check-files test files.
-    local_actions.download_local_wazuh_qa_repository(branch=parameters.qa_branch, path=TMP_FILES)
-    test_build_files.append(WAZUH_QA_FILES)
+    # Download cyb3rhq-qa repository to launch the check-files test files.
+    local_actions.download_local_cyb3rhq_qa_repository(branch=parameters.qa_branch, path=TMP_FILES)
+    test_build_files.append(CYB3RHQ_QA_FILES)
 
     # Create output file if it has been specified and it does not exist
     if parameters.output_file_path:
@@ -122,18 +122,18 @@ def validate_parameters(parameters):
     logger.info('Validating input parameters')
 
     # Check if QA branch exists
-    if not github_checks.branch_exists(parameters.qa_branch, repository=WAZUH_QA_REPO):
-        raise QAValueError(f"{parameters.qa_branch} branch does not exist in Wazuh QA repository.",
+    if not github_checks.branch_exists(parameters.qa_branch, repository=CYB3RHQ_QA_REPO):
+        raise QAValueError(f"{parameters.qa_branch} branch does not exist in Cyb3rhq QA repository.",
                            logger.error, QACTL_LOGGER)
 
     # Check version parameter
-    if parameters.wazuh_version and len((parameters.wazuh_version).split('.')) != 3:
-        raise QAValueError(f"Version parameter has to be in format x.y.z. You entered {parameters.wazuh_version}",
+    if parameters.cyb3rhq_version and len((parameters.cyb3rhq_version).split('.')) != 3:
+        raise QAValueError(f"Version parameter has to be in format x.y.z. You entered {parameters.cyb3rhq_version}",
                            logger.error, QACTL_LOGGER)
 
-    # Check if Wazuh has the specified version
-    if parameters.wazuh_version and not github_checks.version_is_released(parameters.wazuh_version):
-        raise QAValueError(f"The wazuh {parameters.wazuh_version} version has not been released. Enter a right "
+    # Check if Cyb3rhq has the specified version
+    if parameters.cyb3rhq_version and not github_checks.version_is_released(parameters.cyb3rhq_version):
+        raise QAValueError(f"The cyb3rhq {parameters.cyb3rhq_version} version has not been released. Enter a right "
                            'version.', logger.error, QACTL_LOGGER)
 
     # Check the deployment-info parameter
@@ -217,12 +217,12 @@ def generate_test_playbooks(parameters, local_checkfiles_pre_data_path, local_ch
         local_checkfiles_post_data_path (str): Local path where the post-check-files data will be saved.
     """
     playbooks_info = {}
-    package_url = get_production_package_url(parameters.wazuh_target, parameters.os_system, parameters.wazuh_version) \
-        if parameters.wazuh_version else get_last_production_package_url(parameters.wazuh_target, parameters.os_system)
+    package_url = get_production_package_url(parameters.cyb3rhq_target, parameters.os_system, parameters.cyb3rhq_version) \
+        if parameters.cyb3rhq_version else get_last_production_package_url(parameters.cyb3rhq_target, parameters.os_system)
     package_name = os.path.split(package_url)[1]
 
-    check_files_tool_url = f"https://raw.githubusercontent.com/wazuh/wazuh-qa/{parameters.qa_branch}/deps/" \
-                           'wazuh_testing/wazuh_testing/scripts/check_files.py'
+    check_files_tool_url = f"https://raw.githubusercontent.com/cyb3rhq/cyb3rhq-qa/{parameters.qa_branch}/deps/" \
+                           'cyb3rhq_testing/cyb3rhq_testing/scripts/check_files.py'
     os_platform = 'linux'
     package_destination = '/tmp'
     check_files_tool_destination = '/bin/check_files.py'
@@ -235,7 +235,7 @@ def generate_test_playbooks(parameters, local_checkfiles_pre_data_path, local_ch
     post_check_files_command = f"python3 {check_files_tool_destination} -p / -i {' '.join(ignore_check_files_path)} " \
                                f"-o {post_check_files_data_output_path} {check_files_extra_args}"
     # Playbook parameters
-    wazuh_install_playbook_parameters = {'wazuh_target': parameters.wazuh_target, 'package_name': package_name,
+    cyb3rhq_install_playbook_parameters = {'cyb3rhq_target': parameters.cyb3rhq_target, 'package_name': package_name,
                                          'package_url': package_url, 'package_destination': package_destination,
                                          'os_system': parameters.os_system, 'os_platform': os_platform}
 
@@ -252,11 +252,11 @@ def generate_test_playbooks(parameters, local_checkfiles_pre_data_path, local_ch
         'files_data': {post_check_files_data_output_path: local_checkfiles_post_data_path},
         'playbook_parameters': {'become': True}}
 
-    upgrade_wazuh_playbook_parameters = {'package_name': package_name,  'package_url': package_url,
+    upgrade_cyb3rhq_playbook_parameters = {'package_name': package_name,  'package_url': package_url,
                                          'package_destination': package_destination, 'os_system': parameters.os_system,
                                          'os_platform': os_platform}
 
-    uninstall_wazuh_playbook_parameters = {'wazuh_target': parameters.wazuh_target, 'os_system': parameters.os_system,
+    uninstall_cyb3rhq_playbook_parameters = {'cyb3rhq_target': parameters.cyb3rhq_target, 'os_system': parameters.os_system,
                                            'os_platform': os_platform}
 
     # Playbooks builder section
@@ -274,37 +274,37 @@ def generate_test_playbooks(parameters, local_checkfiles_pre_data_path, local_ch
     })
 
     if parameters.test_action == 'install':
-        # 1. - Install Wazuh on remote host
+        # 1. - Install Cyb3rhq on remote host
         # 2. - Wait 30 seconds before running check-files tool
-        playbooks_info.update({'install_wazuh': playbook_generator.install_wazuh(**wazuh_install_playbook_parameters)})
+        playbooks_info.update({'install_cyb3rhq': playbook_generator.install_cyb3rhq(**cyb3rhq_install_playbook_parameters)})
 
     elif parameters.test_action == 'upgrade':
-        wazuh_pre_version = '4.2.0'
-        install_package_url = get_production_package_url(parameters.wazuh_target, parameters.os_system,
-                                                         wazuh_pre_version)
+        cyb3rhq_pre_version = '4.2.0'
+        install_package_url = get_production_package_url(parameters.cyb3rhq_target, parameters.os_system,
+                                                         cyb3rhq_pre_version)
         install_package_name = os.path.split(install_package_url)[1]
-        upgrade_package_url = get_last_production_package_url(parameters.wazuh_target, parameters.os_system)
+        upgrade_package_url = get_last_production_package_url(parameters.cyb3rhq_target, parameters.os_system)
         upgrade_package_name = os.path.split(upgrade_package_url)[1]
-        wazuh_install_playbook_parameters.update({'package_url': install_package_url,
+        cyb3rhq_install_playbook_parameters.update({'package_url': install_package_url,
                                                   'package_name': install_package_name})
-        upgrade_wazuh_playbook_parameters.update({'package_url': upgrade_package_url,
+        upgrade_cyb3rhq_playbook_parameters.update({'package_url': upgrade_package_url,
                                                   'package_name': upgrade_package_name})
-        # 1. - Install Wazuh on remote host
-        # 2. - Wait 30 seconds before upgrading Wazuh
-        # 3. - Upgrade Wazuh on remote host
+        # 1. - Install Cyb3rhq on remote host
+        # 2. - Wait 30 seconds before upgrading Cyb3rhq
+        # 3. - Upgrade Cyb3rhq on remote host
         # 4. - Wait 30 seconds before running check-files tool
-        playbooks_info.update({'install_wazuh': playbook_generator.install_wazuh(**wazuh_install_playbook_parameters)})
-        playbooks_info.update({'waiting_time_before_upgrading_wazuh': playbook_generator.wait_seconds(30)})
-        playbooks_info.update({'upgrade_wazuh': playbook_generator.upgrade_wazuh(**upgrade_wazuh_playbook_parameters)})
+        playbooks_info.update({'install_cyb3rhq': playbook_generator.install_cyb3rhq(**cyb3rhq_install_playbook_parameters)})
+        playbooks_info.update({'waiting_time_before_upgrading_cyb3rhq': playbook_generator.wait_seconds(30)})
+        playbooks_info.update({'upgrade_cyb3rhq': playbook_generator.upgrade_cyb3rhq(**upgrade_cyb3rhq_playbook_parameters)})
 
     elif parameters.test_action == 'uninstall':
-        # 1. - Install Wazuh on remote host
-        # 2. - Wait 30 seconds before uninstalling Wazuh
-        # 3. - Uninstall Wazuh on remote host
-        playbooks_info.update({'install_wazuh': playbook_generator.install_wazuh(**wazuh_install_playbook_parameters)})
-        playbooks_info.update({'waiting_time_before_upgrading_wazuh': playbook_generator.wait_seconds(30)})
-        playbooks_info.update({'uninstall_wazuh':
-                               playbook_generator.uninstall_wazuh(**uninstall_wazuh_playbook_parameters)})
+        # 1. - Install Cyb3rhq on remote host
+        # 2. - Wait 30 seconds before uninstalling Cyb3rhq
+        # 3. - Uninstall Cyb3rhq on remote host
+        playbooks_info.update({'install_cyb3rhq': playbook_generator.install_cyb3rhq(**cyb3rhq_install_playbook_parameters)})
+        playbooks_info.update({'waiting_time_before_upgrading_cyb3rhq': playbook_generator.wait_seconds(30)})
+        playbooks_info.update({'uninstall_cyb3rhq':
+                               playbook_generator.uninstall_cyb3rhq(**uninstall_cyb3rhq_playbook_parameters)})
 
     # Add waiting time before running check_files_tool
     playbooks_info.update({'waiting_time_before_running_check_files_tool': playbook_generator.wait_seconds(30)})

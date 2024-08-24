@@ -1,6 +1,6 @@
-# wazuh-qa
+# cyb3rhq-qa
 
-Wazuh - Big cluster - Forty agents provisioning
+Cyb3rhq - Big cluster - Forty agents provisioning
 
 ## Setting up the provisioning
 

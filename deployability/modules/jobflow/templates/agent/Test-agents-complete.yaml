@@ -64,7 +64,7 @@ tasks:
           - track-output: "{working-dir}/manager-{manager-os}/track.yaml"
           - label-termination-date: "1d"
           - label-team: "qa"
-          - label-issue: "https://github.com/wazuh/wazuh/issues/<issue_number>"
+          - label-issue: "https://github.com/cyb3rhq/cyb3rhq/issues/<issue_number>"
     on-error: "abort-all"
     cleanup:
       this: process
@@ -86,7 +86,7 @@ tasks:
           - modules/provision/main.py
           - inventory: "{working-dir}/manager-{manager-os}/inventory.yaml"
           - install:
-            - component: wazuh-manager
+            - component: cyb3rhq-manager
               type: assistant
               version: <major.minor.patch>
               live: False
@@ -111,7 +111,7 @@ tasks:
           - track-output: "{working-dir}/agent-{agent}/track.yaml"
           - label-termination-date: "1d"
           - label-team: "qa"
-          - label-issue: "https://github.com/wazuh/wazuh/issues/<issue_number>"
+          - label-issue: "https://github.com/cyb3rhq/cyb3rhq/issues/<issue_number>"
     on-error: "abort-all"
     foreach:
       - variable: agent-os
@@ -137,12 +137,12 @@ tasks:
         args:
           - modules/testing/main.py
           - targets:
-            - wazuh-1: "{working-dir}/manager-{manager-os}/inventory.yaml"
+            - cyb3rhq-1: "{working-dir}/manager-{manager-os}/inventory.yaml"
             - agent: "{working-dir}/agent-{agent}/inventory.yaml"
           - tests: "install,registration,connection,basic_info,restart,stop,uninstall"
           - component: "agent"
-          - wazuh-version: "<major.minor.patch>"
-          - wazuh-revision: "<revision>"
+          - cyb3rhq-version: "<major.minor.patch>"
+          - cyb3rhq-revision: "<revision>"
           - live: False
     foreach:
       - variable: agent-os
@@ -167,7 +167,7 @@ tasks:
           - track-output: "{working-dir}/agent-{agent}/track.yaml"
           - label-termination-date: "1d"
           - label-team: "qa"
-          - label-issue: "https://github.com/wazuh/wazuh/issues/<issue_number>"
+          - label-issue: "https://github.com/cyb3rhq/cyb3rhq/issues/<issue_number>"
     on-error: "abort-all"
     foreach:
       - variable: macos-agent-os
@@ -193,12 +193,12 @@ tasks:
         args:
           - modules/testing/main.py
           - targets:
-            - wazuh-1: "{working-dir}/manager-{manager-os}/inventory.yaml"
+            - cyb3rhq-1: "{working-dir}/manager-{manager-os}/inventory.yaml"
             - agent: "{working-dir}/agent-{agent}/inventory.yaml"
           - tests: "install,registration,connection,basic_info,restart,stop,uninstall"
           - component: "agent"
-          - wazuh-version: "<major.minor.patch>"
-          - wazuh-revision: "<revision>"
+          - cyb3rhq-version: "<major.minor.patch>"
+          - cyb3rhq-revision: "<revision>"
           - live: False
     foreach:
       - variable: macos-agent-os
@@ -223,7 +223,7 @@ tasks:
           - track-output: "{working-dir}/agent-{agent}/track.yaml"
           - label-termination-date: "1d"
           - label-team: "qa"
-          - label-issue: "https://github.com/wazuh/wazuh/issues/<issue_number>"
+          - label-issue: "https://github.com/cyb3rhq/cyb3rhq/issues/<issue_number>"
     on-error: "abort-all"
     foreach:
       - variable: windows-agent-os
@@ -249,12 +249,12 @@ tasks:
         args:
           - modules/testing/main.py
           - targets:
-            - wazuh-1: "{working-dir}/manager-{manager-os}/inventory.yaml"
+            - cyb3rhq-1: "{working-dir}/manager-{manager-os}/inventory.yaml"
             - agent: "{working-dir}/agent-{agent}/inventory.yaml"
           - tests: "install,registration,connection,basic_info,restart,stop,uninstall"
           - component: "agent"
-          - wazuh-version: "<major.minor.patch>"
-          - wazuh-revision: "<revision>"
+          - cyb3rhq-version: "<major.minor.patch>"
+          - cyb3rhq-revision: "<revision>"
           - live: False
     foreach:
       - variable: windows-agent-os

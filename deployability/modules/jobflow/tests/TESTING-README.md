@@ -6,21 +6,21 @@ The jobflow module includes pytest unit tests.
 
 - Make sure you have Python installed on your system. You can download it from 
     [python.org](https://www.python.org/downloads/).
-- Clone the wazuh-qa repository in your local environment.
+- Clone the cyb3rhq-qa repository in your local environment.
 - Install the necessary dependencies by running:
 ```bash
-git clone https://github.com/wazuh/wazuh-qa.git -b [your-branch]
-cd wazuh-qa
+git clone https://github.com/cyb3rhq/cyb3rhq-qa.git -b [your-branch]
+cd cyb3rhq-qa
 pip install -r deployability/modules/jobflow/requirements-dev.txt
 ```
 - Configure the `PYTHONPATH` variable with the full path to the directory `deployability/modules`, for example if you've
-cloned the `wazuh-qa` repository into `/wazuh/wazuh-qa`, configure the `PYTHONPATH` in this way:
+cloned the `cyb3rhq-qa` repository into `/cyb3rhq/cyb3rhq-qa`, configure the `PYTHONPATH` in this way:
 ```bash
 > pwd
-/wazuh/wazuh-qa
+/cyb3rhq/cyb3rhq-qa
 > export PYTHONPATH=$PYTHONPATH:$PWD/deployability/modules
 > echo $PYTHONPATH
-/wazuh/wazuh-qa/deployability/modules
+/cyb3rhq/cyb3rhq-qa/deployability/modules
 ```
 
 ## Test Structure
@@ -42,7 +42,7 @@ pytest -vv deployability/modules/jobflow
 platform linux -- Python 3.10.13, pytest-7.1.2, pluggy-1.3.0 -- /usr/local/bin/python3
 cachedir: .pytest_cache
 metadata: {'Python': '3.10.13', 'Platform': 'Linux-5.15.146.1-microsoft-standard-WSL2-x86_64-with-glibc2.31', 'Packages': {'pytest': '7.1.2', 'pluggy': '1.3.0'}, 'Plugins': {'anyio': '4.2.0', 'testinfra': '5.0.0', 'metadata': '3.0.0', 'html': '3.1.1'}}
-rootdir: /home/marcelo/wazuh/wazuh-qa/deployability/modules
+rootdir: /home/marcelo/cyb3rhq/cyb3rhq-qa/deployability/modules
 plugins: anyio-4.2.0, testinfra-5.0.0, metadata-3.0.0, html-3.1.1
 collected 92 items
 

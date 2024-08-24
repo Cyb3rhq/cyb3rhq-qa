@@ -2,9 +2,9 @@ import os
 import pytest
 from tempfile import gettempdir
 
-import wazuh_testing as fw
-from wazuh_testing.tools import configuration as config
-from wazuh_testing import event_monitor as evm
+import cyb3rhq_testing as fw
+from cyb3rhq_testing.tools import configuration as config
+from cyb3rhq_testing import event_monitor as evm
 
 
 # Test cases data
@@ -29,11 +29,11 @@ def test_firewall_status(metadata, configure_environment, generate_events):
 
     test_phases:
         - setup:
-            - Load Wazuh light configuration.
+            - Load Cyb3rhq light configuration.
             - Apply ossec.conf configuration changes according to the configuration template and use case.
             - Apply custom settings in local_internal_options.conf.
-            - Truncate wazuh logs.
-            - Restart wazuh-manager service to apply configuration changes.
+            - Truncate cyb3rhq logs.
+            - Restart cyb3rhq-manager service to apply configuration changes.
             - Change status to the Windows firewall.
             - Generate an RDP attack to the Windows agent
         - test:
@@ -44,17 +44,17 @@ def test_firewall_status(metadata, configure_environment, generate_events):
         - teardown:
             - Restore initial configuration, ossec.conf.
 
-    wazuh_min_version: 4.6.0
+    cyb3rhq_min_version: 4.6.0
 
     tier: 0
 
     parameters:
         - configurate_environment:
             type: fixture
-            brief: Set the wazuh configuration according to the configuration playbook.
+            brief: Set the cyb3rhq configuration according to the configuration playbook.
         - metadata:
             type: dict
-            brief: Wazuh configuration metadata.
+            brief: Cyb3rhq configuration metadata.
         - generate_events:
             type: fixture
             brief: Generate RDP attack to the agent and copy the active-responses.log file to a specific local folder

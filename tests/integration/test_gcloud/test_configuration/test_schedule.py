@@ -1,15 +1,15 @@
 '''
-copyright: Copyright (C) 2015-2022, Wazuh Inc.
+copyright: Copyright (C) 2015-2022, Cyb3rhq Inc.
 
-           Created by Wazuh, Inc. <info@wazuh.com>.
+           Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 
            This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 type: integration
 
-brief: The Wazuh 'gcp-pubsub' module uses it to fetch different kinds of events
+brief: The Cyb3rhq 'gcp-pubsub' module uses it to fetch different kinds of events
        (Data access, Admin activity, System events, DNS queries, etc.) from the
-       Google Cloud infrastructure. Once events are collected, Wazuh processes
+       Google Cloud infrastructure. Once events are collected, Cyb3rhq processes
        them using its threat detection rules. Specifically, these tests
        will check if the 'gcp-pubsub' module executes at the periods
        set in the 'interval' tag.
@@ -24,8 +24,8 @@ targets:
     - manager
 
 daemons:
-    - wazuh-monitord
-    - wazuh-modulesd
+    - cyb3rhq-monitord
+    - cyb3rhq-modulesd
 
 os_platform:
     - linux
@@ -42,7 +42,7 @@ os_version:
     - Ubuntu Bionic
 
 references:
-    - https://documentation.wazuh.com/current/user-manual/reference/ossec-conf/gcp-pubsub.html#interval
+    - https://documentation.cyb3rhq.com/current/user-manual/reference/ossec-conf/gcp-pubsub.html#interval
 
 tags:
     - config
@@ -52,13 +52,13 @@ import os
 import sys
 
 import pytest
-from wazuh_testing import global_parameters
-from wazuh_testing.fim import generate_params
-from wazuh_testing.gcloud import callback_detect_schedule_validate_parameters_warn
-from wazuh_testing.tools import LOG_FILE_PATH
-from wazuh_testing.tools.configuration import load_wazuh_configurations
-from wazuh_testing.tools.monitoring import FileMonitor
-from wazuh_testing.tools.file import truncate_file
+from cyb3rhq_testing import global_parameters
+from cyb3rhq_testing.fim import generate_params
+from cyb3rhq_testing.gcloud import callback_detect_schedule_validate_parameters_warn
+from cyb3rhq_testing.tools import LOG_FILE_PATH
+from cyb3rhq_testing.tools.configuration import load_cyb3rhq_configurations
+from cyb3rhq_testing.tools.monitoring import FileMonitor
+from cyb3rhq_testing.tools.file import truncate_file
 
 # Marks
 
@@ -67,14 +67,14 @@ pytestmark = pytest.mark.tier(level=1)
 # variables
 
 interval = ['1d', '1w', '1M']
-wazuh_log_monitor = FileMonitor(LOG_FILE_PATH)
+cyb3rhq_log_monitor = FileMonitor(LOG_FILE_PATH)
 test_data_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data')
 configurations_path = os.path.join(test_data_path, 'schedule_conf.yaml')
 force_restart_after_restoring = False
 
 # configurations
 
-daemons_handler_configuration = {'daemons': ['wazuh-modulesd']}
+daemons_handler_configuration = {'daemons': ['cyb3rhq-modulesd']}
 monitoring_modes = ['scheduled']
 conf_params = {'PROJECT_ID': global_parameters.gcp_project_id,
                'SUBSCRIPTION_NAME': global_parameters.gcp_subscription_name,
@@ -82,7 +82,7 @@ conf_params = {'PROJECT_ID': global_parameters.gcp_project_id,
 p, m = generate_params(extra_params=conf_params,
                        apply_to_all=({'INTERVAL': interval_value} for interval_value in interval),
                        modes=monitoring_modes)
-configurations = load_wazuh_configurations(configurations_path, __name__, params=p, metadata=m)
+configurations = load_cyb3rhq_configurations(configurations_path, __name__, params=p, metadata=m)
 
 
 # fixtures
@@ -104,7 +104,7 @@ def test_schedule(get_configuration, configure_environment, reset_ossec_log, dae
                  Finally, it will verify that the module starts by detecting the events that indicate
                  the validation of the parameters and vice versa.
 
-    wazuh_min_version: 4.2.0
+    cyb3rhq_min_version: 4.2.0
 
     tier: 1
 
@@ -115,7 +115,7 @@ def test_schedule(get_configuration, configure_environment, reset_ossec_log, dae
         - configure_environment:
             type: fixture
             brief: Configure a custom environment for testing.
-        - restart_wazuh:
+        - restart_cyb3rhq:
             type: fixture
             brief: Reset the 'ossec.log' file and start a new monitor.
 
@@ -142,13 +142,13 @@ def test_schedule(get_configuration, configure_environment, reset_ossec_log, dae
     if (tags_to_apply == 'schedule_day' and 'M' not in str_interval) or \
        (tags_to_apply == 'schedule_wday' and 'w' not in str_interval) or \
        (tags_to_apply == 'schedule_time' and ('d' not in str_interval and 'w' not in str_interval)):
-        wazuh_log_monitor.start(timeout=global_parameters.default_timeout + time_interval,
+        cyb3rhq_log_monitor.start(timeout=global_parameters.default_timeout + time_interval,
                                 callback=callback_detect_schedule_validate_parameters_warn,
                                 error_message='Did not receive expected '
                                               'at _sched_scan_validate_parameters(): WARNING:').result()
     # Warning is not suppose to appear
     else:
         with pytest.raises(TimeoutError):
-            event = wazuh_log_monitor.start(timeout=global_parameters.default_timeout,
+            event = cyb3rhq_log_monitor.start(timeout=global_parameters.default_timeout,
                                             callback=callback_detect_schedule_validate_parameters_warn).result()
             raise AttributeError(f'Unexpected event {event}')

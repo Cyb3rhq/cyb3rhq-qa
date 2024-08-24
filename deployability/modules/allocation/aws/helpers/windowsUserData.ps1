@@ -1,5 +1,5 @@
-# Copyright (C) 2015, Wazuh Inc.
-# Created by Wazuh, Inc. <info@wazuh.com>.
+# Copyright (C) 2015, Cyb3rhq Inc.
+# Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 # This program is a free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 <powershell>
@@ -36,27 +36,27 @@ try {
   "Error enabling WinRM on HTTPS."
   Write-Output "Error enabling WinRM on HTTPS."
 }
-# Check if wazuh-user user exists
-if (-not (Get-LocalUser -Name "wazuh-user" -ErrorAction SilentlyContinue)) {
-    # Create wazuh-user user
-    Write-Output "Creating wazuh-user user"
+# Check if cyb3rhq-user user exists
+if (-not (Get-LocalUser -Name "cyb3rhq-user" -ErrorAction SilentlyContinue)) {
+    # Create cyb3rhq-user user
+    Write-Output "Creating cyb3rhq-user user"
     $password = ConvertTo-SecureString "ChangeMe" -AsPlainText -Force
-    New-LocalUser "wazuh-user" -Password $password -FullName "wazuh-user" -Description "wazuh-user user for remote desktop"
+    New-LocalUser "cyb3rhq-user" -Password $password -FullName "cyb3rhq-user" -Description "cyb3rhq-user user for remote desktop"
 
-    Write-Output "Adding wazuh-user user to RDP group."
-    # Add wazuh-user to Remote Desktop Users group
-    Add-LocalGroupMember -Group "Remote Desktop Users" -Member "wazuh-user"
+    Write-Output "Adding cyb3rhq-user user to RDP group."
+    # Add cyb3rhq-user to Remote Desktop Users group
+    Add-LocalGroupMember -Group "Remote Desktop Users" -Member "cyb3rhq-user"
 
-    Write-Output "Adding wazuh-user user to Administrators group."
-    # Add wazuh-user to wazuh-users group
-    Add-LocalGroupMember -Group "Administrators" -Member "wazuh-user"
+    Write-Output "Adding cyb3rhq-user user to Administrators group."
+    # Add cyb3rhq-user to cyb3rhq-users group
+    Add-LocalGroupMember -Group "Administrators" -Member "cyb3rhq-user"
 } else {
-    Write-Output "wazuh-user user already exists."
-    # Set the password for the wazuh-user account
-    $admin = [ADSI]"WinNT://./wazuh-user, user"
+    Write-Output "cyb3rhq-user user already exists."
+    # Set the password for the cyb3rhq-user account
+    $admin = [ADSI]"WinNT://./cyb3rhq-user, user"
     $password = "ChangeMe"
     $admin.SetPassword($password)
     $admin.SetInfo()
-    Write-Output "wazuh-user password changed successfully."
+    Write-Output "cyb3rhq-user password changed successfully."
 }
 </powershell>

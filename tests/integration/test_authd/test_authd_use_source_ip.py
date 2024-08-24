@@ -1,7 +1,7 @@
 '''
-copyright: Copyright (C) 2015-2022, Wazuh Inc.
+copyright: Copyright (C) 2015-2022, Cyb3rhq Inc.
 
-           Created by Wazuh, Inc. <info@wazuh.com>.
+           Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 
            This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 
@@ -16,9 +16,9 @@ targets:
     - manager
 
 daemons:
-    - wazuh-authd
-    - wazuh-db
-    - wazuh-modulesd
+    - cyb3rhq-authd
+    - cyb3rhq-db
+    - cyb3rhq-modulesd
 
 os_platform:
     - linux
@@ -41,10 +41,10 @@ import os
 import ssl
 import time
 import pytest
-from wazuh_testing.tools import WAZUH_PATH
-from wazuh_testing.tools.configuration import load_wazuh_configurations
-from wazuh_testing.tools.file import read_yaml
-from wazuh_testing.authd import validate_authd_response
+from cyb3rhq_testing.tools import CYB3RHQ_PATH
+from cyb3rhq_testing.tools.configuration import load_cyb3rhq_configurations
+from cyb3rhq_testing.tools.file import read_yaml
+from cyb3rhq_testing.authd import validate_authd_response
 
 # Marks
 
@@ -63,17 +63,17 @@ metadata = [
 ]
 
 test_data_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data')
-configurations_path = os.path.join(test_data_path, 'wazuh_authd_configuration.yaml')
-client_keys_path = os.path.join(WAZUH_PATH, 'etc', 'client.keys')
+configurations_path = os.path.join(test_data_path, 'cyb3rhq_authd_configuration.yaml')
+client_keys_path = os.path.join(CYB3RHQ_PATH, 'etc', 'client.keys')
 test_authd_use_source_ip_tests = read_yaml(os.path.join(test_data_path, 'test_authd_use_source_ip.yaml'))
 configuration_ids = [f"Use_source_ip_{x['USE_SOURCE_IP']}" for x in parameters]
 test_cases_ids = [case['name'].replace(' ', '_') for case in test_authd_use_source_ip_tests]
-configurations = load_wazuh_configurations(configurations_path, __name__, params=parameters, metadata=metadata)
+configurations = load_cyb3rhq_configurations(configurations_path, __name__, params=parameters, metadata=metadata)
 
 # Variables
 
 log_monitor_paths = []
-monitored_sockets_params = [('wazuh-modulesd', None, True), ('wazuh-db', None, True), ('wazuh-authd', None, True)]
+monitored_sockets_params = [('cyb3rhq-modulesd', None, True), ('cyb3rhq-db', None, True), ('cyb3rhq-authd', None, True)]
 receiver_sockets, monitored_sockets, log_monitors = None, None, None  # Set in the fixtures
 
 # Fixtures
@@ -107,13 +107,13 @@ def configure_receiver_sockets(request, get_current_test_case):
 
 
 def test_authd_use_source_ip(get_configuration, configure_environment, get_current_test_case, configure_receiver_sockets,
-                             configure_sockets_environment, clean_client_keys_file_function, restart_wazuh_daemon_function,
+                             configure_sockets_environment, clean_client_keys_file_function, restart_cyb3rhq_daemon_function,
                              wait_for_authd_startup_function, connect_to_sockets_function, tear_down):
     '''
     description:
         Checks that every input message in authd port generates the adequate output
 
-    wazuh_min_version:
+    cyb3rhq_min_version:
         4.2.0
 
     tier: 0
@@ -133,7 +133,7 @@ def test_authd_use_source_ip(get_configuration, configure_environment, get_curre
             brief: Cleans any previous key in client.keys file at function scope.
         - restart_authd_function:
             type: fixture
-            brief: stops the wazuh-authd daemon
+            brief: stops the cyb3rhq-authd daemon
         - wait_for_authd_startup_function:
             type: fixture
             brief: Waits until Authd is accepting connections.

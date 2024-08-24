@@ -1,5 +1,5 @@
-# Copyright (C) 2015, Wazuh Inc.
-# Created by Wazuh, Inc. <info@wazuh.com>.
+# Copyright (C) 2015, Cyb3rhq Inc.
+# Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 # This program is a free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 from pathlib import Path
@@ -53,7 +53,7 @@ class InputPayload(BaseModel):
     provider: str | None = None
     size: Literal['micro', 'small', 'medium', 'large', None] = None
     composite_name: str | None = None
-    working_dir: Path | None = Path('/tmp/wazuh-qa')
+    working_dir: Path | None = Path('/tmp/cyb3rhq-qa')
     track_output: Path | None = working_dir / 'track.yml'
     inventory_output: Path | None = working_dir / 'inventory.yml'
     ssh_key: str | None = None

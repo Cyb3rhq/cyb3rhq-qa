@@ -64,7 +64,7 @@ tasks:
           - track-output: "{working-dir}/manager-{manager-os}/track.yaml"
           - label-termination-date: "1d"
           - label-team: "qa"
-          - label-issue: "https://github.com/wazuh/wazuh-qa/issues/5191"
+          - label-issue: "https://github.com/cyb3rhq/cyb3rhq-qa/issues/5191"
     on-error: "abort-all"
     cleanup:
       this: process
@@ -92,7 +92,7 @@ tasks:
           - track-output: "{working-dir}/agent-{agent}/track.yaml"
           - label-termination-date: "1d"
           - label-team: "qa"
-          - label-issue: "https://github.com/wazuh/wazuh-qa/issues/5191"
+          - label-issue: "https://github.com/cyb3rhq/cyb3rhq-qa/issues/5191"
     on-error: "abort-all"
     foreach:
       - variable: agent-os
@@ -123,7 +123,7 @@ tasks:
           - track-output: "{working-dir}/agent-{agent}/track.yaml"
           - label-termination-date: "1d"
           - label-team: "qa"
-          - label-issue: "https://github.com/wazuh/wazuh-qa/issues/5191"
+          - label-issue: "https://github.com/cyb3rhq/cyb3rhq-qa/issues/5191"
     on-error: "abort-all"
     foreach:
       - variable: macos-agent-os
@@ -148,7 +148,7 @@ tasks:
           - modules/provision/main.py
           - inventory: "{working-dir}/manager-{manager-os}/inventory.yaml"
           - install:
-            - component: wazuh-manager
+            - component: cyb3rhq-manager
               type: assistant
               version: 4.7.4
               live: True
@@ -166,12 +166,12 @@ tasks:
         args:
           - modules/testing/main.py
           - targets:
-            - wazuh-1: "{working-dir}/manager-{manager-os}/inventory.yaml"
+            - cyb3rhq-1: "{working-dir}/manager-{manager-os}/inventory.yaml"
             - agent: "{working-dir}/agent-{agent}/inventory.yaml"
           - tests: "install,registration,basic_info"
           - component: "agent"
-          - wazuh-version: "4.7.4"
-          - wazuh-revision: "40717"
+          - cyb3rhq-version: "4.7.4"
+          - cyb3rhq-revision: "40717"
           - live: False
     foreach:
       - variable: agent-os
@@ -190,12 +190,12 @@ tasks:
         args:
           - modules/testing/main.py
           - targets:
-            - wazuh-1: "{working-dir}/manager-{manager-os}/inventory.yaml"
+            - cyb3rhq-1: "{working-dir}/manager-{manager-os}/inventory.yaml"
             - agent: "{working-dir}/agent-{agent}/inventory.yaml"
           - tests: "install,registration,basic_info,connection,restart,stop,uninstall"
           - component: "agent"
-          - wazuh-version: "4.7.4"
-          - wazuh-revision: "40717"
+          - cyb3rhq-version: "4.7.4"
+          - cyb3rhq-revision: "40717"
           - live: False
     foreach:
       - variable: macos-agent-os

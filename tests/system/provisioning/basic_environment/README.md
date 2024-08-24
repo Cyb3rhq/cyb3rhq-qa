@@ -1,6 +1,6 @@
-# wazuh-qa
+# cyb3rhq-qa
 
-Wazuh - Basic environment provisioning
+Cyb3rhq - Basic environment provisioning
 
 ## Setting up the provisioning
 
@@ -70,7 +70,7 @@ This folder contains the variables used to configure our environment. Variables 
 The base environment defined for Docker provisioning is
 
 - One manager
-- One agent ready to start the enrollment process with the `wazuh-manager` node when `wazuh-agent` starts.
+- One agent ready to start the enrollment process with the `cyb3rhq-manager` node when `cyb3rhq-agent` starts.
 
 ## Environment management
 

@@ -1,0 +1,12 @@
+---
+- name: restart cyb3rhq-manager
+  service:
+    name: cyb3rhq-manager
+    state: restarted
+    enabled: true
+
+- name: restart cyb3rhq-api
+  service:
+    name: cyb3rhq-api
+    state: restarted
+    enabled: true

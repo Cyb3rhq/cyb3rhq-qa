@@ -1,13 +1,13 @@
 '''
-copyright: Copyright (C) 2015-2022, Wazuh Inc.
+copyright: Copyright (C) 2015-2022, Cyb3rhq Inc.
 
-           Created by Wazuh, Inc. <info@wazuh.com>.
+           Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 
            This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 type: reliability
 
-brief: All Wazuh components generate log messages. These can be DEBUG, WARNING, ERROR, CRITICAL. 
+brief: All Cyb3rhq components generate log messages. These can be DEBUG, WARNING, ERROR, CRITICAL. 
        Unexpected errors/warnings/critical should not be generated.
 
 tier: 0
@@ -29,7 +29,7 @@ modules:
     - rids
     - rootcheck
     - vulnerability_detector
-    - wazuh_db
+    - cyb3rhq_db
     - wpk
 
 components:
@@ -37,24 +37,24 @@ components:
     - manager
 
 daemons:
-    - wazuh-agentd
-    - wazuh-agentlessd
-    - wazuh-analysisd
-    - wazuh-authd
-    - wazuh-csyslogd
-    - wazuh-apid
-    - wazuh-clusterd
-    - wazuh-db
-    - wazuh-dbd
-    - wazuh-execd
-    - wazuh-integratord
-    - wazuh-logcollector
-    - wazuh-maild
-    - wazuh-monitord
-    - wazuh-modulesd
-    - wazuh-remoted
-    - wazuh-reportd
-    - wazuh-syscheckd
+    - cyb3rhq-agentd
+    - cyb3rhq-agentlessd
+    - cyb3rhq-analysisd
+    - cyb3rhq-authd
+    - cyb3rhq-csyslogd
+    - cyb3rhq-apid
+    - cyb3rhq-clusterd
+    - cyb3rhq-db
+    - cyb3rhq-dbd
+    - cyb3rhq-execd
+    - cyb3rhq-integratord
+    - cyb3rhq-logcollector
+    - cyb3rhq-maild
+    - cyb3rhq-monitord
+    - cyb3rhq-modulesd
+    - cyb3rhq-remoted
+    - cyb3rhq-reportd
+    - cyb3rhq-syscheckd
 
 os_platform:
     - linux
@@ -96,7 +96,7 @@ import re
 
 import pytest
 
-from wazuh_testing import global_parameters
+from cyb3rhq_testing import global_parameters
 
 error_codes = ['warning', 'error', 'critical']
 known_messages_filename = 'know_messages.json'
@@ -120,7 +120,7 @@ def test_error_messages(get_report, code, target):
     '''
     description: Check if unexpected error, warning or critical occurs in the environment
 
-    wazuh_min_version: 4.4.0
+    cyb3rhq_min_version: 4.4.0
 
     parameters:
         - get_report:

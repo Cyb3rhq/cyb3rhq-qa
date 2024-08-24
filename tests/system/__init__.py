@@ -1,12 +1,12 @@
-# Copyright (C) 2015-2022, Wazuh Inc.
-# Created by Wazuh, Inc. <info@wazuh.com>.
+# Copyright (C) 2015-2022, Cyb3rhq Inc.
+# Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 # This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 import os
 import json
 from multiprocessing.pool import ThreadPool
 
-from wazuh_testing.tools import WAZUH_PATH, LOG_FILE_PATH, CLUSTER_LOGS_PATH, AGENT_GROUPS_BINARY_PATH
+from cyb3rhq_testing.tools import CYB3RHQ_PATH, LOG_FILE_PATH, CLUSTER_LOGS_PATH, AGENT_GROUPS_BINARY_PATH
 
 # Agent Variables
 AGENT_STATUS_ACTIVE = 'active'
@@ -22,18 +22,18 @@ ERR_MSG_FAILED_TO_SET_AGENT_GROUP = 'Failed when trying to set agent group'
 
 
 # Functions
-def get_agent_id(host_manager, node='wazuh-master'):
+def get_agent_id(host_manager, node='cyb3rhq-master'):
     # Gets the first agent id in the master's client.keys file
-    return host_manager.run_command(node, f'cut -c 1-3 {WAZUH_PATH}/etc/client.keys')
+    return host_manager.run_command(node, f'cut -c 1-3 {CYB3RHQ_PATH}/etc/client.keys')
 
 
 def get_id_from_agent(agent, host_manager):
     # Get the agent id from the agent's client.keys file
-    return host_manager.run_command(agent, f'cut -c 1-3 {WAZUH_PATH}/etc/client.keys')
+    return host_manager.run_command(agent, f'cut -c 1-3 {CYB3RHQ_PATH}/etc/client.keys')
 
 
 def restart_cluster(hosts_list, host_manager, parallel=False):
-    service = 'wazuh'
+    service = 'cyb3rhq'
     state = 'restarted'
     # Restart the cluster's hosts
     if parallel:
@@ -53,31 +53,31 @@ def clean_cluster_logs(hosts_list, host_manager):
             host_manager.clear_file_without_recreate(host=host, file_path=CLUSTER_LOGS_PATH)
 
 
-def remove_cluster_agents(wazuh_master, agents_list, host_manager, agents_id=None):
+def remove_cluster_agents(cyb3rhq_master, agents_list, host_manager, agents_id=None):
     # Removes a list of agents from the cluster using manage_agents
     for agent in agents_list:
-        host_manager.control_service(host=agent, service='wazuh', state='stopped')
-        host_manager.clear_file(agent, file_path=os.path.join(WAZUH_PATH, 'etc', 'client.keys'))
+        host_manager.control_service(host=agent, service='cyb3rhq', state='stopped')
+        host_manager.clear_file(agent, file_path=os.path.join(CYB3RHQ_PATH, 'etc', 'client.keys'))
     if agents_id is None:
         id = get_agent_id(host_manager)
         while id != '':
-            host_manager.get_host(wazuh_master).ansible('command', f"{WAZUH_PATH}/bin/manage_agents -r {id}",
+            host_manager.get_host(cyb3rhq_master).ansible('command', f"{CYB3RHQ_PATH}/bin/manage_agents -r {id}",
                                                         check=False)
             id = get_agent_id(host_manager)
     else:
         for id in agents_id:
-            host_manager.get_host(wazuh_master).ansible('command', f"{WAZUH_PATH}/bin/manage_agents -r {id}",
+            host_manager.get_host(cyb3rhq_master).ansible('command', f"{CYB3RHQ_PATH}/bin/manage_agents -r {id}",
                                                         check=False)
 
 
 def get_agents_in_cluster(host, host_manager):
     # Get the list of agents in the cluster
-    return host_manager.run_command(host, f'{WAZUH_PATH}/bin/cluster_control -a')
+    return host_manager.run_command(host, f'{CYB3RHQ_PATH}/bin/cluster_control -a')
 
 
 def check_keys_file(host, host_manager):
     # Checks that the key file is not empty in a host
-    return host_manager.get_file_content(host, os.path.join(WAZUH_PATH, 'etc', 'client.keys'))
+    return host_manager.get_file_content(host, os.path.join(CYB3RHQ_PATH, 'etc', 'client.keys'))
 
 
 def create_new_agent_group(host, group_name, host_manager):
@@ -113,14 +113,14 @@ def delete_agent_group(host, id_group, host_manager, method='tool'):
 def check_agent_groups(agent_id, group_to_check, hosts_list, host_manager):
     # Check the expected group is in the group data for the agent
     for host in hosts_list:
-        group_data = host_manager.run_command(host, f'{WAZUH_PATH}/bin/agent_groups -s -i {agent_id}')
+        group_data = host_manager.run_command(host, f'{CYB3RHQ_PATH}/bin/agent_groups -s -i {agent_id}')
         assert group_to_check in group_data, f"Did not recieve expected agent group: {group_to_check} in data \
                                                {str(group_data)} in host {host}"
 
 
 # Check the expected group is in the group data for the agent in db
 def check_agent_groups_db(query, group_to_check, host, host_manager):
-    group_data = host_manager.run_command(host, f"python3 {WAZUH_PATH}/bin/wdb-query.py global \
+    group_data = host_manager.run_command(host, f"python3 {CYB3RHQ_PATH}/bin/wdb-query.py global \
                                           '{query}'")
     assert group_to_check in group_data, f"Did not recieve expected agent group: {group_to_check} in data \
                                          {str(group_data)}"
@@ -148,7 +148,7 @@ def change_agent_group_with_wdb(agent_id, new_group, host, host_manager):
 
     query = f'{{"mode":"append","sync_status":"syncreq","source":"remote","data":[{{"id":{agent_id}, \
              "groups":["{new_group}"]}}]}}'
-    group_data = host_manager.run_command(host, f"python3 {WAZUH_PATH}/bin/wdb-query.py global \
+    group_data = host_manager.run_command(host, f"python3 {CYB3RHQ_PATH}/bin/wdb-query.py global \
                                           'set-agent-groups {query}'")
     return group_data
 
@@ -162,7 +162,7 @@ def execute_wdb_query(query, host, host_manager):
     Returns:
         response (str): Obtained response.
     """
-    response = host_manager.run_command(host, f"python3 {WAZUH_PATH}/bin/wdb-query.py {query}")
+    response = host_manager.run_command(host, f"python3 {CYB3RHQ_PATH}/bin/wdb-query.py {query}")
 
     return response
 

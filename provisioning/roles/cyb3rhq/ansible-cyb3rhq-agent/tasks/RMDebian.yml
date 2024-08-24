@@ -1,0 +1,6 @@
+---
+- name: Remove Cyb3rhq repository (and clean up left-over metadata)
+  apt_repository:
+    repo: "{{ cyb3rhq_agent_config.repo.apt }}"
+    state: absent
+  changed_when: false

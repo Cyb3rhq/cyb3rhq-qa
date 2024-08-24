@@ -8,15 +8,15 @@
         state: stopped
         name: suricata
 
-    - name: Remove Wazuh logs configuration
+    - name: Remove Cyb3rhq logs configuration
       blockinfile:
         path: /var/ossec/etc/ossec.conf
         marker: <!-- {mark} READ SURICATA LOGS CONFIG -->
         state: absent
 
-    - name: Restart wazuh-agent to apply the change
+    - name: Restart cyb3rhq-agent to apply the change
       include_role:
-        name: manage_wazuh
-        tasks_from: restart_wazuh.yaml
+        name: manage_cyb3rhq
+        tasks_from: restart_cyb3rhq.yaml
       vars:
         os: linux

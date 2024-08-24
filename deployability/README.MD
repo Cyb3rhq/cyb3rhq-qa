@@ -14,18 +14,18 @@ For this purpose, it is recommended to use virtual environments. Follow the tech
 source {venv directory}/bin/activate
 ```
 
-2. Clone the wazuh-qa repository:
+2. Clone the cyb3rhq-qa repository:
 
 Navigate to the project directory and switch to the project branch:
 
 ```
-git clone https://github.com/wazuh/wazuh-qa.git
+git clone https://github.com/cyb3rhq/cyb3rhq-qa.git
 ```
 
 Navigate to the project directory and switch to the project branch:
 
 ```
-cd wazuh-qa
+cd cyb3rhq-qa
 git checkout {project-branch}
 ```
 
@@ -37,7 +37,7 @@ pip3 install -r deployability/deps/requirements.txt
 
 4. Install the JobFlow engine library and its launcher:
 
-While in wazuh-qa:
+While in cyb3rhq-qa:
 
 ```
 cd modules
@@ -79,8 +79,8 @@ tasks:
             - agent: "{working-dir}/agent-{agent}/inventory.yaml"
           - tests: "install,register,stop"
           - component: "agent"
-          - wazuh-version: "4.7.1"
-          - wazuh-revision: "40709"
+          - cyb3rhq-version: "4.7.1"
+          - cyb3rhq-revision: "40709"
     depends-on:
       - "provision-install-{agent}"
       - "provision-manager"
@@ -102,8 +102,8 @@ tasks:
             - manager: "{working-dir}/manager-{manager-os}/inventory.yaml"
           - tests: "uninstall"
           - component: "agent"
-          - wazuh-version: "4.7.1"
-          - wazuh-revision: "40709"
+          - cyb3rhq-version: "4.7.1"
+          - cyb3rhq-revision: "40709"
     depends-on:
       - "run-agent-tests-{agent}"
       - "provision-uninstall-{agent}"
@@ -122,7 +122,7 @@ tasks:
           - modules/provision/main.py
           - inventory-manager: "{working-dir}/manager-{manager-os}/inventory.yaml"
           - install:
-            - component: wazuh-manager
+            - component: cyb3rhq-manager
               type: package
     depends-on:
       - "allocate-manager"
@@ -163,7 +163,7 @@ tasks:
           - inventory-agent: "{working-dir}/agent-{agent}/inventory.yaml"
           - inventory-manager: "{working-dir}/manager-{manager-os}/inventory.yaml"
           - install:
-            - component: wazuh-agent
+            - component: cyb3rhq-agent
               type: package
             - component: curl
     depends-on:
@@ -185,7 +185,7 @@ tasks:
           - inventory-agent: "{working-dir}/agent-{agent}/inventory.yaml"
           - inventory-manager: "{working-dir}/manager-{manager-os}/inventory.yaml"
           - uninstall:
-            - component: wazuh-agent
+            - component: cyb3rhq-agent
               type: package
     depends-on:
       - "provision-install-{agent}"
@@ -276,7 +276,7 @@ The framework has 4 modules (`allocation`, `provision`, `testing`, `observabilit
 - Directory Structure
 
 ```
-wazuh-qa/
+cyb3rhq-qa/
 └── deployability
     ├── deps
     ├── Jenkinsfiles
@@ -299,11 +299,11 @@ Deployability contains the following directories:
 
 #### Overview
 
-![image](https://github.com/wazuh/wazuh-qa/assets/2949519/29b600cf-44bd-412c-b02f-9b08353babde)
+![image](https://github.com/cyb3rhq/cyb3rhq-qa/assets/2949519/29b600cf-44bd-412c-b02f-9b08353babde)
 
 #### Allocator, provision & test process
 
-![image](https://github.com/wazuh/wazuh-qa/assets/2949519/9338ccc4-2ffa-47d4-b4cc-86c2a8aa5851)
+![image](https://github.com/cyb3rhq/cyb3rhq-qa/assets/2949519/9338ccc4-2ffa-47d4-b4cc-86c2a8aa5851)
 
 
 
@@ -316,4 +316,4 @@ Deployability contains the following directories:
 
 ### License
 
-WAZUH Copyright (C) 2015 Wazuh Inc.  (License GPLv2)
+CYB3RHQ Copyright (C) 2015 Cyb3rhq Inc.  (License GPLv2)

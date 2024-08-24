@@ -1,5 +1,5 @@
-# Copyright (C) 2015, Wazuh Inc.
-# Created by Wazuh, Inc. <info@wazuh.com>.
+# Copyright (C) 2015, Cyb3rhq Inc.
+# Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 # This program is a free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 - hosts: localhost
@@ -7,6 +7,6 @@
   become_user: "{{ current_user }}"
   tasks:
     - name: Test {{ test }} for {{ component }}
-      command: "python3 -m pytest modules/testing/tests/test_{{component}}/test_{{ test }}.py  -v --wazuh_version={{ wazuh_version }} --wazuh_revision={{ wazuh_revision }}  --component={{ component }} --dependencies='{{ dependencies }}' --targets='{{ targets }}' --live={{ live }} -s"
+      command: "python3 -m pytest modules/testing/tests/test_{{component}}/test_{{ test }}.py  -v --cyb3rhq_version={{ cyb3rhq_version }} --cyb3rhq_revision={{ cyb3rhq_revision }}  --component={{ component }} --dependencies='{{ dependencies }}' --targets='{{ targets }}' --live={{ live }} -s"
       args:
         chdir: "{{ local_host_path }}"
