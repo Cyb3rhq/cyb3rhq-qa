@@ -1,14 +1,14 @@
 '''
-copyright: Copyright (C) 2015-2022, Wazuh Inc.
+copyright: Copyright (C) 2015-2022, Cyb3rhq Inc.
 
-           Created by Wazuh, Inc. <info@wazuh.com>.
+           Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 
            This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 type: integration
 
-brief: These tests will check if the response_postprocessing middleware of the API handled by the 'wazuh-apid' daemon is
-       working properly. The Wazuh API is an open source 'RESTful' API that allows for interaction with the Wazuh
+brief: These tests will check if the response_postprocessing middleware of the API handled by the 'cyb3rhq-apid' daemon is
+       working properly. The Cyb3rhq API is an open source 'RESTful' API that allows for interaction with the Cyb3rhq
        manager from a web browser, command line tools like 'cURL' or any script or program that can make web requests.
 
 components:
@@ -20,7 +20,7 @@ targets:
     - manager
 
 daemons:
-    - wazuh-apid
+    - cyb3rhq-apid
 
 os_platform:
     - linux
@@ -45,7 +45,7 @@ os_version:
     - Red Hat 6
 
 references:
-    - https://documentation.wazuh.com/current/user-manual/api/getting-started.html
+    - https://documentation.cyb3rhq.com/current/user-manual/api/getting-started.html
 
 tags:
     - api
@@ -56,7 +56,7 @@ import json
 
 import pytest
 import requests
-from wazuh_testing import api
+from cyb3rhq_testing import api
 
 # Marks
 pytestmark = [pytest.mark.server]
@@ -81,7 +81,7 @@ def test_response_postprocessing(restart_api_module, get_api_details, method, en
     '''
     description: Check if the response_postprocessing API middleware works.
 
-    wazuh_min_version: 4.0.0
+    cyb3rhq_min_version: 4.0.0
 
     tier: 0
 

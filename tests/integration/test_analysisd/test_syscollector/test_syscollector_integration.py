@@ -1,6 +1,6 @@
 '''
-copyright: Copyright (C) 2015-2023, Wazuh Inc.
-           Created by Wazuh, Inc. <info@wazuh.com>.
+copyright: Copyright (C) 2015-2023, Cyb3rhq Inc.
+           Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
            This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 type: integration
@@ -17,7 +17,7 @@ targets:
     - manager
 
 daemons:
-    - wazuh-analysisd
+    - cyb3rhq-analysisd
 
 os_platform:
     - linux
@@ -31,15 +31,15 @@ os_version:
     - Ubuntu Bionic
 
 references:
-    - https://documentation.wazuh.com/current/user-manual/capabilities/syscollector.html\
+    - https://documentation.cyb3rhq.com/current/user-manual/capabilities/syscollector.html\
         #using-syscollector-information-to-trigger-alerts
 '''
 import os
 import pytest
 
-from wazuh_testing.tools.configuration import get_test_cases_data
-from wazuh_testing.tools import ANALYSISD_QUEUE_SOCKET_PATH, ALERT_FILE_PATH
-from wazuh_testing.analysis import CallbackWithContext, callback_check_syscollector_alert
+from cyb3rhq_testing.tools.configuration import get_test_cases_data
+from cyb3rhq_testing.tools import ANALYSISD_QUEUE_SOCKET_PATH, ALERT_FILE_PATH
+from cyb3rhq_testing.analysis import CallbackWithContext, callback_check_syscollector_alert
 
 pytestmark = [pytest.mark.server]
 
@@ -71,7 +71,7 @@ def test_syscollector_integration(metadata, configure_local_internal_options_mod
     """
     description: Check if Analysisd handle Syscollector deltas properly by generating alerts.
 
-    wazuh_min_version: 4.4.0
+    cyb3rhq_min_version: 4.4.0
 
     tier: 2
 

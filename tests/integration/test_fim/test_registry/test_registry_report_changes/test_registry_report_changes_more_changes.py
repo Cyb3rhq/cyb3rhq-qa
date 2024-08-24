@@ -1,7 +1,7 @@
 '''
-copyright: Copyright (C) 2015-2022, Wazuh Inc.
+copyright: Copyright (C) 2015-2022, Cyb3rhq Inc.
 
-           Created by Wazuh, Inc. <info@wazuh.com>.
+           Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 
            This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 
@@ -11,7 +11,7 @@ brief: File Integrity Monitoring (FIM) system watches selected files and trigger
        these files are modified. Specifically, these tests will verify that FIM events include
        the 'content_changes' field with the tag 'More changes' when it exceeds the maximum size
        allowed, and the 'report_changes' option is enabled.
-       The FIM capability is managed by the 'wazuh-syscheckd' daemon, which checks configured
+       The FIM capability is managed by the 'cyb3rhq-syscheckd' daemon, which checks configured
        files for changes to the checksums, permissions, and ownership.
 
 components:
@@ -23,7 +23,7 @@ targets:
     - agent
 
 daemons:
-    - wazuh-syscheckd
+    - cyb3rhq-syscheckd
 
 os_platform:
     - windows
@@ -39,8 +39,8 @@ os_version:
     - Windows XP
 
 references:
-    - https://documentation.wazuh.com/current/user-manual/capabilities/file-integrity/index.html
-    - https://documentation.wazuh.com/current/user-manual/reference/ossec-conf/syscheck.html#diff
+    - https://documentation.cyb3rhq.com/current/user-manual/capabilities/file-integrity/index.html
+    - https://documentation.cyb3rhq.com/current/user-manual/reference/ossec-conf/syscheck.html#diff
 
 pytest_args:
     - fim_mode:
@@ -59,11 +59,11 @@ import sys
 
 import pytest
 from test_fim.common import generate_string
-from wazuh_testing import global_parameters
-from wazuh_testing.fim import LOG_FILE_PATH, calculate_registry_diff_paths, registry_value_cud, KEY_WOW64_32KEY, \
+from cyb3rhq_testing import global_parameters
+from cyb3rhq_testing.fim import LOG_FILE_PATH, calculate_registry_diff_paths, registry_value_cud, KEY_WOW64_32KEY, \
     KEY_WOW64_64KEY, generate_params
-from wazuh_testing.tools.configuration import load_wazuh_configurations, check_apply_test
-from wazuh_testing.tools.monitoring import FileMonitor
+from cyb3rhq_testing.tools.configuration import load_cyb3rhq_configurations, check_apply_test
+from cyb3rhq_testing.tools.monitoring import FileMonitor
 
 MAX_STR_MORE_CHANGES = 59391
 MORE_CHANGES_STR = "More changes..."
@@ -81,7 +81,7 @@ test_regs = [os.path.join(key, sub_key_1),
              os.path.join(key, sub_key_2)]
 
 test_data_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data')
-wazuh_log_monitor = FileMonitor(LOG_FILE_PATH)
+cyb3rhq_log_monitor = FileMonitor(LOG_FILE_PATH)
 reg1, reg2 = test_regs
 
 # Configurations
@@ -89,10 +89,10 @@ reg1, reg2 = test_regs
 conf_params = {'WINDOWS_REGISTRY_1': reg1,
                'WINDOWS_REGISTRY_2': reg2}
 
-configurations_path = os.path.join(test_data_path, 'wazuh_registry_report_changes.yaml')
+configurations_path = os.path.join(test_data_path, 'cyb3rhq_registry_report_changes.yaml')
 p, m = generate_params(extra_params=conf_params, modes=['scheduled'])
 
-configurations = load_wazuh_configurations(configurations_path, __name__, params=p, metadata=m)
+configurations = load_cyb3rhq_configurations(configurations_path, __name__, params=p, metadata=m)
 
 
 # Fixtures
@@ -114,14 +114,14 @@ def test_report_changes_more_changes(key, subkey, arch, value_name, tags_to_appl
                                      get_configuration, configure_environment, restart_syscheckd,
                                      wait_for_fim_start):
     '''
-    description: Check if the 'wazuh-syscheckd' daemon detects when the character limit is reached in
+    description: Check if the 'cyb3rhq-syscheckd' daemon detects when the character limit is reached in
                  the value changes, showing the 'More changes' tag in the 'content_changes' field of
                  the generated FIM events. For this purpose, the test will monitor a key, add a testing
                  value and modify it, adding more characters than the allowed limit. Finally, the test
                  will verify that the 'diff' file has been created, and the FIM event generated contains
                  the 'More changes' tag in its 'content_changes' field.
 
-    wazuh_min_version: 4.2.0
+    cyb3rhq_min_version: 4.2.0
 
     tier: 1
 
@@ -160,8 +160,8 @@ def test_report_changes_more_changes(key, subkey, arch, value_name, tags_to_appl
           when the changes made on a value exceed the characters limit.
 
     input_description: A test case (test_report_changes) is contained in external YAML file
-                       (wazuh_registry_report_changes.yaml) which includes configuration
-                       settings for the 'wazuh-syscheckd' daemon. That is combined with
+                       (cyb3rhq_registry_report_changes.yaml) which includes configuration
+                       settings for the 'cyb3rhq-syscheckd' daemon. That is combined with
                        the testing registry keys to be monitored defined in this module.
 
     expected_output:
@@ -182,7 +182,7 @@ def test_report_changes_more_changes(key, subkey, arch, value_name, tags_to_appl
             assert os.path.exists(diff_file), '{diff_file} does not exist'
             assert event['data'].get('content_changes')[-len(MORE_CHANGES_STR):] == MORE_CHANGES_STR, error_str
 
-    registry_value_cud(key, subkey, wazuh_log_monitor, arch=arch, value_list=values,
+    registry_value_cud(key, subkey, cyb3rhq_log_monitor, arch=arch, value_list=values,
                        time_travel=get_configuration['metadata']['fim_mode'] == 'scheduled',
                        min_timeout=global_parameters.default_timeout, triggers_event=True,
                        validators_after_update=[report_changes_validator])

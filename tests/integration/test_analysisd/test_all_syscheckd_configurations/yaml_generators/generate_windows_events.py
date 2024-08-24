@@ -1,5 +1,5 @@
-# Copyright (C) 2015-2021, Wazuh Inc.
-# Created by Wazuh, Inc. <info@wazuh.com>.
+# Copyright (C) 2015-2021, Cyb3rhq Inc.
+# Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 # This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 import argparse
@@ -9,12 +9,12 @@ import shutil
 import sys
 import time
 
-from wazuh_testing import logger
-from wazuh_testing.fim import REGULAR, create_file, modify_file, delete_file, callback_detect_event
-from wazuh_testing.tools import WAZUH_CONF, PREFIX, LOG_FILE_PATH
-from wazuh_testing.tools.configuration import generate_syscheck_config
-from wazuh_testing.tools.monitoring import FileMonitor
-from wazuh_testing.tools.services import control_service
+from cyb3rhq_testing import logger
+from cyb3rhq_testing.fim import REGULAR, create_file, modify_file, delete_file, callback_detect_event
+from cyb3rhq_testing.tools import CYB3RHQ_CONF, PREFIX, LOG_FILE_PATH
+from cyb3rhq_testing.tools.configuration import generate_syscheck_config
+from cyb3rhq_testing.tools.monitoring import FileMonitor
+from cyb3rhq_testing.tools.services import control_service
 
 n_directories = 0
 directories_list = list()
@@ -27,10 +27,10 @@ def _callback_default(line):
 
 
 def set_syscheck_config():
-    original_conf = open(WAZUH_CONF, 'r').readlines()
+    original_conf = open(CYB3RHQ_CONF, 'r').readlines()
     directory = 0
 
-    with open(WAZUH_CONF, 'w') as new_conf:
+    with open(CYB3RHQ_CONF, 'w') as new_conf:
         syscheck_flag = False
         for line in original_conf:
             if re.match(r'.*\<syscheck\>.*', line):
@@ -61,7 +61,7 @@ def configure_syscheck_environment(time_sleep):
         os.makedirs(t_dir, exist_ok=True, mode=0o777)
         directories_list.append(t_dir)
 
-    wazuh_log_monitor = FileMonitor(LOG_FILE_PATH)
+    cyb3rhq_log_monitor = FileMonitor(LOG_FILE_PATH)
     control_service('restart')
     logger.debug('Waiting 15 seconds for syscheckd to start.')
     time.sleep(15)
@@ -77,7 +77,7 @@ def configure_syscheck_environment(time_sleep):
         time.sleep(0.01)
     try:
         while True:
-            wazuh_log_monitor.start(timeout=5, callback=callback_detect_event)
+            cyb3rhq_log_monitor.start(timeout=5, callback=callback_detect_event)
     except TimeoutError:
         pass
 
@@ -87,7 +87,7 @@ def configure_syscheck_environment(time_sleep):
         time.sleep(0.01)
     try:
         while True:
-            wazuh_log_monitor.start(timeout=5, callback=callback_detect_event)
+            cyb3rhq_log_monitor.start(timeout=5, callback=callback_detect_event)
     except TimeoutError:
         pass
 
@@ -97,7 +97,7 @@ def configure_syscheck_environment(time_sleep):
         time.sleep(0.01)
     try:
         while True:
-            wazuh_log_monitor.start(timeout=5, callback=callback_detect_event)
+            cyb3rhq_log_monitor.start(timeout=5, callback=callback_detect_event)
     except TimeoutError:
         pass
 
@@ -108,7 +108,7 @@ def clean_environment(original_conf):
     for d in directories_list:
         shutil.rmtree(d, ignore_errors=True)
 
-    with open(WAZUH_CONF, 'w') as o_conf:
+    with open(CYB3RHQ_CONF, 'w') as o_conf:
         o_conf.writelines(original_conf)
 
 

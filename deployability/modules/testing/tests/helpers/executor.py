@@ -1,5 +1,5 @@
-# Copyright (C) 2015, Wazuh Inc.
-# Created by Wazuh, Inc. <info@wazuh.com>.
+# Copyright (C) 2015, Cyb3rhq Inc.
+# Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 # This program is a free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 import json
@@ -159,7 +159,7 @@ class MacosExecutor():
 # ------------------------------------------------------
 
 
-class WazuhAPI:
+class Cyb3rhqAPI:
     def __init__(self, inventory_path, component=None):
         self.inventory_path = inventory_path
         self.api_url = None
@@ -172,15 +172,15 @@ class WazuhAPI:
 
     def _extract_password(self, file_path, keyword):
         if not 'true' in ConnectionManager.execute_commands(self.inventory_path, f'test -f {file_path} && echo "true" || echo "false"').get('output'):
-            ConnectionManager.execute_commands(self.inventory_path, 'tar -xvf wazuh-install-files.tar')
+            ConnectionManager.execute_commands(self.inventory_path, 'tar -xvf cyb3rhq-install-files.tar')
         return ConnectionManager.execute_commands(self.inventory_path, f"grep {keyword} {file_path} | head -n 1 | awk '{{print $NF}}'").get('output').replace("'", "").replace("\n", "")
 
     def _authenticate(self):
         with open(self.inventory_path, 'r') as yaml_file:
             inventory_data = yaml.safe_load(yaml_file)
 
-        user = 'wazuh'
-        file_path = ConnectionManager.execute_commands(self.inventory_path, 'pwd').get('output').replace("\n", "") + '/wazuh-install-files/wazuh-passwords.txt'
+        user = 'cyb3rhq'
+        file_path = ConnectionManager.execute_commands(self.inventory_path, 'pwd').get('output').replace("\n", "") + '/cyb3rhq-install-files/cyb3rhq-passwords.txt'
         password = self._extract_password(file_path, 'api_password')
 
         login_endpoint = 'security/user/authenticate'

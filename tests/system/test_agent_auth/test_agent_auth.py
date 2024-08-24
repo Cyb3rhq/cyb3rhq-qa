@@ -1,10 +1,10 @@
 '''
-copyright: Copyright (C) 2015-2021, Wazuh Inc.
-           Created by Wazuh, Inc. <info@wazuh.com>.
+copyright: Copyright (C) 2015-2021, Cyb3rhq Inc.
+           Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
            This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 type: system
-brief: The agent-auth program is the client application used along with 'wazuh-authd' to automatically add agents to a
-       Wazuh manager. These tests will check if the 'wazuh-authd' daemon processes registration messages correctly.
+brief: The agent-auth program is the client application used along with 'cyb3rhq-authd' to automatically add agents to a
+       Cyb3rhq manager. These tests will check if the 'cyb3rhq-authd' daemon processes registration messages correctly.
 tier: 0
 modules:
     - enrollment
@@ -12,13 +12,13 @@ components:
     - manager
     - agent
 daemons:
-    - wazuh-authd
+    - cyb3rhq-authd
 os_platform:
     - linux
 os_version:
     - Debian Buster
 references:
-    - https://documentation.wazuh.com/current/user-manual/reference/tools/agent-auth.html
+    - https://documentation.cyb3rhq.com/current/user-manual/reference/tools/agent-auth.html
 tags:
     - authd
 '''
@@ -28,18 +28,18 @@ from time import sleep
 
 import pytest
 
-from wazuh_testing.tools import WAZUH_PATH, WAZUH_LOGS_PATH
-from wazuh_testing.tools.file import read_yaml
-from wazuh_testing.tools.system_monitoring import HostMonitor
-from wazuh_testing.tools.system import HostManager
-from wazuh_testing.tools.utils import format_ipv6_long
+from cyb3rhq_testing.tools import CYB3RHQ_PATH, CYB3RHQ_LOGS_PATH
+from cyb3rhq_testing.tools.file import read_yaml
+from cyb3rhq_testing.tools.system_monitoring import HostMonitor
+from cyb3rhq_testing.tools.system import HostManager
+from cyb3rhq_testing.tools.utils import format_ipv6_long
 
 
 pytestmark = [pytest.mark.basic_environment_env]
 TIMEOUT_AFTER_RESTART = 5
 
 # Hosts
-testinfra_hosts = ["wazuh-manager", "wazuh-agent1"]
+testinfra_hosts = ["cyb3rhq-manager", "cyb3rhq-agent1"]
 
 inventory_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                               'provisioning', 'basic_environment', 'inventory.yml')
@@ -60,12 +60,12 @@ network = {}
 @pytest.fixture(scope='function')
 def clean_environment():
     yield
-    host_manager.control_service(host='wazuh-agent1', service='wazuh', state="stopped")
-    agent_id = host_manager.run_command('wazuh-manager', f'cut -c 1-3 {WAZUH_PATH}/etc/client.keys')
-    host_manager.run_command('wazuh-manager', f"{WAZUH_PATH}/bin/manage_agents -r {agent_id}")
-    host_manager.clear_file(host='wazuh-manager', file_path=os.path.join(WAZUH_PATH, 'etc', 'client.keys'))
-    host_manager.clear_file(host='wazuh-agent1', file_path=os.path.join(WAZUH_PATH, 'etc', 'client.keys'))
-    host_manager.clear_file(host='wazuh-agent1', file_path=os.path.join(WAZUH_LOGS_PATH, 'ossec.log'))
+    host_manager.control_service(host='cyb3rhq-agent1', service='cyb3rhq', state="stopped")
+    agent_id = host_manager.run_command('cyb3rhq-manager', f'cut -c 1-3 {CYB3RHQ_PATH}/etc/client.keys')
+    host_manager.run_command('cyb3rhq-manager', f"{CYB3RHQ_PATH}/bin/manage_agents -r {agent_id}")
+    host_manager.clear_file(host='cyb3rhq-manager', file_path=os.path.join(CYB3RHQ_PATH, 'etc', 'client.keys'))
+    host_manager.clear_file(host='cyb3rhq-agent1', file_path=os.path.join(CYB3RHQ_PATH, 'etc', 'client.keys'))
+    host_manager.clear_file(host='cyb3rhq-agent1', file_path=os.path.join(CYB3RHQ_LOGS_PATH, 'ossec.log'))
 
 
 # IPV6 fixtures
@@ -73,8 +73,8 @@ def clean_environment():
 def get_ip_directions():
     global network
 
-    manager_network = host_manager.get_host_ip('wazuh-manager', 'eth0')
-    agent_network = host_manager.get_host_ip('wazuh-agent1', 'eth0')
+    manager_network = host_manager.get_host_ip('cyb3rhq-manager', 'eth0')
+    agent_network = host_manager.get_host_ip('cyb3rhq-agent1', 'eth0')
 
     network['manager_network'] = manager_network
     network['agent_network'] = agent_network
@@ -86,35 +86,35 @@ def configure_network(test_case):
     for configuration in test_case['test_case']:
         # Manager network configuration
         if 'ipv6' in configuration['manager_network']:
-            host_manager.run_command('wazuh-manager', 'ip -4 addr flush dev eth0')
+            host_manager.run_command('cyb3rhq-manager', 'ip -4 addr flush dev eth0')
         elif 'ipv4' in configuration['manager_network']:
-            host_manager.run_command('wazuh-manager', 'ip -6 addr flush dev eth0')
+            host_manager.run_command('cyb3rhq-manager', 'ip -6 addr flush dev eth0')
 
         # Agent network configuration
         if 'ipv6' in configuration['agent_network']:
-            host_manager.run_command('wazuh-agent1', 'ip -4 addr flush dev eth0')
+            host_manager.run_command('cyb3rhq-agent1', 'ip -4 addr flush dev eth0')
 
         elif 'ipv4' in configuration['agent_network']:
-            host_manager.run_command('wazuh-agent1', 'ip -6 addr flush dev eth0')
+            host_manager.run_command('cyb3rhq-agent1', 'ip -6 addr flush dev eth0')
 
     yield
 
     for configuration in test_case['test_case']:
         # Restore manager network configuration
         if 'ipv6' in configuration['manager_network']:
-            host_manager.run_command('wazuh-manager', f"ip addr add {network['manager_network'][0]} dev eth0")
-            host_manager.run_command('wazuh-manager', 'ip route add 172.24.27.0/24 via 0.0.0.0 dev eth0')
+            host_manager.run_command('cyb3rhq-manager', f"ip addr add {network['manager_network'][0]} dev eth0")
+            host_manager.run_command('cyb3rhq-manager', 'ip route add 172.24.27.0/24 via 0.0.0.0 dev eth0')
         elif 'ipv4' in configuration['manager_network']:
-            host_manager.run_command('wazuh-manager', f"ip addr add {network['manager_network'][1]} dev eth0")
-            host_manager.run_command('wazuh-manager', f"ip addr add {network['manager_network'][2]} dev eth0")
+            host_manager.run_command('cyb3rhq-manager', f"ip addr add {network['manager_network'][1]} dev eth0")
+            host_manager.run_command('cyb3rhq-manager', f"ip addr add {network['manager_network'][2]} dev eth0")
 
         # Restore agent network configuration
         if 'ipv6' in configuration['agent_network']:
-            host_manager.run_command('wazuh-agent1', f"ip addr add {network['agent_network'][0]} dev eth0")
-            host_manager.run_command('wazuh-agent1', 'ip route add 172.24.27.0/24 via 0.0.0.0 dev eth0')
+            host_manager.run_command('cyb3rhq-agent1', f"ip addr add {network['agent_network'][0]} dev eth0")
+            host_manager.run_command('cyb3rhq-agent1', 'ip route add 172.24.27.0/24 via 0.0.0.0 dev eth0')
         elif 'ipv4' in configuration['agent_network']:
-            host_manager.run_command('wazuh-agent1', f"ip addr add {network['agent_network'][1]} dev eth0")
-            host_manager.run_command('wazuh-agent1', f"ip addr add {network['agent_network'][2]} dev eth0")
+            host_manager.run_command('cyb3rhq-agent1', f"ip addr add {network['agent_network'][1]} dev eth0")
+            host_manager.run_command('cyb3rhq-agent1', f"ip addr add {network['agent_network'][2]} dev eth0")
 
 
 @pytest.fixture(scope='function')
@@ -145,11 +145,11 @@ def modify_ip_address_conf(test_case):
             expected_message_manager_ip = format_ipv6_long(network['manager_network'][1])
 
         elif 'dns' in configuration['ip_type']:
-            expected_message_manager_ip = 'wazuh-manager'
+            expected_message_manager_ip = 'cyb3rhq-manager'
 
         new_configuration = old_agent_configuration.replace('<address>MANAGER_IP</address>',
                                                             f"<address>{expected_message_manager_ip}</address>")
-        host_manager.modify_file_content(host='wazuh-agent1', path='/var/ossec/etc/ossec.conf',
+        host_manager.modify_file_content(host='cyb3rhq-agent1', path='/var/ossec/etc/ossec.conf',
                                          content=new_configuration)
 
         formatted_regex_ip = expected_message_manager_ip.replace(r'-', r'\\-')
@@ -199,7 +199,7 @@ def test_agent_auth(test_case, get_ip_directions, configure_network, modify_ip_a
     '''
     description: Check if 'agent-auth' messages are sent in the correct format
                  and the agent is registered and connected.
-    wazuh_min_version: 4.4.0
+    cyb3rhq_min_version: 4.4.0
     parameters:
         - test_case:
             type: list
@@ -235,19 +235,19 @@ def test_agent_auth(test_case, get_ip_directions, configure_network, modify_ip_a
         - authd
     '''
     # Clean ossec.log and cluster.log
-    host_manager.clear_file(host='wazuh-manager', file_path=os.path.join(WAZUH_LOGS_PATH, 'ossec.log'))
-    host_manager.control_service(host='wazuh-manager', service='wazuh', state="restarted")
+    host_manager.clear_file(host='cyb3rhq-manager', file_path=os.path.join(CYB3RHQ_LOGS_PATH, 'ossec.log'))
+    host_manager.control_service(host='cyb3rhq-manager', service='cyb3rhq', state="restarted")
 
     sleep(TIMEOUT_AFTER_RESTART)
 
     # Start the agent enrollment process using agent-auth
     for configuration in test_case['test_case']:
         if 'ipv4' in configuration['ip_type']:
-            host_manager.run_command('wazuh-agent1', f"{WAZUH_PATH}/bin/agent-auth -m {network['manager_network'][0]}")
+            host_manager.run_command('cyb3rhq-agent1', f"{CYB3RHQ_PATH}/bin/agent-auth -m {network['manager_network'][0]}")
         elif 'ipv6' in configuration['ip_type']:
-            host_manager.run_command('wazuh-agent1', f"{WAZUH_PATH}/bin/agent-auth -m {network['manager_network'][1]}")
+            host_manager.run_command('cyb3rhq-agent1', f"{CYB3RHQ_PATH}/bin/agent-auth -m {network['manager_network'][1]}")
         else:
-            host_manager.run_command('wazuh-agent1', f"{WAZUH_PATH}/bin/agent-auth -m wazuh-manager")
+            host_manager.run_command('cyb3rhq-agent1', f"{CYB3RHQ_PATH}/bin/agent-auth -m cyb3rhq-manager")
 
     # Run the callback checks for the ossec.log
     HostMonitor(inventory_path=inventory_path,
@@ -255,17 +255,17 @@ def test_agent_auth(test_case, get_ip_directions, configure_network, modify_ip_a
                 tmp_path=tmp_path).run(update_position=True)
 
     # Start the agent and the manager to connect them
-    host_manager.control_service(host='wazuh-agent1', service='wazuh', state="started")
+    host_manager.control_service(host='cyb3rhq-agent1', service='cyb3rhq', state="started")
 
     # Make sure the agent's and manager's client.keys have the same keys
-    agent_client_keys = host_manager.get_file_content('wazuh-agent1', os.path.join(WAZUH_PATH, 'etc', 'client.keys'))
-    manager_client_keys = host_manager.get_file_content('wazuh-agent1', os.path.join(WAZUH_PATH, 'etc', 'client.keys'))
+    agent_client_keys = host_manager.get_file_content('cyb3rhq-agent1', os.path.join(CYB3RHQ_PATH, 'etc', 'client.keys'))
+    manager_client_keys = host_manager.get_file_content('cyb3rhq-agent1', os.path.join(CYB3RHQ_PATH, 'etc', 'client.keys'))
     assert agent_client_keys == manager_client_keys
 
     # Check if the agent is active
-    agent_id = host_manager.run_command('wazuh-manager', f'cut -c 1-3 {WAZUH_PATH}/etc/client.keys')
+    agent_id = host_manager.run_command('cyb3rhq-manager', f'cut -c 1-3 {CYB3RHQ_PATH}/etc/client.keys')
 
     sleep(wait_agent_start)
 
-    agent_info = host_manager.run_command('wazuh-manager', f'{WAZUH_PATH}/bin/agent_control -i {agent_id}')
+    agent_info = host_manager.run_command('cyb3rhq-manager', f'{CYB3RHQ_PATH}/bin/agent_control -i {agent_id}')
     assert 'Active' in agent_info

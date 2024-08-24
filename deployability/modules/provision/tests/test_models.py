@@ -1,5 +1,5 @@
-# Copyright (C) 2015, Wazuh Inc.
-# Created by Wazuh, Inc. <info@wazuh.com>.
+# Copyright (C) 2015, Cyb3rhq Inc.
+# Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 # This program is a free software; you can redistribute it and/or modify it under the terms of GPLv2
 """modules.provision.models Unit tests."""
 from pathlib import Path
@@ -21,7 +21,7 @@ def test_input_payload_constructor_components(install:bool):
     components = [
         "{'component':'component_1', 'type':'component_type_1'}",
         "{'component':'component_2'}",
-        "{'component':'linux wazuh-agent'}"]
+        "{'component':'linux cyb3rhq-agent'}"]
     payload = InputPayload(inventory=path,
                            install=components if install else [],
                            uninstall=[] if install else components)
@@ -29,7 +29,7 @@ def test_input_payload_constructor_components(install:bool):
     comp_list = payload.install if install else payload.uninstall
     assert comp_list[0] == ComponentInfo(component='component_1', type='component_type_1')
     assert comp_list[1] == ComponentInfo(component='component_2', type='package')
-    assert comp_list[2] == ComponentInfo(component='linux wazuh-agent', type='package')
+    assert comp_list[2] == ComponentInfo(component='linux cyb3rhq-agent', type='package')
 
 
 @pytest.mark.parametrize('dependencies',[

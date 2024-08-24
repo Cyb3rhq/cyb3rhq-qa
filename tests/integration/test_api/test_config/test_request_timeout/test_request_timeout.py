@@ -1,7 +1,7 @@
 '''
-copyright: Copyright (C) 2015-2022, Wazuh Inc.
+copyright: Copyright (C) 2015-2022, Cyb3rhq Inc.
 
-           Created by Wazuh, Inc. <info@wazuh.com>.
+           Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 
            This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 
@@ -9,8 +9,8 @@ type: integration
 
 brief: These tests will check if the 'request_timeout' setting of the API is working properly.
        This setting allows specifying the time limit for the API to process a request.
-       The Wazuh API is an open source 'RESTful' API that allows for interaction with
-       the Wazuh manager from a web browser, command line tool like 'cURL' or any script
+       The Cyb3rhq API is an open source 'RESTful' API that allows for interaction with
+       the Cyb3rhq manager from a web browser, command line tool like 'cURL' or any script
        or program that can make web requests.
 
 components:
@@ -22,10 +22,10 @@ targets:
     - manager
 
 daemons:
-    - wazuh-apid
-    - wazuh-analysisd
-    - wazuh-syscheckd
-    - wazuh-db
+    - cyb3rhq-apid
+    - cyb3rhq-analysisd
+    - cyb3rhq-syscheckd
+    - cyb3rhq-db
 
 os_platform:
     - linux
@@ -42,8 +42,8 @@ os_version:
     - Ubuntu Bionic
 
 references:
-    - https://documentation.wazuh.com/current/user-manual/api/getting-started.html
-    - https://documentation.wazuh.com/current/user-manual/api/configuration.html
+    - https://documentation.cyb3rhq.com/current/user-manual/api/getting-started.html
+    - https://documentation.cyb3rhq.com/current/user-manual/api/configuration.html
 
 tags:
     - api
@@ -54,8 +54,8 @@ from json import loads
 import pytest
 import requests
 
-import wazuh_testing.api as api
-from wazuh_testing.tools.configuration import check_apply_test, get_api_conf
+import cyb3rhq_testing.api as api
+from cyb3rhq_testing.tools.configuration import check_apply_test, get_api_conf
 
 # Marks
 
@@ -88,7 +88,7 @@ def test_request_timeout(tags_to_apply, get_configuration, configure_api_environ
                  For this purpose, a value of '0' seconds is set for the 'request_timeout'
                  setting, and a request is made to the API, expecting an error in the response.
 
-    wazuh_min_version: 4.3.0
+    cyb3rhq_min_version: 4.3.0
 
     tier: 0
 

@@ -32,19 +32,19 @@
           - name: "{{ docker_network }}"
         privileged: yes
 
-- name: Wazuh Manager
-  hosts: wazuh-manager
+- name: Cyb3rhq Manager
+  hosts: cyb3rhq-manager
   vars:
-    manager_hostname: "wazuh-manager"
+    manager_hostname: "cyb3rhq-manager"
   vars_files:
     - ./vars/configurations.yml
   roles:
     - name: "roles/manager-role"
 
-- name: Wazuh Agent1
-  hosts: wazuh-agent1
+- name: Cyb3rhq Agent1
+  hosts: cyb3rhq-agent1
   vars:
-    manager_hostname: wazuh-manager
+    manager_hostname: cyb3rhq-manager
     agent_hostname: "{{ agent1_hostname }}"
   vars_files:
     - ./vars/configurations.yml

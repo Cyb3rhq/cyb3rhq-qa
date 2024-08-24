@@ -1,5 +1,5 @@
 version: 0.1
-description: This workflow is used to test the Wazuh manager deployment for DDT
+description: This workflow is used to test the Cyb3rhq manager deployment for DDT
 variables:
   central_components-os:
     - linux-ubuntu-20.04-amd64
@@ -35,7 +35,7 @@ tasks:
           - track-output: "{working-dir}/central_components-{central_components}/track.yaml"
           - label-termination-date: "1d"
           - label-team: "qa"
-          - label-issue: "https://github.com/wazuh/wazuh/issues/<issue_number>"
+          - label-issue: "https://github.com/cyb3rhq/cyb3rhq/issues/<issue_number>"
     on-error: "abort-all"
     foreach:
       - variable: central_components-os
@@ -59,11 +59,11 @@ tasks:
         args:
           - modules/testing/main.py
           - targets:
-            - wazuh-1: "{working-dir}/central_components-{central_components}/inventory.yaml"
+            - cyb3rhq-1: "{working-dir}/central_components-{central_components}/inventory.yaml"
           - tests: "install,restart,stop,uninstall"
           - component: "central_components"
-          - wazuh-version: "<major.minor.patch>"
-          - wazuh-revision: "<revision>"
+          - cyb3rhq-version: "<major.minor.patch>"
+          - cyb3rhq-revision: "<revision>"
           - live: False
     foreach:
       - variable: central_components-os

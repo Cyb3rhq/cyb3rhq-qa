@@ -1,7 +1,7 @@
 '''
-copyright: Copyright (C) 2015-2022, Wazuh Inc.
+copyright: Copyright (C) 2015-2022, Cyb3rhq Inc.
 
-           Created by Wazuh, Inc. <info@wazuh.com>.
+           Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 
            This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 
@@ -19,7 +19,7 @@ targets:
     - manager
 
 daemons:
-    - wazuh-authd
+    - cyb3rhq-authd
 
 os_platform:
     - linux
@@ -41,11 +41,11 @@ tags:
 '''
 import os
 import pytest
-from wazuh_testing.tools import LOG_FILE_PATH
-from wazuh_testing.tools.configuration import load_wazuh_configurations
-from wazuh_testing.tools.file import read_yaml, truncate_file
-from wazuh_testing.authd import DAEMON_NAME, validate_authd_logs
-from wazuh_testing.tools.services import control_service
+from cyb3rhq_testing.tools import LOG_FILE_PATH
+from cyb3rhq_testing.tools.configuration import load_cyb3rhq_configurations
+from cyb3rhq_testing.tools.file import read_yaml, truncate_file
+from cyb3rhq_testing.authd import DAEMON_NAME, validate_authd_logs
+from cyb3rhq_testing.tools.services import control_service
 
 
 # Data paths
@@ -54,7 +54,7 @@ configurations_path = os.path.join(data_path, 'template_configuration.yaml')
 tests_path = os.path.join(data_path, 'test_cases', 'invalid_config')
 
 # Configurations
-configurations = load_wazuh_configurations(configurations_path, __name__)
+configurations = load_cyb3rhq_configurations(configurations_path, __name__)
 local_internal_options = {'authd.debug': '2'}
 
 # Tests
@@ -95,7 +95,7 @@ def test_authd_force_options_invalid_config(get_current_test_case, configure_loc
         matches the adequate output log. None force registration
         or response message is made.
 
-    wazuh_min_version:
+    cyb3rhq_min_version:
         4.3.0
 
     tier: 0

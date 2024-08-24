@@ -1,14 +1,14 @@
 '''
-copyright: Copyright (C) 2015-2022, Wazuh Inc.
+copyright: Copyright (C) 2015-2022, Cyb3rhq Inc.
 
-           Created by Wazuh, Inc. <info@wazuh.com>.
+           Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 
            This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 type: integration
 
-brief: The 'wazuh-logcollector' daemon monitors configured files and commands for new log messages. When Wazuh is
-       configured incorrectly then a configuration error is displayed in the Wazuh's log, and Wazuh does not start (if
+brief: The 'cyb3rhq-logcollector' daemon monitors configured files and commands for new log messages. When Cyb3rhq is
+       configured incorrectly then a configuration error is displayed in the Cyb3rhq's log, and Cyb3rhq does not start (if
        it has been restarted previously).
 
 tier: 0
@@ -20,7 +20,7 @@ components:
     - agent
 
 daemons:
-    - wazuh-logcollector
+    - cyb3rhq-logcollector
 
 os_platform:
     - linux
@@ -70,9 +70,9 @@ os_version:
     - Windows Server 2019
 
 references:
-    - https://documentation.wazuh.com/current/user-manual/capabilities/log-data-collection/index.html
-    - https://documentation.wazuh.com/current/user-manual/reference/ossec-conf/localfile.html#location
-    - https://documentation.wazuh.com/current/user-manual/reference/ossec-conf/localfile.html#log-format
+    - https://documentation.cyb3rhq.com/current/user-manual/capabilities/log-data-collection/index.html
+    - https://documentation.cyb3rhq.com/current/user-manual/reference/ossec-conf/localfile.html#location
+    - https://documentation.cyb3rhq.com/current/user-manual/reference/ossec-conf/localfile.html#log-format
 
 tags:
     - logcollector
@@ -82,13 +82,13 @@ import tempfile
 
 import pytest
 
-from wazuh_testing.tools import LOGCOLLECTOR_DAEMON, LOG_FILE_PATH
-from wazuh_testing.tools.services import check_daemon_status
-from wazuh_testing.tools.monitoring import FileMonitor
-from wazuh_testing.tools.configuration import load_wazuh_configurations
-from wazuh_testing.tools.utils import lower_case_key_dictionary_array
-from wazuh_testing.fim import callback_configuration_error
-from wazuh_testing.logcollector import LOG_COLLECTOR_GLOBAL_TIMEOUT, callback_missing_element_error
+from cyb3rhq_testing.tools import LOGCOLLECTOR_DAEMON, LOG_FILE_PATH
+from cyb3rhq_testing.tools.services import check_daemon_status
+from cyb3rhq_testing.tools.monitoring import FileMonitor
+from cyb3rhq_testing.tools.configuration import load_cyb3rhq_configurations
+from cyb3rhq_testing.tools.utils import lower_case_key_dictionary_array
+from cyb3rhq_testing.fim import callback_configuration_error
+from cyb3rhq_testing.logcollector import LOG_COLLECTOR_GLOBAL_TIMEOUT, callback_missing_element_error
 
 
 # Marks
@@ -105,13 +105,13 @@ daemons_handler_configuration = {
 temp_dir = tempfile.gettempdir()
 file_structure = [
     {
-        'folder_path': os.path.join(temp_dir, 'wazuh-testing'),
+        'folder_path': os.path.join(temp_dir, 'cyb3rhq-testing'),
         'filename': files
     }
 ]
 
 parameters = [
-    {'LOCATION': os.path.join(temp_dir, 'wazuh-testing', files[0]), 'LOG_FORMAT': None},
+    {'LOCATION': os.path.join(temp_dir, 'cyb3rhq-testing', files[0]), 'LOG_FORMAT': None},
     {'LOCATION': None, 'LOG_FORMAT': 'syslog'},
 ]
 metadata = lower_case_key_dictionary_array(parameters)
@@ -119,7 +119,7 @@ metadata = lower_case_key_dictionary_array(parameters)
 tcase_ids = [f"location_{'None' if param['LOCATION'] is None else files[0]}_"
              f"logformat_{'None' if param['LOG_FORMAT'] is None else param['LOG_FORMAT']}" for param in parameters]
 configurations_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'invalid_agent_conf.yaml')
-configurations = load_wazuh_configurations(configurations_path, __name__, params=parameters, metadata=metadata)
+configurations = load_cyb3rhq_configurations(configurations_path, __name__, params=parameters, metadata=metadata)
 
 
 @pytest.fixture(scope="module")
@@ -140,9 +140,9 @@ def test_invalid_agent_localfile_config(get_files_list, create_file_structure_mo
                                         daemons_handler_module):
     '''
     description: Check if the expected message is present in the ossec.log when an invalid <localfile> configuration is
-                 set and if the Wazuh continues running.
+                 set and if the Cyb3rhq continues running.
 
-    wazuh_min_version: 4.3.0
+    cyb3rhq_min_version: 4.3.0
 
     parameters:
         - get_files_list:
@@ -159,7 +159,7 @@ def test_invalid_agent_localfile_config(get_files_list, create_file_structure_mo
             brief: Set a new configuration in 'agent.conf' file.
         - daemons_handler_module:
             type: fixture
-            brief: Handler of Wazuh daemons.
+            brief: Handler of Cyb3rhq daemons.
 
     assertions:
         - Verify that the expected error message is in the log
@@ -173,12 +173,12 @@ def test_invalid_agent_localfile_config(get_files_list, create_file_structure_mo
     tags:
         - logcollector
     '''
-    wazuh_log_monitor = FileMonitor(LOG_FILE_PATH)
+    cyb3rhq_log_monitor = FileMonitor(LOG_FILE_PATH)
 
     check_daemon_status(target_daemon=LOGCOLLECTOR_DAEMON, running_condition=True)
 
-    wazuh_log_monitor.start(timeout=LOG_COLLECTOR_GLOBAL_TIMEOUT, callback=callback_missing_element_error,
+    cyb3rhq_log_monitor.start(timeout=LOG_COLLECTOR_GLOBAL_TIMEOUT, callback=callback_missing_element_error,
                             error_message='Did not receive the expected "ERROR: ...: Missing ... element.')
 
-    wazuh_log_monitor.start(timeout=LOG_COLLECTOR_GLOBAL_TIMEOUT, callback=callback_configuration_error,
+    cyb3rhq_log_monitor.start(timeout=LOG_COLLECTOR_GLOBAL_TIMEOUT, callback=callback_configuration_error,
                             error_message='Did not receive the expected "ERROR: ...: Configuration error at" event')

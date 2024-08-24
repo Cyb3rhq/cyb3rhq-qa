@@ -1,7 +1,7 @@
 '''
-copyright: Copyright (C) 2015-2022, Wazuh Inc.
+copyright: Copyright (C) 2015-2022, Cyb3rhq Inc.
 
-           Created by Wazuh, Inc. <info@wazuh.com>.
+           Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 
            This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 
@@ -10,7 +10,7 @@ type: integration
 brief: File Integrity Monitoring (FIM) system watches selected files and triggering alerts when these
        files are modified. In particular, these tests will check if FIM events are still generated when
        a monitored directory is deleted and created again.
-       The FIM capability is managed by the 'wazuh-syscheckd' daemon, which checks configured files
+       The FIM capability is managed by the 'cyb3rhq-syscheckd' daemon, which checks configured files
        for changes to the checksums, permissions, and ownership.
 
 components:
@@ -23,7 +23,7 @@ targets:
     - manager
 
 daemons:
-    - wazuh-syscheckd
+    - cyb3rhq-syscheckd
 
 os_platform:
     - linux
@@ -44,8 +44,8 @@ os_version:
     - Windows Server 2016
 
 references:
-    - https://documentation.wazuh.com/current/user-manual/capabilities/file-integrity/index.html
-    - https://documentation.wazuh.com/current/user-manual/reference/ossec-conf/syscheck.html
+    - https://documentation.cyb3rhq.com/current/user-manual/capabilities/file-integrity/index.html
+    - https://documentation.cyb3rhq.com/current/user-manual/reference/ossec-conf/syscheck.html
 
 pytest_args:
     - fim_mode:
@@ -65,11 +65,11 @@ import sys
 import time
 
 import pytest
-from wazuh_testing import T_10
-from wazuh_testing.modules.fim.utils import generate_params, regular_file_cud
-from wazuh_testing.tools import PREFIX, LOG_FILE_PATH
-from wazuh_testing.tools.configuration import load_wazuh_configurations, check_apply_test
-from wazuh_testing.tools.monitoring import FileMonitor
+from cyb3rhq_testing import T_10
+from cyb3rhq_testing.modules.fim.utils import generate_params, regular_file_cud
+from cyb3rhq_testing.tools import PREFIX, LOG_FILE_PATH
+from cyb3rhq_testing.tools.configuration import load_cyb3rhq_configurations, check_apply_test
+from cyb3rhq_testing.tools.monitoring import FileMonitor
 
 # Marks
 
@@ -81,16 +81,16 @@ directory_str = os.path.join(PREFIX, 'testdir1')
 test_directories = [directory_str]
 test_data_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data')
 configurations_path = os.path.join(test_data_path,
-                                   'wazuh_conf.yaml' if sys.platform != 'win32' else 'wazuh_conf_win32.yaml')
-wazuh_log_monitor = FileMonitor(LOG_FILE_PATH)
-mark_skip_agentWindows = pytest.mark.skipif(sys.platform == 'win32', reason="It will be blocked by wazuh/wazuh-qa#2174")
+                                   'cyb3rhq_conf.yaml' if sys.platform != 'win32' else 'cyb3rhq_conf_win32.yaml')
+cyb3rhq_log_monitor = FileMonitor(LOG_FILE_PATH)
+mark_skip_agentWindows = pytest.mark.skipif(sys.platform == 'win32', reason="It will be blocked by cyb3rhq/cyb3rhq-qa#2174")
 
 # Configurations
 windows_audit_interval = 1
 conf_params = {'TEST_DIRECTORIES': directory_str, 'MODULE_NAME': __name__,
                'WINDOWS_AUDIT_INTERVAL': str(windows_audit_interval)}
 p, m = generate_params(extra_params=conf_params, modes=['realtime', 'whodata'])
-configurations = load_wazuh_configurations(configurations_path, __name__, params=p, metadata=m)
+configurations = load_cyb3rhq_configurations(configurations_path, __name__, params=p, metadata=m)
 
 
 # Fixtures
@@ -116,7 +116,7 @@ def test_create_after_delete(tags_to_apply, get_configuration, configure_environ
                  directory to be monitored, checks that FIM events are generated, and then deletes it.
                  Finally, it creates the directory again and verifies that the events are still generated correctly.
 
-    wazuh_min_version: 4.2.0
+    cyb3rhq_min_version: 4.2.0
 
     tier: 0
 
@@ -141,12 +141,12 @@ def test_create_after_delete(tags_to_apply, get_configuration, configure_environ
         - Verify that FIM events are still generated when a monitored directory is deleted and created again.
 
     input_description: A test case (ossec_conf) is contained in external YAML file
-                       (wazuh_conf.yaml or wazuh_conf_win32.yaml) which includes configuration
-                       settings for the 'wazuh-syscheckd' daemon and, it is combined with
+                       (cyb3rhq_conf.yaml or cyb3rhq_conf_win32.yaml) which includes configuration
+                       settings for the 'cyb3rhq-syscheckd' daemon and, it is combined with
                        the testing directories to be monitored defined in this module.
 
     expected_output:
-        - r'.*Sending FIM event: (.+)$' (Initial scan when restarting Wazuh)
+        - r'.*Sending FIM event: (.+)$' (Initial scan when restarting Cyb3rhq)
         - Multiple FIM events logs of the monitored directories.
 
     tags:
@@ -156,7 +156,7 @@ def test_create_after_delete(tags_to_apply, get_configuration, configure_environ
     check_apply_test(tags_to_apply, get_configuration['tags'])
 
     # Create the monitored directory with files and check that events are not raised
-    regular_file_cud(directory_str, wazuh_log_monitor, file_list=['file1', 'file2', 'file3'],
+    regular_file_cud(directory_str, cyb3rhq_log_monitor, file_list=['file1', 'file2', 'file3'],
                      min_timeout=T_10, triggers_event=True)
 
     # Delete the directory
@@ -169,5 +169,5 @@ def test_create_after_delete(tags_to_apply, get_configuration, configure_environ
     time.sleep(5)
 
     # Assert that events of new CUD actions are raised after next scheduled scan
-    regular_file_cud(directory_str, wazuh_log_monitor, file_list=['file4', 'file5', 'file6'],
+    regular_file_cud(directory_str, cyb3rhq_log_monitor, file_list=['file4', 'file5', 'file6'],
                      min_timeout=T_10, triggers_event=True)

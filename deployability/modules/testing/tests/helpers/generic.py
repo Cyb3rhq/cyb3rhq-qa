@@ -1,5 +1,5 @@
-# Copyright (C) 2015, Wazuh Inc.
-# Created by Wazuh, Inc. <info@wazuh.com>.
+# Copyright (C) 2015, Cyb3rhq Inc.
+# Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 # This program is a free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 import boto3
@@ -12,7 +12,7 @@ import time
 import yaml
 
 from pathlib import Path
-from .constants import WAZUH_CONTROL, CLIENT_KEYS, WINDOWS_CLIENT_KEYS, WINDOWS_VERSION, WINDOWS_REVISION, MACOS_WAZUH_CONTROL, MACOS_CLIENT_KEYS
+from .constants import CYB3RHQ_CONTROL, CLIENT_KEYS, WINDOWS_CLIENT_KEYS, WINDOWS_VERSION, WINDOWS_REVISION, MACOS_CYB3RHQ_CONTROL, MACOS_CLIENT_KEYS
 from .executor import ConnectionManager
 from modules.testing.utils import logger
 from .utils import Utils
@@ -372,23 +372,23 @@ class HostConfiguration:
             return [Utils.extract_ansible_host(path) for path in paths]
 
     @staticmethod
-    def certs_create(wazuh_version, master_path, dashboard_path, indexer_paths=[], worker_paths=[], live="") -> None:
+    def certs_create(cyb3rhq_version, master_path, dashboard_path, indexer_paths=[], worker_paths=[], live="") -> None:
         """
-        Creates wazuh certificates
+        Creates cyb3rhq certificates
 
         Args:
-            wazuh_version (str): wazuh version
-            master_path (str): wazuh master inventory_path
-            dashboard_path (str): wazuh dashboard inventory_path
-            indexer_paths (list): wazuh indexers list
-            workers_paths (list): wazuh worker paths list
+            cyb3rhq_version (str): cyb3rhq version
+            master_path (str): cyb3rhq master inventory_path
+            dashboard_path (str): cyb3rhq dashboard inventory_path
+            indexer_paths (list): cyb3rhq indexers list
+            workers_paths (list): cyb3rhq worker paths list
 
         """
         from .utils import Utils
 
         current_directory = HostInformation.get_current_dir(master_path)
 
-        wazuh_version = '.'.join(wazuh_version.split('.')[:2])
+        cyb3rhq_version = '.'.join(cyb3rhq_version.split('.')[:2])
 
         is_aws = 'amazonaws' in Utils.extract_ansible_host(master_path)
 
@@ -401,36 +401,36 @@ class HostConfiguration:
         os_name = HostInformation.get_os_name_from_inventory(master_path)
 
         if live == "False":
-            s3_url = 'packages-dev.wazuh.com'
+            s3_url = 'packages-dev.cyb3rhq.com'
         else:
-            s3_url = 'packages.wazuh.com'
+            s3_url = 'packages.cyb3rhq.com'
 
         if os_name == 'debian':
             commands = [
-                f'wget https://{s3_url}/{wazuh_version}/wazuh-install.sh',
-                f'wget https://{s3_url}/{wazuh_version}/config.yml',
+                f'wget https://{s3_url}/{cyb3rhq_version}/cyb3rhq-install.sh',
+                f'wget https://{s3_url}/{cyb3rhq_version}/config.yml',
                 f"sed -i '/^\s*#/d' {current_directory}/config.yml"
             ]
         else:
             commands = [
-                f'curl -sO https://{s3_url}/{wazuh_version}/wazuh-install.sh',
-                f'curl -sO https://{s3_url}/{wazuh_version}/config.yml',
+                f'curl -sO https://{s3_url}/{cyb3rhq_version}/cyb3rhq-install.sh',
+                f'curl -sO https://{s3_url}/{cyb3rhq_version}/config.yml',
                 f"sed -i '/^\s*#/d' {current_directory}/config.yml"
             ]
 
         # Add master tag if there are workers
         if len(worker_paths) != 0:
-            commands.append(f"""sed -i '/ip: "<wazuh-manager-ip>"/a\      node_type: master' {current_directory}/config.yml""")
+            commands.append(f"""sed -i '/ip: "<cyb3rhq-manager-ip>"/a\      node_type: master' {current_directory}/config.yml""")
 
         # Add manager and dashboard IP
         commands.extend([
-            f"sed -i '0,/<wazuh-manager-ip>/s//{master}/' {current_directory}/config.yml",
+            f"sed -i '0,/<cyb3rhq-manager-ip>/s//{master}/' {current_directory}/config.yml",
             f"sed -i '0,/<dashboard-node-ip>/s//{dashboard}/' {current_directory}/config.yml"
         ])
 
         # Adding workers
         for index, element in reversed(list(enumerate(workers))):
-            commands.append(f'sed -i \'/node_type: master/a\\    - name: wazuh-{index+2}\\n      ip: "<wazuh-manager-ip>"\\n      node_type: worker\' {current_directory}/config.yml')
+            commands.append(f'sed -i \'/node_type: master/a\\    - name: cyb3rhq-{index+2}\\n      ip: "<cyb3rhq-manager-ip>"\\n      node_type: worker\' {current_directory}/config.yml')
 
         # Add as much indexers as indexer_paths were presented
         for index, element in enumerate(indexers, start=1):
@@ -443,11 +443,11 @@ class HostConfiguration:
                 commands.append(f'''sed -i '/- name: node-{index+2}/,/^ *ip: "<indexer-node-ip>"/d' {current_directory}/config.yml''')
 
         for index, element in enumerate(workers):
-                commands.append(f"""sed -i '0,/<wazuh-manager-ip>/s//{element}/' {current_directory}/config.yml""")
+                commands.append(f"""sed -i '0,/<cyb3rhq-manager-ip>/s//{element}/' {current_directory}/config.yml""")
 
         ## Adding workers and indexer Ips
         certs_creation = [
-            'bash wazuh-install.sh --generate-config-files --ignore-check'
+            'bash cyb3rhq-install.sh --generate-config-files --ignore-check'
         ]
 
         commands.extend(certs_creation)
@@ -456,7 +456,7 @@ class HostConfiguration:
 
         current_from_directory = HostInformation.get_current_dir(master_path)
 
-        assert HostInformation.file_exists(master_path, f'{current_from_directory}/wazuh-install-files.tar'), logger.error('wazuh-install-files.tar not created, check config.yml information')
+        assert HostInformation.file_exists(master_path, f'{current_from_directory}/cyb3rhq-install-files.tar'), logger.error('cyb3rhq-install-files.tar not created, check config.yml information')
 
     @staticmethod
     def scp_to(from_inventory_path, to_inventory_path, file_name) -> None:
@@ -489,7 +489,7 @@ class HostConfiguration:
         to_port = to_inventory_data.get('ansible_port')
 
         # Allowing handling permissions
-        if file_name == 'wazuh-install-files.tar':
+        if file_name == 'cyb3rhq-install-files.tar':
             ConnectionManager.execute_commands(from_inventory_path, f'chmod +rw {file_name}')
             logger.info('File permissions modified to be handled')
 
@@ -499,14 +499,14 @@ class HostConfiguration:
             logger.info(f'File copied from {HostInformation.get_os_name_and_version_from_inventory(from_inventory_path)} ({from_host}) to {Path(__file__).parent}/{file_name}')
         else:
             logger.error(f'File is not present in {HostInformation.get_os_name_and_version_from_inventory(from_inventory_path)} ({from_host}) in {current_from_directory}/{file_name}')
-        if os.path.exists(f'{Path(__file__).parent}/wazuh-install-files.tar'):
+        if os.path.exists(f'{Path(__file__).parent}/cyb3rhq-install-files.tar'):
             subprocess.run(f'scp -i {to_key} -o StrictHostKeyChecking=no -P {to_port} {Path(__file__).parent}/{file_name} {to_user}@{to_host}:{current_to_directory}', shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
             logger.info(f'Sending file from {current_from_directory}/{file_name} to {HostInformation.get_os_name_and_version_from_inventory(to_inventory_path)} ({to_host})')
         else:
             logger.error(f'Failure sending the file from {current_from_directory}/{file_name} to {HostInformation.get_os_name_and_version_from_inventory(to_inventory_path)} ({to_host})')
 
         # Restoring permissions
-        if file_name == 'wazuh-install-files.tar':
+        if file_name == 'cyb3rhq-install-files.tar':
             ConnectionManager.execute_commands(from_inventory_path, f'chmod 600 {file_name}')
             ConnectionManager.execute_commands(to_inventory_path, f'chmod 600 {file_name}')
             logger.info('File permissions were restablished')
@@ -717,11 +717,11 @@ class GeneralComponentActions:
         if os_type == 'linux':
             return ConnectionManager.execute_commands(inventory_path, f'systemctl status {host_role}').get('output')
         elif os_type == 'windows':
-            result = ConnectionManager.execute_commands(inventory_path, "Get-Service -Name 'Wazuh' | Format-Table -HideTableHeaders Status")
+            result = ConnectionManager.execute_commands(inventory_path, "Get-Service -Name 'Cyb3rhq' | Format-Table -HideTableHeaders Status")
             if result.get('success'):
                 return result.get('output')
         elif os_type == 'macos':
-            return ConnectionManager.execute_commands(inventory_path, f'{MACOS_WAZUH_CONTROL} status | grep {host_role}').get('output')
+            return ConnectionManager.execute_commands(inventory_path, f'{MACOS_CYB3RHQ_CONTROL} status | grep {host_role}').get('output')
 
     @staticmethod
     def component_stop(inventory_path, host_role) -> None:
@@ -738,9 +738,9 @@ class GeneralComponentActions:
         if os_type == 'linux':
             ConnectionManager.execute_commands(inventory_path, f'systemctl stop {host_role}')
         elif os_type == 'windows':
-            ConnectionManager.execute_commands(inventory_path, f'NET STOP Wazuh')
+            ConnectionManager.execute_commands(inventory_path, f'NET STOP Cyb3rhq')
         elif os_type == 'macos':
-            ConnectionManager.execute_commands(inventory_path, f'{MACOS_WAZUH_CONTROL} stop | grep {host_role}')
+            ConnectionManager.execute_commands(inventory_path, f'{MACOS_CYB3RHQ_CONTROL} stop | grep {host_role}')
 
     @staticmethod
     def component_restart(inventory_path, host_role) -> None:
@@ -758,10 +758,10 @@ class GeneralComponentActions:
         if os_type == 'linux':
             ConnectionManager.execute_commands(inventory_path, f'systemctl restart {host_role}')
         elif os_type == 'windows':
-            ConnectionManager.execute_commands(inventory_path, 'NET STOP Wazuh')
-            ConnectionManager.execute_commands(inventory_path, 'NET START Wazuh')
+            ConnectionManager.execute_commands(inventory_path, 'NET STOP Cyb3rhq')
+            ConnectionManager.execute_commands(inventory_path, 'NET START Cyb3rhq')
         elif os_type == 'macos':
-            ConnectionManager.execute_commands(inventory_path, f'{MACOS_WAZUH_CONTROL} restart | grep {host_role}')
+            ConnectionManager.execute_commands(inventory_path, f'{MACOS_CYB3RHQ_CONTROL} restart | grep {host_role}')
 
     @staticmethod
     def component_start(inventory_path, host_role) -> None:
@@ -780,9 +780,9 @@ class GeneralComponentActions:
         if os_type == 'linux':
             ConnectionManager.execute_commands(inventory_path, f'systemctl start {host_role}')
         elif os_type == 'windows':
-            ConnectionManager.execute_commands(inventory_path, 'NET START Wazuh')
+            ConnectionManager.execute_commands(inventory_path, 'NET START Cyb3rhq')
         elif os_type == 'macos':
-            ConnectionManager.execute_commands(inventory_path, f'{MACOS_WAZUH_CONTROL} start | grep {host_role}')
+            ConnectionManager.execute_commands(inventory_path, f'{MACOS_CYB3RHQ_CONTROL} start | grep {host_role}')
 
     @staticmethod
     def get_component_version(inventory_path) -> str:
@@ -798,13 +798,13 @@ class GeneralComponentActions:
         os_type = HostInformation.get_os_type(inventory_path)
 
         if os_type == 'linux':
-            return ConnectionManager.execute_commands(inventory_path, f'{WAZUH_CONTROL} info -v').get('output')
+            return ConnectionManager.execute_commands(inventory_path, f'{CYB3RHQ_CONTROL} info -v').get('output')
 
         elif os_type == 'windows':
             return ConnectionManager.execute_commands(inventory_path, f'Get-Content "{WINDOWS_VERSION}"').get('output')#.replace("\n", ""))
 
         elif os_type == 'macos':
-            return ConnectionManager.execute_commands(inventory_path, f'{MACOS_WAZUH_CONTROL} info -v').get('output')
+            return ConnectionManager.execute_commands(inventory_path, f'{MACOS_CYB3RHQ_CONTROL} info -v').get('output')
 
     @staticmethod
     def get_component_revision(inventory_path) -> str:
@@ -820,11 +820,11 @@ class GeneralComponentActions:
         os_type = HostInformation.get_os_type(inventory_path)
 
         if os_type == 'linux':
-            return ConnectionManager.execute_commands(inventory_path, f'{WAZUH_CONTROL} info -r').get('output')
+            return ConnectionManager.execute_commands(inventory_path, f'{CYB3RHQ_CONTROL} info -r').get('output')
         elif os_type == 'windows':
             return ConnectionManager.execute_commands(inventory_path, f'Get-Content "{WINDOWS_REVISION}"').get('output')
         elif os_type == 'macos':
-            return ConnectionManager.execute_commands(inventory_path, f'{MACOS_WAZUH_CONTROL} info -r').get('output')
+            return ConnectionManager.execute_commands(inventory_path, f'{MACOS_CYB3RHQ_CONTROL} info -r').get('output')
 
     @staticmethod
     def has_agent_client_keys(inventory_path) -> bool:
@@ -868,7 +868,7 @@ class GeneralComponentActions:
             return 'active' == ConnectionManager.execute_commands(inventory_path, f'systemctl is-active {host_role}').get('output').replace("\n", "")
 
         elif os_type == 'windows':
-            result = ConnectionManager.execute_commands(inventory_path, "Get-Service -Name 'Wazuh'")
+            result = ConnectionManager.execute_commands(inventory_path, "Get-Service -Name 'Cyb3rhq'")
             return result.get('success')
 
         elif os_type == 'macos':

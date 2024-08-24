@@ -1,6 +1,6 @@
 """
-copyright: Copyright (C) 2015-2022, Wazuh Inc.
-           Created by Wazuh, Inc. <info@wazuh.com>.
+copyright: Copyright (C) 2015-2022, Cyb3rhq Inc.
+           Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
            This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 type: system
 brief: Check that when an agent pointing to a worker node is registered using enrrolment method and with
@@ -13,8 +13,8 @@ components:
     - agent
 path: /tests/system/test_cluster/test_agent_groups/test_assign_agent_group_with_enrollment.py
 daemons:
-    - wazuh-db
-    - wazuh-clusterd
+    - cyb3rhq-db
+    - cyb3rhq-clusterd
 os_platform:
     - linux
 os_version:
@@ -36,7 +36,7 @@ os_version:
     - Red Hat 7
     - Red Hat 6
 references:
-    - https://github.com/wazuh/wazuh-qa/issues/2510
+    - https://github.com/cyb3rhq/cyb3rhq-qa/issues/2510
 tags:
     - cluster
 """
@@ -47,16 +47,16 @@ import pytest
 
 from system import (ERR_MSG_CLIENT_KEYS_IN_MASTER_NOT_FOUND, restart_cluster, check_keys_file, delete_agent_group,
                     check_agent_groups_db)
-from wazuh_testing.tools.system_monitoring import HostMonitor
-from wazuh_testing.tools.system import HostManager
-from wazuh_testing.tools import WAZUH_PATH
+from cyb3rhq_testing.tools.system_monitoring import HostMonitor
+from cyb3rhq_testing.tools.system import HostManager
+from cyb3rhq_testing.tools import CYB3RHQ_PATH
 
 
 pytestmark = [pytest.mark.cluster, pytest.mark.enrollment_cluster_env]
 
 # Hosts
-test_infra_managers = ["wazuh-master", "wazuh-worker1", "wazuh-worker2"]
-test_infra_agents = ["wazuh-agent1"]
+test_infra_managers = ["cyb3rhq-master", "cyb3rhq-worker1", "cyb3rhq-worker2"]
+test_infra_agents = ["cyb3rhq-agent1"]
 
 inventory_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
                               'provisioning', 'enrollment_cluster', 'inventory.yml')
@@ -77,19 +77,19 @@ enrollment_group = f"""
 
 
 # Tests
-@pytest.mark.parametrize("agent_target", ["wazuh-worker1"])
+@pytest.mark.parametrize("agent_target", ["cyb3rhq-worker1"])
 def test_assign_agent_to_a_group(agent_target, clean_environment):
     '''
     description: Check that when an agent registers in a worker, with a group assigned in the enrollment section,
                  the agent has that group assigned in the worker's database.
-    wazuh_min_version: 4.4.0
+    cyb3rhq_min_version: 4.4.0
     parameters:
         - agent_target:
             type: string
             brief: name of the host where the agent will register
         - clean_enviroment:
             type: fixture
-            brief: Reset the wazuh log files at the start of the test. Remove all registered agents from master.
+            brief: Reset the cyb3rhq log files at the start of the test. Remove all registered agents from master.
     assertions:
         - Verify that after registering the agent key file exists in all nodes.
         - Verify that after registering and after receiving agent group info, it has the 'group_test' group assigned.
@@ -102,9 +102,9 @@ def test_assign_agent_to_a_group(agent_target, clean_environment):
     worker_ip = host_manager.run_command(agent_target, 'hostname -i')
 
     # Modify ossec.conf in agent
-    host_manager.add_block_to_file(host=test_infra_agents[0], path=f"{WAZUH_PATH}/etc/ossec.conf",
+    host_manager.add_block_to_file(host=test_infra_agents[0], path=f"{CYB3RHQ_PATH}/etc/ossec.conf",
                                    after="</crypto_method>", before="</client>", replace=enrollment_group)
-    host_manager.add_block_to_file(host=test_infra_agents[0], path=f"{WAZUH_PATH}/etc/ossec.conf",
+    host_manager.add_block_to_file(host=test_infra_agents[0], path=f"{CYB3RHQ_PATH}/etc/ossec.conf",
                                    after="<address>", before="</address>", replace=worker_ip)
 
     restart_cluster(test_infra_agents, host_manager)

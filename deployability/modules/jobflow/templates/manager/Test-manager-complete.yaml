@@ -35,7 +35,7 @@ tasks:
           - track-output: "{working-dir}/manager-{manager}/track.yaml"
           - label-termination-date: "1d"
           - label-team: "qa"
-          - label-issue: "https://github.com/wazuh/wazuh/issues/<issue_number>"
+          - label-issue: "https://github.com/cyb3rhq/cyb3rhq/issues/<issue_number>"
     on-error: "abort-all"
     foreach:
       - variable: manager-os
@@ -59,21 +59,21 @@ tasks:
         args:
           - modules/testing/main.py
           - targets:
-            - wazuh-1: "{working-dir}/manager-linux-centos-7-amd64/inventory.yaml"
-            - wazuh-2: "{working-dir}/manager-linux-ubuntu-20.04-amd64/inventory.yaml"
-            - wazuh-3: "{working-dir}/manager-linux-ubuntu-22.04-amd64/inventory.yaml"
-            - wazuh-4: "{working-dir}/manager-linux-redhat-7-amd64/inventory.yaml"
-            - wazuh-5: "{working-dir}/manager-linux-redhat-8-amd64/inventory.yaml"
-            - wazuh-6: "{working-dir}/manager-linux-redhat-9-amd64/inventory.yaml"
-            - wazuh-7: "{working-dir}/manager-linux-centos-8-amd64/inventory.yaml"
-            - wazuh-8: "{working-dir}/manager-linux-debian-10-amd64/inventory.yaml"
-            - wazuh-9: "{working-dir}/manager-linux-debian-11-amd64/inventory.yaml"
-            - wazuh-10: "{working-dir}/manager-linux-debian-12-amd64/inventory.yaml"
-            - wazuh-11: "{working-dir}/manager-linux-amazon-2-amd64/inventory.yaml"
+            - cyb3rhq-1: "{working-dir}/manager-linux-centos-7-amd64/inventory.yaml"
+            - cyb3rhq-2: "{working-dir}/manager-linux-ubuntu-20.04-amd64/inventory.yaml"
+            - cyb3rhq-3: "{working-dir}/manager-linux-ubuntu-22.04-amd64/inventory.yaml"
+            - cyb3rhq-4: "{working-dir}/manager-linux-redhat-7-amd64/inventory.yaml"
+            - cyb3rhq-5: "{working-dir}/manager-linux-redhat-8-amd64/inventory.yaml"
+            - cyb3rhq-6: "{working-dir}/manager-linux-redhat-9-amd64/inventory.yaml"
+            - cyb3rhq-7: "{working-dir}/manager-linux-centos-8-amd64/inventory.yaml"
+            - cyb3rhq-8: "{working-dir}/manager-linux-debian-10-amd64/inventory.yaml"
+            - cyb3rhq-9: "{working-dir}/manager-linux-debian-11-amd64/inventory.yaml"
+            - cyb3rhq-10: "{working-dir}/manager-linux-debian-12-amd64/inventory.yaml"
+            - cyb3rhq-11: "{working-dir}/manager-linux-amazon-2-amd64/inventory.yaml"
           - tests: "install,restart,stop,uninstall"
           - component: "manager"
-          - wazuh-version: "<major.minor.patch>"
-          - wazuh-revision: "<revision>"
+          - cyb3rhq-version: "<major.minor.patch>"
+          - cyb3rhq-revision: "<revision>"
           - live: False
     depends-on:
       - "allocate-manager-linux-ubuntu-20.04-amd64"

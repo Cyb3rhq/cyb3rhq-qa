@@ -1,13 +1,13 @@
-# Copyright (C) 2015-2023, Wazuh Inc.
-# Created by Wazuh, Inc. <info@wazuh.com>.
+# Copyright (C) 2015-2023, Cyb3rhq Inc.
+# Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 # This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 import os
 
-from wazuh_testing.modules.fim import registry_parser, KEY_WOW64_32KEY, REG_SZ, RegCloseKey
-from wazuh_testing.modules.fim.classes import validate_registry_event
-from wazuh_testing.modules.fim.event_monitor import callback_detect_event, callback_value_event
-from wazuh_testing.modules.fim.utils import (create_registry, check_time_travel, modify_registry, delete_registry,
+from cyb3rhq_testing.modules.fim import registry_parser, KEY_WOW64_32KEY, REG_SZ, RegCloseKey
+from cyb3rhq_testing.modules.fim.classes import validate_registry_event
+from cyb3rhq_testing.modules.fim.event_monitor import callback_detect_event, callback_value_event
+from cyb3rhq_testing.modules.fim.utils import (create_registry, check_time_travel, modify_registry, delete_registry,
                                              modify_registry_value, delete_registry_value)
 
 

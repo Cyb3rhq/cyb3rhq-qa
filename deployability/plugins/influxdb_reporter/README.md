@@ -1,4 +1,4 @@
-# Wazuh's InfluxDB plugin for pytest
+# Cyb3rhq's InfluxDB plugin for pytest
 
 This is a plugin to send the results of the tests to an InfluxDB database.
 
@@ -8,11 +8,11 @@ This is a plugin to send the results of the tests to an InfluxDB database.
 
 1. Clone the repository
     ```shellsession
-    $ git clone https://github.com/wazuh/wazuh-qa.git -b <YOUR_BRANCH>
+    $ git clone https://github.com/cyb3rhq/cyb3rhq-qa.git -b <YOUR_BRANCH>
     ```
 2. Open the repository folder
     ```shellsession
-    $ cd wazuh-qa/poc-test/src/plugins
+    $ cd cyb3rhq-qa/poc-test/src/plugins
     ```
 3. Install the plugin
     ```shellsession

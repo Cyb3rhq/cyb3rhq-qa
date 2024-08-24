@@ -1,6 +1,6 @@
 """
-copyright: Copyright (C) 2015-2021, Wazuh Inc.
-           Created by Wazuh, Inc. <info@wazuh.com>.
+copyright: Copyright (C) 2015-2021, Cyb3rhq Inc.
+           Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
            This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 type: system
 brief: Check that when FIM is activated, and the agent is running, the agent and manager are synchronization when
@@ -13,7 +13,7 @@ components:
     - agent
 path: tests/system/test_fim/test_fim_synchronization/test_files_cud.py
 daemons:
-    - wazuh-syscheckd
+    - cyb3rhq-syscheckd
 os_platform:
     - linux
 os_version:
@@ -35,7 +35,7 @@ os_version:
     - Red Hat 7
     - Red Hat 6
 references:
-    - https://github.com/wazuh/wazuh-qa/issues/2389
+    - https://github.com/cyb3rhq/cyb3rhq-qa/issues/2389
 tags:
     - fim_basic_usage
 """
@@ -43,16 +43,16 @@ tags:
 import os
 
 import pytest
-from wazuh_testing.tools.system_monitoring import HostMonitor
-from wazuh_testing.tools.system import HostManager, clean_environment
-from wazuh_testing.tools import WAZUH_LOGS_PATH
-from wazuh_testing.fim import create_folder_file, wait_for_fim_scan_end
+from cyb3rhq_testing.tools.system_monitoring import HostMonitor
+from cyb3rhq_testing.tools.system import HostManager, clean_environment
+from cyb3rhq_testing.tools import CYB3RHQ_LOGS_PATH
+from cyb3rhq_testing.fim import create_folder_file, wait_for_fim_scan_end
 
 
 pytestmark = [pytest.mark.one_manager_agent_env]
 
 # Hosts
-testinfra_hosts = ["wazuh-manager", "wazuh-agent1"]
+testinfra_hosts = ["cyb3rhq-manager", "cyb3rhq-agent1"]
 
 inventory_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
                               'provisioning', 'one_manager_agent', 'inventory.yml')
@@ -74,7 +74,7 @@ def test_file_cud(folder_path, case):
                   Finally, it will verify that the FIM event is generated
                   in agent and manager side.
 
-    wazuh_min_version: 4.2.0
+    cyb3rhq_min_version: 4.2.0
 
     parameters:
         - folder_path:
@@ -100,23 +100,23 @@ def test_file_cud(folder_path, case):
         - who_data
     '''
     messages = messages_path[0]
-    enviroment_files = [('wazuh-manager', os.path.join(WAZUH_LOGS_PATH, 'ossec.log')),
-                        ('wazuh-agent1', os.path.join(WAZUH_LOGS_PATH, 'ossec.log'))]
+    enviroment_files = [('cyb3rhq-manager', os.path.join(CYB3RHQ_LOGS_PATH, 'ossec.log')),
+                        ('cyb3rhq-agent1', os.path.join(CYB3RHQ_LOGS_PATH, 'ossec.log'))]
     clean_environment(host_manager, enviroment_files)
     create_folder_file(host_manager, folder_path)
 
-    # Restart Wazuh agent
-    host_manager.control_service(host='wazuh-agent1', service='wazuh', state="restarted")
+    # Restart Cyb3rhq agent
+    host_manager.control_service(host='cyb3rhq-agent1', service='cyb3rhq', state="restarted")
 
     # Check if the scan monitors end
     if (folder_path == scheduled_mode):
         wait_for_fim_scan_end(HostMonitor, inventory_path, messages_path[2], tmp_path)
 
     if (case == 'modify'):
-        host_manager.modify_file_content(host='wazuh-agent1', path=folder_path, content=folder_path)
+        host_manager.modify_file_content(host='cyb3rhq-agent1', path=folder_path, content=folder_path)
 
     elif(case == 'delete'):
-        host_manager.run_command('wazuh-agent1', f'rm -rf {folder_path}')
+        host_manager.run_command('cyb3rhq-agent1', f'rm -rf {folder_path}')
         messages = messages_path[1]
 
     try:
@@ -125,4 +125,4 @@ def test_file_cud(folder_path, case):
                     messages_path=messages,
                     tmp_path=tmp_path).run()
     finally:
-        host_manager.run_command('wazuh-agent1', f'rm -rf {folder_path}')
+        host_manager.run_command('cyb3rhq-agent1', f'rm -rf {folder_path}')

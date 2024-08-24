@@ -1,0 +1,7 @@
+{% if component == 'cyb3rhq-agent' %}
+- name: Modify Cyb3rhq manager IP in Cyb3rhq agent
+  replace:
+    path: "/var/ossec/etc/ossec.conf"
+    regexp: "MANAGER_IP"
+    replace: {{ dependencies['manager'] }}
+{% endif %}

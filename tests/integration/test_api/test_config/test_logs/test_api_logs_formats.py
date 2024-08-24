@@ -1,6 +1,6 @@
 '''
-copyright: Copyright (C) 2015-2022, Wazuh Inc.
-           Created by Wazuh, Inc. <info@wazuh.com>.
+copyright: Copyright (C) 2015-2022, Cyb3rhq Inc.
+           Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
            This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 type: integration
@@ -16,12 +16,12 @@ targets:
     - manager
 
 daemons:
-    - wazuh-apid
-    - wazuh-modulesd
-    - wazuh-analysisd
-    - wazuh-execd
-    - wazuh-db
-    - wazuh-remoted
+    - cyb3rhq-apid
+    - cyb3rhq-modulesd
+    - cyb3rhq-analysisd
+    - cyb3rhq-execd
+    - cyb3rhq-db
+    - cyb3rhq-remoted
 
 os_platform:
     - linux
@@ -46,7 +46,7 @@ os_version:
     - Red Hat 6
 
 references:
-    - https://documentation.wazuh.com/current/user-manual/api/configuration.html#logs
+    - https://documentation.cyb3rhq.com/current/user-manual/api/configuration.html#logs
 
 tags:
     - api
@@ -58,10 +58,10 @@ import time
 import pytest
 import requests
 
-import wazuh_testing as fw
-from wazuh_testing import api
-from wazuh_testing.tools import configuration as config
-from wazuh_testing.modules.api import event_monitor as evm
+import cyb3rhq_testing as fw
+from cyb3rhq_testing import api
+from cyb3rhq_testing.tools import configuration as config
+from cyb3rhq_testing.modules.api import event_monitor as evm
 
 # Marks
 pytestmark = [pytest.mark.server]
@@ -129,7 +129,7 @@ def test_api_logs_formats(configuration, metadata, set_api_configuration, clean_
         - Send a request to the API to generate the desired event.
         - Check in the log file that the expected event has been recorded.
 
-    wazuh_min_version: 4.4.0
+    cyb3rhq_min_version: 4.4.0
 
     parameters:
         - configuration:
@@ -137,7 +137,7 @@ def test_api_logs_formats(configuration, metadata, set_api_configuration, clean_
             brief: API configuration data. Needed for set_api_configuration fixture.
         - metadata:
             type: dict
-            brief: Wazuh configuration metadata.
+            brief: Cyb3rhq configuration metadata.
         - set_api_configuration:
             type: fixture
             brief: Set API custom configuration.

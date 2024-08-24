@@ -1,76 +1,76 @@
-# Copyright (C) 2015, Wazuh Inc.
-# Created by Wazuh, Inc. <info@wazuh.com>.
+# Copyright (C) 2015, Cyb3rhq Inc.
+# Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 # This program is a free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 import requests
 import time
 
-from .constants import CLUSTER_CONTROL, AGENT_CONTROL, WAZUH_CONF, WAZUH_ROOT, WAZUH_LOG
-from .executor import WazuhAPI, ConnectionManager
+from .constants import CLUSTER_CONTROL, AGENT_CONTROL, CYB3RHQ_CONF, CYB3RHQ_ROOT, CYB3RHQ_LOG
+from .executor import Cyb3rhqAPI, ConnectionManager
 from .generic import HostInformation, CheckFiles
 from modules.testing.utils import logger
 from .utils import Utils
 
 
-class WazuhManager:
+class Cyb3rhqManager:
 
     @staticmethod
-    def install_manager(inventory_path, node_name, wazuh_version, live) -> None:
+    def install_manager(inventory_path, node_name, cyb3rhq_version, live) -> None:
         """
-        Installs Wazuh Manager in the host
+        Installs Cyb3rhq Manager in the host
 
         Args:
             inventory_path (str): host's inventory path
             node_name (str): manager node name
-            wazuh_version (str): major.minor.patch
+            cyb3rhq_version (str): major.minor.patch
 
         """
         os_name = HostInformation.get_os_name_from_inventory(inventory_path)
 
         if live == "False":
-            s3_url = 'packages-dev.wazuh.com'
+            s3_url = 'packages-dev.cyb3rhq.com'
         else:
-            s3_url = 'packages.wazuh.com'
+            s3_url = 'packages.cyb3rhq.com'
 
-        release = '.'.join(wazuh_version.split('.')[:2])
+        release = '.'.join(cyb3rhq_version.split('.')[:2])
 
-        logger.info(f'Installing the Wazuh manager with https://{s3_url}/{release}/wazuh-install.sh')
+        logger.info(f'Installing the Cyb3rhq manager with https://{s3_url}/{release}/cyb3rhq-install.sh')
 
         if os_name == 'debian':
             commands = [
-                    f"wget https://{s3_url}/{release}/wazuh-install.sh",
-                    f"bash wazuh-install.sh --wazuh-server {node_name} --ignore-check"
+                    f"wget https://{s3_url}/{release}/cyb3rhq-install.sh",
+                    f"bash cyb3rhq-install.sh --cyb3rhq-server {node_name} --ignore-check"
             ]
         else:
             commands = [
-                    f"curl -sO https://{s3_url}/{release}/wazuh-install.sh",
-                    f"bash wazuh-install.sh --wazuh-server {node_name} --ignore-check"
+                    f"curl -sO https://{s3_url}/{release}/cyb3rhq-install.sh",
+                    f"bash cyb3rhq-install.sh --cyb3rhq-server {node_name} --ignore-check"
             ]
         logger.info(f'Installing Manager in {HostInformation.get_os_name_and_version_from_inventory(inventory_path)}')
         ConnectionManager.execute_commands(inventory_path, commands)
 
 
     @staticmethod
-    def install_managers(inventories_paths=[], node_names=[], wazuh_versions=[]) -> None:
+    def install_managers(inventories_paths=[], node_names=[], cyb3rhq_versions=[]) -> None:
         """
-        Install Wazuh Managers in the hosts
+        Install Cyb3rhq Managers in the hosts
 
         Args:
             inventories_paths (list): list of hosts' inventory path
             node_name (list): managers node names' in the same order than inventories_paths
-            wazuh_version (list): manager versions int he same order than inventories_paths
+            cyb3rhq_version (list): manager versions int he same order than inventories_paths
 
         """
         for inventory in inventories_paths:
             for node_name in node_names:
-                for wazuh_version in wazuh_versions:
-                    WazuhManager.install_manager(inventory, node_name, wazuh_version)
+                for cyb3rhq_version in cyb3rhq_versions:
+                    Cyb3rhqManager.install_manager(inventory, node_name, cyb3rhq_version)
 
 
     @staticmethod
     def uninstall_manager(inventory_path) -> None:
         """
-        Uninstall Wazuh Manager in the host
+        Uninstall Cyb3rhq Manager in the host
 
         Args:
             inventory_paths (str): hosts' inventory path
@@ -80,16 +80,16 @@ class WazuhManager:
 
         if distribution == 'rpm':
             commands.extend([
-                "yum remove wazuh-manager -y",
-                f"rm -rf {WAZUH_ROOT}"
+                "yum remove cyb3rhq-manager -y",
+                f"rm -rf {CYB3RHQ_ROOT}"
             ])
         elif distribution == 'deb':
             commands.extend([
-                "apt-get remove --purge wazuh-manager -y"
+                "apt-get remove --purge cyb3rhq-manager -y"
             ])
 
         system_commands = [
-                "systemctl disable wazuh-manager",
+                "systemctl disable cyb3rhq-manager",
                 "systemctl daemon-reload"
         ]
 
@@ -102,23 +102,23 @@ class WazuhManager:
     @staticmethod
     def uninstall_managers(inventories_paths=[]) -> None:
         """
-        Uninstall Wazuh Managers in the hosts
+        Uninstall Cyb3rhq Managers in the hosts
 
         Args:
             inventories_paths (list): list of hosts' inventory path
         """
         for inventory in inventories_paths:
-            WazuhManager.uninstall_manager(inventory)
+            Cyb3rhqManager.uninstall_manager(inventory)
 
 
     @staticmethod
-    def _install_manager_callback(wazuh_params, manager_name, manager_params):
-        WazuhManager.install_manager(manager_params, manager_name, wazuh_params['wazuh_version'], wazuh_params['live'])
+    def _install_manager_callback(cyb3rhq_params, manager_name, manager_params):
+        Cyb3rhqManager.install_manager(manager_params, manager_name, cyb3rhq_params['cyb3rhq_version'], cyb3rhq_params['live'])
 
 
     @staticmethod
     def _uninstall_manager_callback(manager_params):
-        WazuhManager.uninstall_manager(manager_params)
+        Cyb3rhqManager.uninstall_manager(manager_params)
 
 
     @staticmethod
@@ -184,20 +184,20 @@ class WazuhManager:
         return result
 
     @staticmethod
-    def perform_install_and_scan_for_manager(manager_params, manager_name, wazuh_params) -> None:
+    def perform_install_and_scan_for_manager(manager_params, manager_name, cyb3rhq_params) -> None:
         """
         Coordinates the action of install the manager and compares the checkfiles
 
         Args:
             manager_params (str): manager parameters
             manager_name (str): manager name
-            wazuh_params (str): wazuh parameters
+            cyb3rhq_params (str): cyb3rhq parameters
 
         """
-        action_callback = lambda: WazuhManager._install_manager_callback(wazuh_params, manager_name, manager_params)
-        result = WazuhManager.perform_action_and_scan(manager_params, action_callback)
+        action_callback = lambda: Cyb3rhqManager._install_manager_callback(cyb3rhq_params, manager_name, manager_params)
+        result = Cyb3rhqManager.perform_action_and_scan(manager_params, action_callback)
         logger.info(f'Pre and post install checkfile comparison in {HostInformation.get_os_name_and_version_from_inventory(manager_params)}: {result}')
-        WazuhManager.assert_results(result, manager_params)
+        Cyb3rhqManager.assert_results(result, manager_params)
 
 
     @staticmethod
@@ -209,10 +209,10 @@ class WazuhManager:
             manager_params (str): manager parameters
 
         """
-        action_callback = lambda: WazuhManager._uninstall_manager_callback(manager_params)
-        result = WazuhManager.perform_action_and_scan(manager_params, action_callback)
+        action_callback = lambda: Cyb3rhqManager._uninstall_manager_callback(manager_params)
+        result = Cyb3rhqManager.perform_action_and_scan(manager_params, action_callback)
         logger.info(f'Pre and post uninstall checkfile comparison in {HostInformation.get_os_name_and_version_from_inventory(manager_params)}: {result}')
-        WazuhManager.assert_results(result, manager_params)
+        Cyb3rhqManager.assert_results(result, manager_params)
 
 
     @staticmethod
@@ -233,11 +233,11 @@ class WazuhManager:
 
 
     @staticmethod
-    def is_wazuh_api_port_open(inventory_path, wait=10, cycles=50) -> bool:
+    def is_cyb3rhq_api_port_open(inventory_path, wait=10, cycles=50) -> bool:
         """
-        Check if the Wazuh manager API port is open
+        Check if the Cyb3rhq manager API port is open
         Args:
-            inventory_path (str): Wazuh manager inventory.
+            inventory_path (str): Cyb3rhq manager inventory.
         Returns:
             bool: True if port is opened.
         """
@@ -258,9 +258,9 @@ class WazuhManager:
         return False
 
     @staticmethod
-    def is_wazuh_agent_port_open(inventory_path, wait=10, cycles=50) -> bool:
+    def is_cyb3rhq_agent_port_open(inventory_path, wait=10, cycles=50) -> bool:
         """
-        Check if the Wazuh manager port is open
+        Check if the Cyb3rhq manager port is open
         Args:
             inventory_path (str): Manager inventory.
 
@@ -284,9 +284,9 @@ class WazuhManager:
         return False
 
     @staticmethod
-    def is_wazuh_agent_enrollment_port_open(inventory_path, wait=10, cycles=50) -> bool:
+    def is_cyb3rhq_agent_enrollment_port_open(inventory_path, wait=10, cycles=50) -> bool:
         """
-        Check if Wazuh manager's agent enrollment port is open
+        Check if Cyb3rhq manager's agent enrollment port is open
         Args:
             inventory_path (str): Manager inventory.
 
@@ -312,7 +312,7 @@ class WazuhManager:
     @staticmethod
     def get_cluster_info(inventory_path) -> None:
         """
-        Returns the Wazuh cluster information from the Wazuh manager
+        Returns the Cyb3rhq cluster information from the Cyb3rhq manager
 
         Args:
             inventory_path: host's inventory path
@@ -355,22 +355,22 @@ class WazuhManager:
         """
         master_dns = Utils.extract_ansible_host(node_to_connect_inventory)
         commands = [
-            f"sed -i 's/<node_name>node01<\/node_name>/<node_name>{node_name}<\/node_name>/' {WAZUH_CONF}",
-            f"sed -i 's/<node_type>master<\/node_type>/<node_type>{node_type}<\/node_type>/'  {WAZUH_CONF}",
-            f"sed -i 's/<key><\/key>/<key>{key}<\/key>/' {WAZUH_CONF}",
-            f"sed -i 's/<node>NODE_IP<\/node>/<node>{HostInformation.get_internal_ip_from_aws_dns(master_dns)}<\/node>/' {WAZUH_CONF}",
-            f"sed -i 's/<disabled>yes<\/disabled>/<disabled>{disabled}<\/disabled>/' {WAZUH_CONF}",
-            "systemctl restart wazuh-manager"
+            f"sed -i 's/<node_name>node01<\/node_name>/<node_name>{node_name}<\/node_name>/' {CYB3RHQ_CONF}",
+            f"sed -i 's/<node_type>master<\/node_type>/<node_type>{node_type}<\/node_type>/'  {CYB3RHQ_CONF}",
+            f"sed -i 's/<key><\/key>/<key>{key}<\/key>/' {CYB3RHQ_CONF}",
+            f"sed -i 's/<node>NODE_IP<\/node>/<node>{HostInformation.get_internal_ip_from_aws_dns(master_dns)}<\/node>/' {CYB3RHQ_CONF}",
+            f"sed -i 's/<disabled>yes<\/disabled>/<disabled>{disabled}<\/disabled>/' {CYB3RHQ_CONF}",
+            "systemctl restart cyb3rhq-manager"
         ]
 
         ConnectionManager.execute_commands(inventory_path, commands)
-        if node_name in ConnectionManager.execute_commands(inventory_path, f'cat {WAZUH_CONF}').get('output'):
+        if node_name in ConnectionManager.execute_commands(inventory_path, f'cat {CYB3RHQ_CONF}').get('output'):
             logger.info(f'Cluster configured in: {HostInformation.get_os_name_and_version_from_inventory(inventory_path)}')
         else:
             logger.error(f'Error configuring cluster information in: {HostInformation.get_os_name_and_version_from_inventory(inventory_path)}')
 
 
-    def get_manager_version(wazuh_api: WazuhAPI) -> str:
+    def get_manager_version(cyb3rhq_api: Cyb3rhqAPI) -> str:
         """
         Get the version of the manager.
 
@@ -378,14 +378,14 @@ class WazuhManager:
             str: The version of the manager.
         """
         try:
-            response = requests.get(f"{wazuh_api.api_url}/?pretty=true", headers=wazuh_api.headers, verify=False)
+            response = requests.get(f"{cyb3rhq_api.api_url}/?pretty=true", headers=cyb3rhq_api.headers, verify=False)
             return eval(response.text)['data']['api_version']
         except Exception as e:
             logger.error(f"Unexpected error: {e}")
             return f"Unexpected error: {e}"
 
 
-    def get_manager_revision(wazuh_api: WazuhAPI) -> str:
+    def get_manager_revision(cyb3rhq_api: Cyb3rhqAPI) -> str:
         """
         Get the revision of the manager.
 
@@ -393,13 +393,13 @@ class WazuhManager:
             str: The revision of the manager.
         """
         try:
-            response = requests.get(f"{wazuh_api.api_url}/?pretty=true", headers=wazuh_api.headers, verify=False)
+            response = requests.get(f"{cyb3rhq_api.api_url}/?pretty=true", headers=cyb3rhq_api.headers, verify=False)
             return eval(response.text)['data']['revision']
         except Exception as e:
             logger.error(f"Unexpected error: {e}")
             return f"Unexpected error: {e}"
 
-    def get_manager_host_name(wazuh_api: WazuhAPI) -> str:
+    def get_manager_host_name(cyb3rhq_api: Cyb3rhqAPI) -> str:
         """
         Get the hostname of the manager.
 
@@ -407,14 +407,14 @@ class WazuhManager:
             str: The hostname of the manager.
         """
         try:
-            response = requests.get(f"{wazuh_api.api_url}/?pretty=true", headers=wazuh_api.headers, verify=False)
+            response = requests.get(f"{cyb3rhq_api.api_url}/?pretty=true", headers=cyb3rhq_api.headers, verify=False)
             return eval(response.text)['data']['hostname']
         except Exception as e:
             logger.error(f"Unexpected error: {e}")
             return f"Unexpected error: {e}"
 
 
-    def get_manager_nodes_status(wazuh_api: WazuhAPI) -> dict:
+    def get_manager_nodes_status(cyb3rhq_api: Cyb3rhqAPI) -> dict:
         """
         Get the status of the manager's nodes.
 
@@ -422,13 +422,13 @@ class WazuhManager:
             Dict: The status of the manager's nodes.
         """
         try:
-            response = requests.get(f"{wazuh_api.api_url}/manager/status", headers=wazuh_api.headers, verify=False)
+            response = requests.get(f"{cyb3rhq_api.api_url}/manager/status", headers=cyb3rhq_api.headers, verify=False)
             return eval(response.text)['data']['affected_items'][0]
         except Exception as e:
             logger.error(f"Unexpected error: {e}")
             return f"Unexpected error: {e}"
 
-    def get_manager_logs(wazuh_api: WazuhAPI) -> list:
+    def get_manager_logs(cyb3rhq_api: Cyb3rhqAPI) -> list:
         """
         Get the logs of the manager.
 
@@ -436,7 +436,7 @@ class WazuhManager:
             List: The logs of the manager.
         """
         try:
-            response = requests.get(f"{wazuh_api.api_url}/manager/logs", headers=wazuh_api.headers, verify=False)
+            response = requests.get(f"{cyb3rhq_api.api_url}/manager/logs", headers=cyb3rhq_api.headers, verify=False)
             return eval(response.text)['data']['affected_items']
         except Exception as e:
             logger.error(f"Unexpected error: {e}")
@@ -445,7 +445,7 @@ class WazuhManager:
     @staticmethod
     def get_indexer_status(inventory_path) -> None:
         """
-        Returns if Wazuh indexer is connected to Wazuh manager
+        Returns if Cyb3rhq indexer is connected to Cyb3rhq manager
 
         Args:
             inventory_path: host's inventory path
@@ -454,6 +454,6 @@ class WazuhManager:
             str: Agents status
         """
 
-        indexerConnection = ConnectionManager.execute_commands(inventory_path, f'cat {WAZUH_LOG} | grep "IndexerConnector initialized successfully" | tail -n1').get('output')
+        indexerConnection = ConnectionManager.execute_commands(inventory_path, f'cat {CYB3RHQ_LOG} | grep "IndexerConnector initialized successfully" | tail -n1').get('output')
 
         return indexerConnection is not None and indexerConnection.strip()

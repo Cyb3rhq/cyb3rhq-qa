@@ -1,0 +1,6 @@
+yum/cyb3rhq-manager-VERSION-1.x86_64.rpm
+apt/pool/main/w/cyb3rhq-manager/cyb3rhq-manager_VERSION-1_amd64.deb
+yum/cyb3rhq-dashboard-VERSION-1.x86_64.rpm
+yum/cyb3rhq-indexer-VERSION-1.x86_64.rpm
+apt/pool/main/w/cyb3rhq-agent/cyb3rhq-agent_VERSION-1_amd64.deb
+yum/cyb3rhq-agent-VERSION-1.x86_64.rpm

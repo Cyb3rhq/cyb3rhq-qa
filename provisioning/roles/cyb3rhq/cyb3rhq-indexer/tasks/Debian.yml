@@ -1,0 +1,23 @@
+
+- name: Update cache
+  apt:
+    update_cache: yes
+  register: update_result
+  until: update_result is success
+  retries: 3
+  delay: 10
+
+- name: Debian 9 (Stretch)
+  when: (ansible_facts['distribution'] == "Debian" and ansible_facts['distribution_major_version'] == "9")
+  block:
+
+    - name: Install Cyb3rhq indexer dependencies
+      apt:
+        name: [
+          'unzip', 'wget', 'curl', 'apt-transport-https', software-properties-common
+        ]
+        state: present
+
+- include_tasks: "install_from_custom_package.yml"
+  when:
+    - cyb3rhq_custom_packages_installation_indexer_enabled

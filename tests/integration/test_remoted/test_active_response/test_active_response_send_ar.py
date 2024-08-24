@@ -1,6 +1,6 @@
 '''
-copyright: Copyright (C) 2015-2022, Wazuh Inc.
-           Created by Wazuh, Inc. <info@wazuh.com>.
+copyright: Copyright (C) 2015-2022, Cyb3rhq Inc.
+           Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
            This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 type: integration
@@ -8,7 +8,7 @@ type: integration
 brief: Active responses perform various countermeasures to address active
        threats, such as blocking access to an agent from the threat source when certain
        criteria are met. These tests will check if an active response command is sent
-       correctly to the Wazuh agent by `wazuh-remoted` daemon.
+       correctly to the Cyb3rhq agent by `cyb3rhq-remoted` daemon.
 
 components:
     - remoted
@@ -19,8 +19,8 @@ targets:
     - manager
 
 daemons:
-    - wazuh-remoted
-    - wazuh-execd
+    - cyb3rhq-remoted
+    - cyb3rhq-execd
 
 os_platform:
     - linux
@@ -37,7 +37,7 @@ os_version:
     - Ubuntu Bionic
 
 references:
-    - https://documentation.wazuh.com/current/user-manual/reference/ossec-conf/remote.html
+    - https://documentation.cyb3rhq.com/current/user-manual/reference/ossec-conf/remote.html
 
 tags:
     - remoted
@@ -47,18 +47,18 @@ import os
 import pytest
 import time
 
-import wazuh_testing.remote as remote
-import wazuh_testing.tools.agent_simulator as ag
-from wazuh_testing import UDP, TCP, TCP_UDP
-from wazuh_testing.tools.configuration import load_wazuh_configurations
-from wazuh_testing.tools.sockets import send_active_response_message
+import cyb3rhq_testing.remote as remote
+import cyb3rhq_testing.tools.agent_simulator as ag
+from cyb3rhq_testing import UDP, TCP, TCP_UDP
+from cyb3rhq_testing.tools.configuration import load_cyb3rhq_configurations
+from cyb3rhq_testing.tools.sockets import send_active_response_message
 
 # Marks
 pytestmark = pytest.mark.tier(level=1)
 
 # Configuration
 test_data_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data')
-configurations_path = os.path.join(test_data_path, 'wazuh_test_active_response.yaml')
+configurations_path = os.path.join(test_data_path, 'cyb3rhq_test_active_response.yaml')
 
 parameters = [
     {'PROTOCOL': TCP, 'PORT': '1514'},
@@ -78,7 +78,7 @@ metadata = [
     {'protocol': TCP_UDP, 'port': '4565'}
 ]
 
-configurations = load_wazuh_configurations(configurations_path, __name__ ,
+configurations = load_cyb3rhq_configurations(configurations_path, __name__ ,
                                            params=parameters, metadata=metadata)
 configuration_ids = [f"{x['PROTOCOL']}_{x['PORT']}" for x in parameters]
 
@@ -97,13 +97,13 @@ def get_configuration(request):
                          "messages causing the agent to never being in active status.")
 def test_active_response_ar_sending(get_configuration, configure_environment, restart_remoted):
     '''
-    description: Check if the 'wazuh-remoted' daemon sends active response commands to the Wazuh agent.
+    description: Check if the 'cyb3rhq-remoted' daemon sends active response commands to the Cyb3rhq agent.
                  For this purpose, the test will establish a connection with a simulated agent using
                  different ports and transport protocols. Then, it will send an active response to that
                  agent, and finally, the test will verify that the events indicating that the active
                  response has been sent by the manager and received it by the agent are generated.
     
-    wazuh_min_version: 4.2.0
+    cyb3rhq_min_version: 4.2.0
     
     tier: 1
 
@@ -119,14 +119,14 @@ def test_active_response_ar_sending(get_configuration, configure_environment, re
             brief: Clear the 'ossec.log' file and start a new monitor.
     
     assertions:
-        - Verify that the 'wazuh-execd' daemon sends the active response to the 'wazuh-remoted' daemon.
-        - Verify that the 'wazuh-remoted' daemon receives the active response from the 'wazuh-execd' daemon.
-        - Verify that the Wazuh agent receives an active response message.
+        - Verify that the 'cyb3rhq-execd' daemon sends the active response to the 'cyb3rhq-remoted' daemon.
+        - Verify that the 'cyb3rhq-remoted' daemon receives the active response from the 'cyb3rhq-execd' daemon.
+        - Verify that the Cyb3rhq agent receives an active response message.
     
     input_description: A configuration template (test_active_response_send_ar) is contained in an external YAML
-                       file (wazuh_test_active_response.yaml). That template is combined with different
+                       file (cyb3rhq_test_active_response.yaml). That template is combined with different
                        test cases defined in the module. Those include configuration settings for
-                       the 'wazuh-remoted' daemon.
+                       the 'cyb3rhq-remoted' daemon.
     
     expected_output:
         - r'.*Active response request received.*'
@@ -157,12 +157,12 @@ def test_active_response_ar_sending(get_configuration, configure_environment, re
             send_active_response_message(active_response_message)
 
             log_callback = remote.callback_active_response_received(active_response_message)
-            wazuh_log_monitor.start(timeout=10, callback=log_callback,
+            cyb3rhq_log_monitor.start(timeout=10, callback=log_callback,
                                     error_message='The expected event has not been found in ossec.log')
 
             log_callback = remote.callback_active_response_sent(active_response_message)
 
-            wazuh_log_monitor.start(timeout=10, callback=log_callback,
+            cyb3rhq_log_monitor.start(timeout=10, callback=log_callback,
                                     error_message='The expected event has not been found in ossec.log')
 
             remote.check_agent_received_message(agent, f"#!-execd {remote.ACTIVE_RESPONSE_EXAMPLE_COMMAND}", escape=True)

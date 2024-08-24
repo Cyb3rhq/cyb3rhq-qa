@@ -1,5 +1,5 @@
-# Copyright (C) 2015, Wazuh Inc.
-# Created by Wazuh, Inc. <info@wazuh.com>.
+# Copyright (C) 2015, Cyb3rhq Inc.
+# Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 # This program is a free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 import boto3
@@ -59,7 +59,7 @@ class AWSProvider(Provider):
             termination_date = params.label_termination_date
             host_identifier = None
             date_regex = r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}"
-            url_regex = "(https:\/\/|http:\/\/)?[github]{2,}(\.[com]{2,})?\/wazuh\/[a-zA-Z0-9_-]+(?:-[a-zA-Z0-9_-]+)?\/issues\/[0-9]{2,}"
+            url_regex = "(https:\/\/|http:\/\/)?[github]{2,}(\.[com]{2,})?\/cyb3rhq\/[a-zA-Z0-9_-]+(?:-[a-zA-Z0-9_-]+)?\/issues\/[0-9]{2,}"
             if not termination_date:
                 raise ValueError(f"The termination_date label was not provided.")
             elif re.match(r'^\d+d$', termination_date):
@@ -83,8 +83,8 @@ class AWSProvider(Provider):
                 name = params.instance_name
             elif issue:
                 if not re.match(url_regex, issue):
-                    raise ValueError(f"The issue label was not provided or is of incorrect format, example: https://github.com/wazuh/<repository>/issues/<issue-number>")
-                issue_name= re.search(r'github\.com\/wazuh\/([^\/]+)\/issues', issue)
+                    raise ValueError(f"The issue label was not provided or is of incorrect format, example: https://github.com/cyb3rhq/<repository>/issues/<issue-number>")
+                issue_name= re.search(r'github\.com\/cyb3rhq\/([^\/]+)\/issues', issue)
                 repository = cls.generate_repository_name(str(issue_name.group(1)))
                 name = repository + "-" + str(re.search(r'(\d+)$', issue).group(1)) + "-" + str(params.composite_name.split("-")[1]) + "-" + str(params.composite_name.split("-")[2])
             else:

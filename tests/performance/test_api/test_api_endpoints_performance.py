@@ -9,16 +9,16 @@ from yaml import safe_load
 
 restart_delay = safe_load(open(join(dirname(realpath(__file__)), 'data', 'configuration.yaml'))
                           )['configuration']['restart_delay']
-test_data = safe_load(open(join(dirname(realpath(__file__)), 'data', 'wazuh_api_endpoints_performance.yaml')))
+test_data = safe_load(open(join(dirname(realpath(__file__)), 'data', 'cyb3rhq_api_endpoints_performance.yaml')))
 case_ids = [f"{case['method']}_{case['endpoint']}" for case in test_data['test_cases']]
 api_details = dict()
 
 xfailed_items = {
     '/agents/group': {'message': 'Investigate performance issues with PUT /agents/group API endpoint: '
-                                 'https://github.com/wazuh/wazuh/issues/13872',
+                                 'https://github.com/cyb3rhq/cyb3rhq/issues/13872',
                       'method': 'put'},
     '/active-response': {'message': 'Investigate invalid commands with PUT /active-response endpoint: '
-                                    'https://github.com/wazuh/wazuh-qa/issues/5648',
+                                    'https://github.com/cyb3rhq/cyb3rhq-qa/issues/5648',
                          'method': 'put'}
 }
 

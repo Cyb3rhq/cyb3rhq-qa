@@ -1,0 +1,5 @@
+---
+- name: restart cyb3rhq-indexer
+  service:
+    name: cyb3rhq-indexer
+    state: restarted

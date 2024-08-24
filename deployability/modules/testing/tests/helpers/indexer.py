@@ -1,27 +1,27 @@
-# Copyright (C) 2015, Wazuh Inc.
-# Created by Wazuh, Inc. <info@wazuh.com>.
+# Copyright (C) 2015, Cyb3rhq Inc.
+# Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 # This program is a free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 import time
 
-from .executor import ConnectionManager, WazuhAPI
+from .executor import ConnectionManager, Cyb3rhqAPI
 from modules.testing.utils import logger
 
-class WazuhIndexer:
+class Cyb3rhqIndexer:
 
     @staticmethod
     def get_indexer_version(inventory_path) -> str:
         """
-        Returns the Wazuh indexer version
+        Returns the Cyb3rhq indexer version
 
         Args:
             inventory_path (str): host's inventory path
 
         Returns:
-        - str: Version of the Wazuh indexer.
+        - str: Version of the Cyb3rhq indexer.
         """
 
-        return ConnectionManager.execute_commands(inventory_path,'cat /usr/share/wazuh-indexer/VERSION').get('output').strip()
+        return ConnectionManager.execute_commands(inventory_path,'cat /usr/share/cyb3rhq-indexer/VERSION').get('output').strip()
 
 
     @staticmethod
@@ -44,7 +44,7 @@ class WazuhIndexer:
             'readall',
             'snapshotrestore'
         ]
-        report_of_users = ConnectionManager.execute_commands(inventory_path, "cat /etc/wazuh-indexer/opensearch-security/internal_users.yml | grep '^[a-z]'").get('output')
+        report_of_users = ConnectionManager.execute_commands(inventory_path, "cat /etc/cyb3rhq-indexer/opensearch-security/internal_users.yml | grep '^[a-z]'").get('output')
         for user in users_to_check:
             if user not in report_of_users:
                 return False
@@ -52,9 +52,9 @@ class WazuhIndexer:
 
 
     @staticmethod
-    def are_indexes_working(wazuh_api: WazuhAPI, inventory_path) -> bool:
+    def are_indexes_working(cyb3rhq_api: Cyb3rhqAPI, inventory_path) -> bool:
         """
-        Returns True/False depending on the working status of the Wazuh indexes
+        Returns True/False depending on the working status of the Cyb3rhq indexes
 
         Args:
             inventory_path (str): host's inventory path
@@ -62,7 +62,7 @@ class WazuhIndexer:
         Returns:
         - bool: True/False depending on the status.
         """
-        indexes = ConnectionManager.execute_commands(inventory_path, f"curl -k -u {wazuh_api.username}:{wazuh_api.password} {wazuh_api.api_url}/_cat/indices/?pretty").get('output').strip().split('\n')
+        indexes = ConnectionManager.execute_commands(inventory_path, f"curl -k -u {cyb3rhq_api.username}:{cyb3rhq_api.password} {cyb3rhq_api.api_url}/_cat/indices/?pretty").get('output').strip().split('\n')
         for index in indexes:
             if 'red' not in index:
                 return True
@@ -70,9 +70,9 @@ class WazuhIndexer:
 
 
     @staticmethod
-    def is_index_cluster_working(wazuh_api: WazuhAPI, inventory_path) -> bool:
+    def is_index_cluster_working(cyb3rhq_api: Cyb3rhqAPI, inventory_path) -> bool:
         """
-        Returns True/False depending on the status of the Wazuh indexer cluster
+        Returns True/False depending on the status of the Cyb3rhq indexer cluster
 
         Args:
             inventory_path (str): host's inventory path
@@ -80,17 +80,17 @@ class WazuhIndexer:
         Returns:
         - bool: True/False depending on the status.
         """
-        response = ConnectionManager.execute_commands(inventory_path, f"curl -k -u {wazuh_api.username}:{wazuh_api.password} {wazuh_api.api_url}/_cat/health").get('output')
+        response = ConnectionManager.execute_commands(inventory_path, f"curl -k -u {cyb3rhq_api.username}:{cyb3rhq_api.password} {cyb3rhq_api.api_url}/_cat/health").get('output')
         return 'green' in response
 
 
     @staticmethod
     def is_indexer_port_open(inventory_path, wait=10, cycles=50) -> bool:
         """
-        Check if the Wazuh indexer port is open
+        Check if the Cyb3rhq indexer port is open
 
         Args:
-            inventory_path (str): Wazuh indexer inventory.
+            inventory_path (str): Cyb3rhq indexer inventory.
 
         Returns:
             str: OS name.

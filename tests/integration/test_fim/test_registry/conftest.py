@@ -1,14 +1,14 @@
-# Copyright (C) 2015-2023, Wazuh Inc.
-# Created by Wazuh, Inc. <info@wazuh.com>.
+# Copyright (C) 2015-2023, Cyb3rhq Inc.
+# Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 # This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 import pytest
 
-from wazuh_testing import LOG_FILE_PATH
-from wazuh_testing.tools.file import truncate_file
-from wazuh_testing.tools.monitoring import FileMonitor
-from wazuh_testing.tools.services import control_service
-from wazuh_testing.modules.fim.event_monitor import detect_initial_scan, detect_realtime_start, detect_whodata_start
+from cyb3rhq_testing import LOG_FILE_PATH
+from cyb3rhq_testing.tools.file import truncate_file
+from cyb3rhq_testing.tools.monitoring import FileMonitor
+from cyb3rhq_testing.tools.services import control_service
+from cyb3rhq_testing.modules.fim.event_monitor import detect_initial_scan, detect_realtime_start, detect_whodata_start
 
 
 @pytest.fixture(scope='module')
@@ -16,11 +16,11 @@ def restart_syscheckd(get_configuration, request):
     """
     Reset ossec.log and start a new monitor.
     """
-    control_service('stop', daemon='wazuh-syscheckd')
+    control_service('stop', daemon='cyb3rhq-syscheckd')
     truncate_file(LOG_FILE_PATH)
     file_monitor = FileMonitor(LOG_FILE_PATH)
-    setattr(request.module, 'wazuh_log_monitor', file_monitor)
-    control_service('start', daemon='wazuh-syscheckd')
+    setattr(request.module, 'cyb3rhq_log_monitor', file_monitor)
+    control_service('start', daemon='cyb3rhq-syscheckd')
 
 
 @pytest.fixture(scope='module')

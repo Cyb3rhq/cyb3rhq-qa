@@ -1,5 +1,5 @@
-# Copyright (C) 2015, Wazuh Inc.
-# Created by Wazuh, Inc. <info@wazuh.com>.
+# Copyright (C) 2015, Cyb3rhq Inc.
+# Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 # This program is a free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 from .executor import ConnectionManager
@@ -7,66 +7,66 @@ from .generic import HostInformation, CheckFiles
 from modules.testing.utils import logger
 
 
-class WazuhCentralComponents:
+class Cyb3rhqCentralComponents:
 
     @staticmethod
-    def install_aio(inventory_path, wazuh_version, live) -> None:
+    def install_aio(inventory_path, cyb3rhq_version, live) -> None:
         """
-        Installs Wazuh central components (AIO) in the host
+        Installs Cyb3rhq central components (AIO) in the host
 
         Args:
             inventory_path (str): host's inventory path
-            wazuh_version (str): major.minor.patch
+            cyb3rhq_version (str): major.minor.patch
 
         """
         os_name = HostInformation.get_os_name_from_inventory(inventory_path)
 
         if live == "False":
-            s3_url = 'packages-dev.wazuh.com'
+            s3_url = 'packages-dev.cyb3rhq.com'
         else:
-            s3_url = 'packages.wazuh.com'
+            s3_url = 'packages.cyb3rhq.com'
 
-        release = '.'.join(wazuh_version.split('.')[:2])
+        release = '.'.join(cyb3rhq_version.split('.')[:2])
 
 
-        logger.info(f'Installing the Wazuh manager with https://{s3_url}/{release}/wazuh-install.sh')
+        logger.info(f'Installing the Cyb3rhq manager with https://{s3_url}/{release}/cyb3rhq-install.sh')
 
         if HostInformation.has_curl(inventory_path):
             commands = [
-                f"curl -sO https://{s3_url}/{release}/wazuh-install.sh && sudo bash ./wazuh-install.sh -a --ignore-check"
+                f"curl -sO https://{s3_url}/{release}/cyb3rhq-install.sh && sudo bash ./cyb3rhq-install.sh -a --ignore-check"
             ]
         else:
             commands = [
-                f"wget https://{s3_url}/{release}/wazuh-install.sh && sudo bash ./wazuh-install.sh -a --ignore-check"
+                f"wget https://{s3_url}/{release}/cyb3rhq-install.sh && sudo bash ./cyb3rhq-install.sh -a --ignore-check"
             ]
 
 
-        logger.info(f'Installing Wazuh central components (AIO) in {HostInformation.get_os_name_and_version_from_inventory(inventory_path)}')
+        logger.info(f'Installing Cyb3rhq central components (AIO) in {HostInformation.get_os_name_and_version_from_inventory(inventory_path)}')
         ConnectionManager.execute_commands(inventory_path, commands)
 
     @staticmethod
     def uninstall_aio(inventory_path) -> None:
         """
-        Uninstall Wazuh Central Components (AIO) in the host
+        Uninstall Cyb3rhq Central Components (AIO) in the host
 
         Args:
             inventory_paths (str): hosts' inventory path
         """
 
-        commands = ['bash wazuh-install.sh --uninstall --ignore-check']
+        commands = ['bash cyb3rhq-install.sh --uninstall --ignore-check']
 
-        logger.info(f'Uninstalling Wazuh central components (AIO) in {HostInformation.get_os_name_and_version_from_inventory(inventory_path)}')
+        logger.info(f'Uninstalling Cyb3rhq central components (AIO) in {HostInformation.get_os_name_and_version_from_inventory(inventory_path)}')
         ConnectionManager.execute_commands(inventory_path, commands)
 
 
     @staticmethod
-    def _install_aio_callback(wazuh_params, host_params):
-        WazuhCentralComponents.install_aio(host_params, wazuh_params['wazuh_version'], wazuh_params['live'])
+    def _install_aio_callback(cyb3rhq_params, host_params):
+        Cyb3rhqCentralComponents.install_aio(host_params, cyb3rhq_params['cyb3rhq_version'], cyb3rhq_params['live'])
 
 
     @staticmethod
     def _uninstall_aio_callback(host_params):
-        WazuhCentralComponents.uninstall_aio(host_params)
+        Cyb3rhqCentralComponents.uninstall_aio(host_params)
 
 
     @staticmethod
@@ -132,35 +132,35 @@ class WazuhCentralComponents:
         return result
 
     @staticmethod
-    def perform_install_and_scan_for_aio(host_params, wazuh_params) -> None:
+    def perform_install_and_scan_for_aio(host_params, cyb3rhq_params) -> None:
         """
-        Coordinates the action of install the Wazuh central components (AIO) and compares the checkfiles
+        Coordinates the action of install the Cyb3rhq central components (AIO) and compares the checkfiles
 
         Args:
             host_params (str): host parameters
-            wazuh_params (str): wazuh parameters
+            cyb3rhq_params (str): cyb3rhq parameters
 
         """
-        action_callback = lambda: WazuhCentralComponents._install_aio_callback(wazuh_params, host_params)
-        result = WazuhCentralComponents.perform_action_and_scan(host_params, action_callback)
+        action_callback = lambda: Cyb3rhqCentralComponents._install_aio_callback(cyb3rhq_params, host_params)
+        result = Cyb3rhqCentralComponents.perform_action_and_scan(host_params, action_callback)
         logger.info(f'Pre and post install checkfile comparison in {HostInformation.get_os_name_and_version_from_inventory(host_params)}: {result}')
-        WazuhCentralComponents.assert_results(result)
+        Cyb3rhqCentralComponents.assert_results(result)
 
 
     @staticmethod
     def perform_uninstall_and_scan_for_aio(host_params) -> None:
         """
-        Coordinates the action of uninstall the Wazuh central components (AIO) and compares the checkfiles
+        Coordinates the action of uninstall the Cyb3rhq central components (AIO) and compares the checkfiles
 
         Args:
             host_params (str): host parameters
-            wazuh_params (str): wazuh parameters
+            cyb3rhq_params (str): cyb3rhq parameters
 
         """
-        action_callback = lambda: WazuhCentralComponents._uninstall_aio_callback(host_params)
-        result = WazuhCentralComponents.perform_action_and_scan(host_params, action_callback)
+        action_callback = lambda: Cyb3rhqCentralComponents._uninstall_aio_callback(host_params)
+        result = Cyb3rhqCentralComponents.perform_action_and_scan(host_params, action_callback)
         logger.info(f'Pre and post uninstall checkfile comparison in {HostInformation.get_os_name_and_version_from_inventory(host_params)}: {result}')
-        WazuhCentralComponents.assert_results(result)
+        Cyb3rhqCentralComponents.assert_results(result)
 
 
     @staticmethod

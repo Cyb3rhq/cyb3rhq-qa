@@ -2,10 +2,10 @@
 - hosts: localhost
   tasks:
   - docker_container:
-      name: wazuh-manager
+      name: cyb3rhq-manager
       state: absent
       force_kill: yes
   - docker_container:
-      name: wazuh-agent1
+      name: cyb3rhq-agent1
       state: absent
       force_kill: yes

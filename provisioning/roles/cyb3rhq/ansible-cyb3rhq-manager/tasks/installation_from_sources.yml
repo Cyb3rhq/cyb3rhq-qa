@@ -1,0 +1,125 @@
+---
+# Cyb3rhq Manager
+  - name: Check if Cyb3rhq Manager is already installed
+    stat:
+      path: "{{ cyb3rhq_dir }}/bin/cyb3rhq-control"
+    register: cyb3rhq_control_path
+
+  - name: Installing Cyb3rhq Manager from sources
+    block:
+      - name: Install dependencies to build Cyb3rhq packages
+        package:
+          name:
+            - make
+            - gcc
+            - automake
+            - autoconf
+            - libtool
+            - tar
+          state: present
+
+      - name: Install CMake 
+        include_tasks: install_cmake.yml
+
+      - name: Removing old files
+        file:
+          path: "/tmp/{{ cyb3rhq_manager_sources_installation.branch }}.tar.gz"
+          state: absent
+
+      - name: Removing old folders
+        file:
+          path: "/tmp/cyb3rhq-{{ cyb3rhq_manager_sources_installation.branch }}"
+          state: absent
+
+      - name: Installing policycoreutils-python (RedHat families)
+        package:
+          name:
+            - policycoreutils-python
+        when:
+          - ansible_os_family|lower == "redhat"
+
+      - name: Installing policycoreutils-python-utils (Debian families)
+        package:
+          name:
+            - libc6-dev
+            - curl
+            - policycoreutils
+        when:
+          - ansible_os_family|lower == "debian"
+
+      - name: Remove old repository folder
+        file:
+          path: /tmp/cyb3rhq-{{ cyb3rhq_manager_sources_installation.branch }}
+          state: absent
+
+      - name: Download required packages from github.com/cyb3rhq/cyb3rhq
+        get_url:
+          url: "https://github.com/cyb3rhq/cyb3rhq/archive/{{ cyb3rhq_manager_sources_installation.branch }}.tar.gz"
+          dest: "/tmp/{{ cyb3rhq_manager_sources_installation.branch }}.tar.gz"
+        delegate_to: "{{ inventory_hostname }}"
+
+      - name: Create folder to extract Cyb3rhq branch
+        file:
+          path: "/tmp/cyb3rhq-{{ cyb3rhq_manager_sources_installation.branch }}"
+          owner: root
+          group: root
+          mode: 0644
+          state: directory
+
+    # When downloading "v3.11.0" extracted folder name is 3.11.0.
+
+    # Explicitly creating the folder with proper naming and striping first level in .tar.gz file
+
+      - name: Extract downloaded Cyb3rhq branch from Github # Using shell instead of unarchive due to that module not working properlyh with --strip
+        command: >-
+          tar -xzvf /tmp/{{ cyb3rhq_manager_sources_installation.branch }}.tar.gz
+          --strip 1
+          --directory /tmp/cyb3rhq-{{ cyb3rhq_manager_sources_installation.branch }}
+        register: cyb3rhq_untar
+        changed_when: cyb3rhq_untar.rc ==0
+        args:
+          warn: false
+
+      - name: Clean remaining files from others builds
+        command: "make -C src {{ item }}"
+        args:
+          chdir: "/tmp/cyb3rhq-{{ cyb3rhq_manager_sources_installation.branch }}/src/"
+        with_items:
+          - "clean"
+          - "clean-deps"
+        register: clean_result
+        changed_when: clean_result.rc == 0
+        failed_when: false
+
+      - name: Render the "preloaded-vars.conf" file
+        template:
+          src: "templates/preloaded_vars_manager.conf.j2"
+          dest: "/tmp/cyb3rhq-{{ cyb3rhq_manager_sources_installation.branch }}/etc/preloaded-vars.conf"
+          owner: root
+          group: root
+          mode: 0644
+
+      - name: Executing "install.sh" script to build and install the Cyb3rhq Manager
+        shell: ./install.sh > /tmp/build_cyb3rhq_manager_log.txt
+        register: installation_result
+        changed_when: installation_result == 0
+        args:
+          chdir: "/tmp/cyb3rhq-{{ cyb3rhq_manager_sources_installation.branch }}"
+        environment:
+          PATH: /usr/local/bin:{{ ansible_env.PATH }}
+
+      - name: Cleanup downloaded files
+        file:
+          path: "/tmp/{{ cyb3rhq_manager_sources_installation.branch }}.tar.gz"
+          state: absent
+
+      - name: Cleanup created folders
+        file:
+          path: "/tmp/cyb3rhq-{{ cyb3rhq_manager_sources_installation.branch }}"
+          state: absent
+
+    when:
+      - not cyb3rhq_control_path.stat.exists
+      - cyb3rhq_manager_sources_installation.enabled
+    tags:
+      - manager

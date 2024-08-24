@@ -1,15 +1,15 @@
 '''
-copyright: Copyright (C) 2015-2021, Wazuh Inc.
+copyright: Copyright (C) 2015-2021, Cyb3rhq Inc.
 
-           Created by Wazuh, Inc. <info@wazuh.com>.
+           Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 
            This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 type: integration
 
-brief: The 'wazuh-analysisd' daemon receives the log messages and compares them to the rules.
+brief: The 'cyb3rhq-analysisd' daemon receives the log messages and compares them to the rules.
        It then creates an alert when a log message matches an applicable rule.
-       Specifically, these tests will check if the 'wazuh-analysisd' daemon correctly handles
+       Specifically, these tests will check if the 'cyb3rhq-analysisd' daemon correctly handles
        incoming events related to file scanning.
 
 components:
@@ -21,8 +21,8 @@ targets:
     - manager
 
 daemons:
-    - wazuh-analysisd
-    - wazuh-db
+    - cyb3rhq-analysisd
+    - cyb3rhq-db
 
 os_platform:
     - linux
@@ -39,7 +39,7 @@ os_version:
     - Ubuntu Bionic
 
 references:
-    - https://documentation.wazuh.com/current/user-manual/reference/daemons/wazuh-analysisd.html
+    - https://documentation.cyb3rhq.com/current/user-manual/reference/daemons/cyb3rhq-analysisd.html
 
 tags:
     - events
@@ -48,10 +48,10 @@ import os
 
 import pytest
 import yaml
-from wazuh_testing import global_parameters
-from wazuh_testing.analysis import callback_analysisd_message, callback_wazuh_db_scan
-from wazuh_testing.tools import WAZUH_PATH, LOG_FILE_PATH
-from wazuh_testing.tools.monitoring import ManInTheMiddle
+from cyb3rhq_testing import global_parameters
+from cyb3rhq_testing.analysis import callback_analysisd_message, callback_cyb3rhq_db_scan
+from cyb3rhq_testing.tools import CYB3RHQ_PATH, LOG_FILE_PATH
+from cyb3rhq_testing.tools.monitoring import ManInTheMiddle
 
 # Marks
 
@@ -67,20 +67,20 @@ with open(messages_path) as f:
 # Variables
 
 log_monitor_paths = [LOG_FILE_PATH]
-wdb_path = os.path.join(os.path.join(WAZUH_PATH, 'queue', 'db', 'wdb'))
-analysis_path = os.path.join(os.path.join(WAZUH_PATH, 'queue', 'sockets', 'queue'))
+wdb_path = os.path.join(os.path.join(CYB3RHQ_PATH, 'queue', 'db', 'wdb'))
+analysis_path = os.path.join(os.path.join(CYB3RHQ_PATH, 'queue', 'sockets', 'queue'))
 
 receiver_sockets_params = [(analysis_path, 'AF_UNIX', 'UDP')]
 
 mitm_wdb = ManInTheMiddle(address=wdb_path, family='AF_UNIX', connection_protocol='TCP')
 mitm_analysisd = ManInTheMiddle(address=analysis_path, family='AF_UNIX', connection_protocol='UDP')
 # monitored_sockets_params is a List of daemons to start with optional ManInTheMiddle to monitor
-# List items -> (wazuh_daemon: str,(
+# List items -> (cyb3rhq_daemon: str,(
 #                mitm: ManInTheMiddle
 #                daemon_first: bool))
-# Example1 -> ('wazuh-clusterd', None)              Only start wazuh-clusterd with no MITM
-# Example2 -> ('wazuh-clusterd', (my_mitm, True))   Start MITM and then wazuh-clusterd
-monitored_sockets_params = [('wazuh-db', mitm_wdb, True), ('wazuh-analysisd', mitm_analysisd, True)]
+# Example1 -> ('cyb3rhq-clusterd', None)              Only start cyb3rhq-clusterd with no MITM
+# Example2 -> ('cyb3rhq-clusterd', (my_mitm, True))   Start MITM and then cyb3rhq-clusterd
+monitored_sockets_params = [('cyb3rhq-db', mitm_wdb, True), ('cyb3rhq-analysisd', mitm_analysisd, True)]
 
 receiver_sockets, monitored_sockets, log_monitors = None, None, None  # Set in the fixtures
 
@@ -93,11 +93,11 @@ receiver_sockets, monitored_sockets, log_monitors = None, None, None  # Set in t
 def test_scan_messages(configure_sockets_environment, connect_to_sockets_module, wait_for_analysisd_startup,
                        test_case: list):
     '''
-    description: Check if when the 'wazuh-analysisd' daemon socket receives a message with
+    description: Check if when the 'cyb3rhq-analysisd' daemon socket receives a message with
                  a file scanning-related event, it generates the corresponding alert
-                 that sends to the 'wazuh-db' daemon socket.
+                 that sends to the 'cyb3rhq-db' daemon socket.
 
-    wazuh_min_version: 4.2.0
+    cyb3rhq_min_version: 4.2.0
 
     tier: 0
 
@@ -110,7 +110,7 @@ def test_scan_messages(configure_sockets_environment, connect_to_sockets_module,
             brief: Module scope version of 'connect_to_sockets' fixture.
         - wait_for_analysisd_startup:
             type: fixture
-            brief: Wait until the 'wazuh-analysisd' has begun and the 'alerts.json' file is created.
+            brief: Wait until the 'cyb3rhq-analysisd' has begun and the 'alerts.json' file is created.
         - test_case:
             type: list
             brief: List of tests to be performed.
@@ -133,5 +133,5 @@ def test_scan_messages(configure_sockets_environment, connect_to_sockets_module,
         expected = callback_analysisd_message(stage['output'])
         receiver_sockets[0].send(stage['input'])
         response = monitored_sockets[0].start(timeout=global_parameters.default_timeout,
-                                              callback=callback_wazuh_db_scan).result()
+                                              callback=callback_cyb3rhq_db_scan).result()
         assert response == expected, 'Failed test case stage {}: {}'.format(test_case.index(stage) + 1, stage['stage'])

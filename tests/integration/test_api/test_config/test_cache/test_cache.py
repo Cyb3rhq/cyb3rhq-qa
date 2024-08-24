@@ -1,15 +1,15 @@
 '''
-copyright: Copyright (C) 2015-2022, Wazuh Inc.
+copyright: Copyright (C) 2015-2022, Cyb3rhq Inc.
 
-           Created by Wazuh, Inc. <info@wazuh.com>.
+           Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 
            This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 type: integration
 
-brief: These tests will check if the cache feature of the API handled by the 'wazuh-apid' daemon
-       is working properly. The Wazuh API is an open source 'RESTful' API that allows for interaction
-       with the Wazuh manager from a web browser, command line tool like 'cURL' or any script
+brief: These tests will check if the cache feature of the API handled by the 'cyb3rhq-apid' daemon
+       is working properly. The Cyb3rhq API is an open source 'RESTful' API that allows for interaction
+       with the Cyb3rhq manager from a web browser, command line tool like 'cURL' or any script
        or program that can make web requests.
 
 components:
@@ -21,10 +21,10 @@ targets:
     - manager
 
 daemons:
-    - wazuh-apid
-    - wazuh-analysisd
-    - wazuh-syscheckd
-    - wazuh-db
+    - cyb3rhq-apid
+    - cyb3rhq-analysisd
+    - cyb3rhq-syscheckd
+    - cyb3rhq-db
 
 os_platform:
     - linux
@@ -41,8 +41,8 @@ os_version:
     - Ubuntu Bionic
 
 references:
-    - https://documentation.wazuh.com/current/user-manual/api/getting-started.html
-    - https://documentation.wazuh.com/current/user-manual/api/configuration.html#cache
+    - https://documentation.cyb3rhq.com/current/user-manual/api/getting-started.html
+    - https://documentation.cyb3rhq.com/current/user-manual/api/configuration.html#cache
 
 tags:
     - api
@@ -52,8 +52,8 @@ import time
 
 import pytest
 import requests
-from wazuh_testing.fim import create_file, delete_file, REGULAR, WAZUH_PATH
-from wazuh_testing.tools.configuration import check_apply_test, get_api_conf
+from cyb3rhq_testing.fim import create_file, delete_file, REGULAR, CYB3RHQ_PATH
+from cyb3rhq_testing.tools.configuration import check_apply_test, get_api_conf
 
 # Marks
 
@@ -61,7 +61,7 @@ pytestmark = pytest.mark.server
 
 # Variables
 
-rules_directory = os.path.join(WAZUH_PATH, 'ruleset', 'rules')
+rules_directory = os.path.join(CYB3RHQ_PATH, 'ruleset', 'rules')
 test_file = 'api_test.xml'
 
 # Configurations
@@ -106,7 +106,7 @@ def test_cache(tags_to_apply, get_configuration, configure_api_environment, rest
                  a period established in the configuration, even though a new file
                  has been created during the process.
 
-    wazuh_min_version: 4.2.0
+    cyb3rhq_min_version: 4.2.0
 
     tier: 0
 

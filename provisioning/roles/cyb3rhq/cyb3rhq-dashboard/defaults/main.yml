@@ -1,0 +1,32 @@
+---
+
+# Custom package installation
+cyb3rhq_custom_packages_installation_indexer_enabled: false
+cyb3rhq_custom_packages_installation_indexer_deb_url: ""
+cyb3rhq_custom_packages_installation_indexer_rpm_url: ""
+
+# Dashboard configuration
+indexer_http_port: 9200
+indexer_api_protocol: https
+dashboard_conf_path: /etc/cyb3rhq-dashboard/
+dashboard_node_name: node-1
+dashboard_server_host: "0.0.0.0"
+dashboard_server_port: "443"
+dashboard_server_name: "dashboard"
+indexer_cluster_nodes:
+  - 127.0.0.1
+
+# API credentials
+cyb3rhq_api_credentials:
+  - id: "default"
+    url: "https://localhost"
+    port: 55000
+    username: "cyb3rhq"
+    password: "cyb3rhq"
+
+# Dashboard Security
+dashboard_security: true
+indexer_admin_password: changeme
+dashboard_user: kibanaserver
+dashboard_password: changeme
+local_certs_path: "{{ playbook_dir }}/indexer/certificates"

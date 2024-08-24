@@ -1,14 +1,14 @@
 all:
   hosts:
-    wazuh-manager:
+    cyb3rhq-manager:
       ansible_connection: docker
       ansible_python_interpreter: python
-    wazuh-agent1:
+    cyb3rhq-agent1:
       ansible_connection: docker
       ansible_python_interpreter: python
-    wazuh-agent2:
+    cyb3rhq-agent2:
       ansible_connection: docker
       ansible_python_interpreter: python
-    wazuh-agent3:
+    cyb3rhq-agent3:
       ansible_connection: docker
       ansible_python_interpreter: python

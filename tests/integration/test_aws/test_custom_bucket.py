@@ -1,9 +1,9 @@
 import os
 
 import pytest
-from wazuh_testing import TEMPLATE_DIR, TEST_CASES_DIR, global_parameters, T_10
-from wazuh_testing.modules.aws import event_monitor, local_internal_options
-from wazuh_testing.tools.configuration import (
+from cyb3rhq_testing import TEMPLATE_DIR, TEST_CASES_DIR, global_parameters, T_10
+from cyb3rhq_testing.modules.aws import event_monitor, local_internal_options
+from cyb3rhq_testing.tools.configuration import (
     get_test_cases_data,
     load_configuration_template,
 )
@@ -34,27 +34,27 @@ t1_configurations = load_configuration_template(
 
 @pytest.mark.tier(level=0)
 @pytest.mark.parametrize('configuration, metadata', zip(t1_configurations, t1_configuration_metadata), ids=t1_case_ids)
-def test_custom_bucket_defaults(configuration, metadata, load_wazuh_basic_configuration, set_wazuh_configuration,
+def test_custom_bucket_defaults(configuration, metadata, load_cyb3rhq_basic_configuration, set_cyb3rhq_configuration,
                                 configure_local_internal_options_function, truncate_monitored_files,
-                                restart_wazuh_function, file_monitoring):
+                                restart_cyb3rhq_function, file_monitoring):
     """
     description: Test the AWS S3 custom bucket module is invoked with the expected parameters and no error occurs.
 
     test_phases:
         - setup:
-            - Load Wazuh light configuration.
+            - Load Cyb3rhq light configuration.
             - Apply ossec.conf configuration changes according to the configuration template and use case.
             - Apply custom settings in local_internal_options.conf.
-            - Truncate wazuh logs.
-            - Restart wazuh-manager service to apply configuration changes.
+            - Truncate cyb3rhq logs.
+            - Restart cyb3rhq-manager service to apply configuration changes.
         - test:
             - Check in the ossec.log that a line has appeared calling the module with correct parameters.
             - Check in the ossec.log that no errors occurs.
         - teardown:
-            - Truncate wazuh logs.
+            - Truncate cyb3rhq logs.
             - Restore initial configuration, both ossec.conf and local_internal_options.conf.
 
-    wazuh_min_version: 4.7.0
+    cyb3rhq_min_version: 4.7.0
 
     parameters:
         - configuration:
@@ -66,10 +66,10 @@ def test_custom_bucket_defaults(configuration, metadata, load_wazuh_basic_config
         - upload_and_delete_file_to_s3:
             type: fixture
             brief: Upload a file to S3 bucket for the day of the execution.
-        - load_wazuh_basic_configuration:
+        - load_cyb3rhq_basic_configuration:
             type: fixture
-            brief: Load basic wazuh configuration.
-        - set_wazuh_configuration:
+            brief: Load basic cyb3rhq configuration.
+        - set_cyb3rhq_configuration:
             type: fixture
             brief: Apply changes to the ossec.conf configuration.
         - configure_local_internal_options_function:
@@ -77,10 +77,10 @@ def test_custom_bucket_defaults(configuration, metadata, load_wazuh_basic_config
             brief: Apply changes to the local_internal_options.conf configuration.
         - truncate_monitored_files:
             type: fixture
-            brief: Truncate wazuh logs.
-        - restart_wazuh_function:
+            brief: Truncate cyb3rhq logs.
+        - restart_cyb3rhq_function:
             type: fixture
-            brief: Restart the wazuh service.
+            brief: Restart the cyb3rhq service.
         - file_monitoring:
             type: fixture
             brief: Handle the monitoring of a specified file.
@@ -139,31 +139,31 @@ t2_configurations = load_configuration_template(
 
 @pytest.mark.tier(level=0)
 @pytest.mark.parametrize('configuration, metadata', zip(t2_configurations, t2_configuration_metadata), ids=t2_case_ids)
-def test_custom_bucket_logs(configuration, metadata, load_wazuh_basic_configuration, set_wazuh_configuration,
+def test_custom_bucket_logs(configuration, metadata, load_cyb3rhq_basic_configuration, set_cyb3rhq_configuration,
                             configure_local_internal_options_function, truncate_monitored_files,
-                            restart_wazuh_function, file_monitoring, upload_and_delete_file_to_s3):
+                            restart_cyb3rhq_function, file_monitoring, upload_and_delete_file_to_s3):
     """
     description: Test the AWS S3 custom bucket module is invoked with the expected parameters and retrieve
     the messages from the SQS Queue.
 
     test_phases:
         - setup:
-            - Load Wazuh light configuration.
+            - Load Cyb3rhq light configuration.
             - Apply ossec.conf configuration changes according to the configuration template and use case.
             - Apply custom settings in local_internal_options.conf.
-            - Truncate wazuh logs.
-            - Restart wazuh-manager service to apply configuration changes.
+            - Truncate cyb3rhq logs.
+            - Restart cyb3rhq-manager service to apply configuration changes.
             - Uploads a file to the S3 Bucket.
         - test:
             - Check in the log that the module was called with correct parameters.
             - Check that the module retrieved a message from the SQS Queue.
             - Check that the module processed a message from the SQS Queue.
         - teardown:
-            - Truncate wazuh logs.
+            - Truncate cyb3rhq logs.
             - Restore initial configuration, both ossec.conf and local_internal_options.conf.
             - Deletes the file created in the S3 Bucket.
 
-    wazuh_min_version: 4.7.0
+    cyb3rhq_min_version: 4.7.0
 
     parameters:
         - configuration:
@@ -175,10 +175,10 @@ def test_custom_bucket_logs(configuration, metadata, load_wazuh_basic_configurat
         - upload_and_delete_file_to_s3:
             type: fixture
             brief: Upload a file to S3 bucket for the day of the execution.
-        - load_wazuh_basic_configuration:
+        - load_cyb3rhq_basic_configuration:
             type: fixture
-            brief: Load basic wazuh configuration.
-        - set_wazuh_configuration:
+            brief: Load basic cyb3rhq configuration.
+        - set_cyb3rhq_configuration:
             type: fixture
             brief: Apply changes to the ossec.conf configuration.
         - configure_local_internal_options_function:
@@ -186,10 +186,10 @@ def test_custom_bucket_logs(configuration, metadata, load_wazuh_basic_configurat
             brief: Apply changes to the local_internal_options.conf configuration.
         - truncate_monitored_files:
             type: fixture
-            brief: Truncate wazuh logs.
-        - restart_wazuh_function:
+            brief: Truncate cyb3rhq logs.
+        - restart_cyb3rhq_function:
             type: fixture
-            brief: Restart the wazuh service.
+            brief: Restart the cyb3rhq service.
         - file_monitoring:
             type: fixture
             brief: Handle the monitoring of a specified file.

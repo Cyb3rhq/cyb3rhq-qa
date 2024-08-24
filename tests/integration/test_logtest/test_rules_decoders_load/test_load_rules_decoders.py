@@ -1,16 +1,16 @@
 '''
-copyright: Copyright (C) 2015-2022, Wazuh Inc.
+copyright: Copyright (C) 2015-2022, Cyb3rhq Inc.
 
-           Created by Wazuh, Inc. <info@wazuh.com>.
+           Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 
            This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 type: integration
 
-brief: The 'wazuh-logtest' tool allows the testing and verification of rules and decoders against provided log examples
-       remotely inside a sandbox in 'wazuh-analysisd'. This functionality is provided by the manager, whose work
+brief: The 'cyb3rhq-logtest' tool allows the testing and verification of rules and decoders against provided log examples
+       remotely inside a sandbox in 'cyb3rhq-analysisd'. This functionality is provided by the manager, whose work
        parameters are configured in the ossec.conf file in the XML rule_test section. Test logs can be evaluated through
-       the 'wazuh-logtest' tool or by making requests via RESTful API. These tests will check if the logtest
+       the 'cyb3rhq-logtest' tool or by making requests via RESTful API. These tests will check if the logtest
        configuration is valid. Also checks rules, decoders, decoders, alerts matching logs correctly.
 
 components:
@@ -22,7 +22,7 @@ targets:
     - manager
 
 daemons:
-    - wazuh-analysisd
+    - cyb3rhq-analysisd
 
 os_platform:
     - linux
@@ -39,11 +39,11 @@ os_version:
     - Ubuntu Bionic
 
 references:
-    - https://documentation.wazuh.com/current/user-manual/reference/tools/wazuh-logtest.html
-    - https://documentation.wazuh.com/current/user-manual/capabilities/wazuh-logtest/index.html
-    - https://documentation.wazuh.com/current/user-manual/ruleset/testing.html?highlight=logtest
-    - https://documentation.wazuh.com/current/user-manual/capabilities/wazuh-logtest/logtest-configuration.html
-    - https://documentation.wazuh.com/current/user-manual/reference/daemons/wazuh-analysisd.html
+    - https://documentation.cyb3rhq.com/current/user-manual/reference/tools/cyb3rhq-logtest.html
+    - https://documentation.cyb3rhq.com/current/user-manual/capabilities/cyb3rhq-logtest/index.html
+    - https://documentation.cyb3rhq.com/current/user-manual/ruleset/testing.html?highlight=logtest
+    - https://documentation.cyb3rhq.com/current/user-manual/capabilities/cyb3rhq-logtest/logtest-configuration.html
+    - https://documentation.cyb3rhq.com/current/user-manual/reference/daemons/cyb3rhq-analysisd.html
 
 tags:
     - logtest_configuration
@@ -54,8 +54,8 @@ import shutil
 
 import pytest
 import yaml
-from wazuh_testing.tools import WAZUH_PATH
-from wazuh_testing.tools.monitoring import SocketController
+from cyb3rhq_testing.tools import CYB3RHQ_PATH
+from cyb3rhq_testing.tools.monitoring import SocketController
 
 # Marks
 
@@ -71,7 +71,7 @@ with open(messages_path) as f:
 
 # Variables
 
-logtest_path = os.path.join(os.path.join(WAZUH_PATH, 'queue', 'sockets', 'logtest'))
+logtest_path = os.path.join(os.path.join(CYB3RHQ_PATH, 'queue', 'sockets', 'logtest'))
 
 
 # Functions used on the test
@@ -104,19 +104,19 @@ def create_dummy_session():
                          ids=[test_case['name'] for test_case in test_cases])
 def test_load_rules_decoders(restart_required_logtest_daemons, wait_for_logtest_startup, test_case):
     '''
-    description: Check if 'wazuh-logtest' does produce the right decoder/rule matching when processing a log under
+    description: Check if 'cyb3rhq-logtest' does produce the right decoder/rule matching when processing a log under
                  different sets of configurations. To do this, it creates backup rules and decoders and copies the test
                  case rules and decoders to restore after the checks. It sends the requests to the logtest socket and
                  checks if the outputs match with the expected test cases.
 
-    wazuh_min_version: 4.2.0
+    cyb3rhq_min_version: 4.2.0
 
     tier: 0
 
     parameters:
         - restart_required_logtest_daemons:
             type: fixture
-            brief: Wazuh logtests daemons handler.
+            brief: Cyb3rhq logtests daemons handler.
         - wait_for_logtest_startup:
             type: fixture
             brief: Wait until logtest has begun.
@@ -155,7 +155,7 @@ def test_load_rules_decoders(restart_required_logtest_daemons, wait_for_logtest_
         file_test = test_case['local_rules']
         # copy test rules
         shutil.copy(test_data_path + file_test, '/var/ossec/etc/rules/local_rules.xml')
-        shutil.chown('/var/ossec/etc/rules/local_rules.xml', "wazuh", "wazuh")
+        shutil.chown('/var/ossec/etc/rules/local_rules.xml', "cyb3rhq", "cyb3rhq")
 
     if 'local_decoders' in test_case:
         # save current decoders
@@ -165,7 +165,7 @@ def test_load_rules_decoders(restart_required_logtest_daemons, wait_for_logtest_
         file_test = test_case['local_decoders']
         # copy test decoder
         shutil.copy(test_data_path + file_test, '/var/ossec/etc/decoders/local_decoder.xml')
-        shutil.chown('/var/ossec/etc/decoders/local_decoder.xml', "wazuh", "wazuh")
+        shutil.chown('/var/ossec/etc/decoders/local_decoder.xml', "cyb3rhq", "cyb3rhq")
 
     # Create session token
     if 'same_session' in test_case and test_case['same_session']:
@@ -229,12 +229,12 @@ def test_load_rules_decoders(restart_required_logtest_daemons, wait_for_logtest_
         # restore previous rules
         shutil.move('/var/ossec/etc/rules/local_rules.xml.cpy',
                     '/var/ossec/etc/rules/local_rules.xml')
-    shutil.chown('/var/ossec/etc/rules/local_rules.xml', "wazuh", "wazuh")
+    shutil.chown('/var/ossec/etc/rules/local_rules.xml', "cyb3rhq", "cyb3rhq")
 
     if 'local_decoders' in test_case:
         # restore previous decoders
         shutil.move('/var/ossec/etc/decoders/local_decoder.xml.cpy',
                     '/var/ossec/etc/decoders/local_decoder.xml')
-        shutil.chown('/var/ossec/etc/decoders/local_decoder.xml', "wazuh", "wazuh")
+        shutil.chown('/var/ossec/etc/decoders/local_decoder.xml', "cyb3rhq", "cyb3rhq")
 
     assert not errors, "Failed stage(s) :{}".format("\n".join(errors))

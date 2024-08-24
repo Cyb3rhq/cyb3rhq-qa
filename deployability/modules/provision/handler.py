@@ -1,5 +1,5 @@
-# Copyright (C) 2015, Wazuh Inc.
-# Created by Wazuh, Inc. <info@wazuh.com>.
+# Copyright (C) 2015, Cyb3rhq Inc.
+# Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 # This program is a free software; you can redistribute it and/or modify it under the terms of GPLv2
 from pathlib import Path
 
@@ -36,15 +36,15 @@ class ProvisionHandler:
             raise ValueError(f"Unsupported action: {action}")
         if not method in self._methods:
             raise ValueError(f"Unsupported method: {method}")
-        if not "wazuh" in component_info.component and method.lower() == 'assistant':
-            raise ValueError(f"Assistant actions is only supported for Wazuh components.")
+        if not "cyb3rhq" in component_info.component and method.lower() == 'assistant':
+            raise ValueError(f"Assistant actions is only supported for Cyb3rhq components.")
 
         # We cant uninstall from source.
         if action == "uninstall" and method.lower() == "source":
             logger.warning(f"Uninstall from source not supported. Using package.")
             method = "package"
         # Agent can not be installed from assistant.
-        if 'wazuh-agent' in component_info.component and method.lower() == "assistant":
+        if 'cyb3rhq-agent' in component_info.component and method.lower() == "assistant":
             logger.warning(f"Agent can not be installed from assistant. Using package.")
             method = "package"
 
@@ -62,9 +62,9 @@ class ProvisionHandler:
         Returns:
             str: The path to the templates.
         """
-        # If the component is wazuh, we need to change the templates path.
-        if "wazuh" in self.component_info.component or self.method == "assistant":
-            self._base_templates_path = f'{self._base_templates_path}/wazuh'
+        # If the component is cyb3rhq, we need to change the templates path.
+        if "cyb3rhq" in self.component_info.component or self.method == "assistant":
+            self._base_templates_path = f'{self._base_templates_path}/cyb3rhq'
 
         return f"{self._base_templates_path}/{self.method}/{self.action}"
 
@@ -81,7 +81,7 @@ class ProvisionHandler:
             case 'assistant':
                 return ["download.j2", f"{self.action}.j2"]
             case 'source':
-                # This will be kept as it could be used in the wazuh installation from sources.
+                # This will be kept as it could be used in the cyb3rhq installation from sources.
                 component_file = f"{self.component_info.component}.j2"
                 if not Path(f"{self.templates_path}/{component_file}").exists():
                     # The source installation is always component specific.

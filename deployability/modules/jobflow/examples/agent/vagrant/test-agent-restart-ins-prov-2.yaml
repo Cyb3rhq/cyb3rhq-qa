@@ -79,7 +79,7 @@ tasks:
           - modules/provision/main.py
           - inventory: "{working-dir}/manager-{manager-os}/inventory.yaml"
           - install:
-            - component: wazuh-manager
+            - component: cyb3rhq-manager
               type: assistant
               version: 4.7.4
               live: False
@@ -100,7 +100,7 @@ tasks:
           - dependencies:
             - manager: "{working-dir}/manager-{manager-os}/inventory.yaml"
           - install:
-            - component: wazuh-agent
+            - component: cyb3rhq-agent
               type: package
               version: 4.7.4
               live: False
@@ -122,12 +122,12 @@ tasks:
         args:
           - modules/testing/main.py
           - targets:
-            - wazuh-1: "{working-dir}/manager-{manager-os}/inventory.yaml"
+            - cyb3rhq-1: "{working-dir}/manager-{manager-os}/inventory.yaml"
             - agent: "{working-dir}/agent-{agent}/inventory.yaml"
           - tests: "restart"
           - component: "agent"
-          - wazuh-version: "4.7.4"
-          - wazuh-revision: "40717"
+          - cyb3rhq-version: "4.7.4"
+          - cyb3rhq-revision: "40717"
           - live: False
     foreach:
       - variable: agent-os

@@ -1,0 +1,9 @@
+---
+- name: restart cyb3rhq-agent
+  service: name=cyb3rhq-agent state=restarted enabled=yes
+
+- name: Windows | Restart Cyb3rhq Agent
+  win_service: name=Cyb3rhqSvc start_mode=auto state=restarted
+
+- name: MacOS | Restart Cyb3rhq Agent
+  shell: "{{ macos_cyb3rhq_dir }}/bin/cyb3rhq-control restart"

@@ -1,5 +1,5 @@
-# Copyright (C) 2015, Wazuh Inc.
-# Created by Wazuh, Inc. <info@wazuh.com>.
+# Copyright (C) 2015, Cyb3rhq Inc.
+# Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 # This program is a free software; you can redistribute it and/or modify it under the terms of GPLv2
 """Unit Tests for the ProvisionHandler class."""
 from unittest.mock import patch, MagicMock
@@ -9,14 +9,14 @@ from modules.provision.handler import ProvisionHandler
 from modules.provision.models import ComponentInfo
 
 @pytest.mark.parametrize('component, action, method',
-                         [('wazuh-manager', 'install', 'package'),
-                          ('wazuh-manager', 'install', 'assistant'),
-                          ('wazuh-manager', 'install', 'source'),
-                          ('wazuh-manager', 'uninstall', 'package'),
-                          ('wazuh-manager', 'uninstall', 'assistant'),
-                          ('wazuh-manager', 'uninstall', 'source'),
-                          ('wazuh-agent', 'uninstall', 'source'),
-                          ('wazuh-agent', 'uninstall', 'assistant'),
+                         [('cyb3rhq-manager', 'install', 'package'),
+                          ('cyb3rhq-manager', 'install', 'assistant'),
+                          ('cyb3rhq-manager', 'install', 'source'),
+                          ('cyb3rhq-manager', 'uninstall', 'package'),
+                          ('cyb3rhq-manager', 'uninstall', 'assistant'),
+                          ('cyb3rhq-manager', 'uninstall', 'source'),
+                          ('cyb3rhq-agent', 'uninstall', 'source'),
+                          ('cyb3rhq-agent', 'uninstall', 'assistant'),
 ])
 @pytest.mark.parametrize('logger_mock',
                          [{'logger_to_patch': 'modules.provision.handler.logger'}],
@@ -46,7 +46,7 @@ def test_provision_handler_constructor(component: str, action: str, method: str,
     if action == 'uninstall' and method == 'source':
         logger_mock.warning.assert_called_once_with("Uninstall from source not supported. Using package.")
         method = 'package'
-    if 'wazuh-agent' in component and method == 'assistant':
+    if 'cyb3rhq-agent' in component and method == 'assistant':
         logger_mock.warning.assert_called_once_with("Agent can not be installed from assistant. Using package.")
         method = 'package'
     assert handler.component_info == info
@@ -58,12 +58,12 @@ def test_provision_handler_constructor(component: str, action: str, method: str,
 
 
 @pytest.mark.parametrize('component, action, method, to_match',
-                         [('wazuh-manager', 'INSTALL', 'package', 'Unsupported action: INSTALL'),
-                          ('wazuh-manager', 'UNINSTALL', 'assistant', 'Unsupported action: UNINSTALL'),
-                          ('wazuh-manager', 'other', 'source', 'Unsupported action: other'),
-                          ('wazuh-manager', 'uninstall', 'other', 'Unsupported method: other'),
+                         [('cyb3rhq-manager', 'INSTALL', 'package', 'Unsupported action: INSTALL'),
+                          ('cyb3rhq-manager', 'UNINSTALL', 'assistant', 'Unsupported action: UNINSTALL'),
+                          ('cyb3rhq-manager', 'other', 'source', 'Unsupported action: other'),
+                          ('cyb3rhq-manager', 'uninstall', 'other', 'Unsupported method: other'),
                           ('indexer', 'uninstall', 'assistant',
-                           "Assistant actions is only supported for Wazuh components."),
+                           "Assistant actions is only supported for Cyb3rhq components."),
 ])
 def test_provision_handler_constructor_fail(component: str, action: str, method: str, to_match: str):
     """Test ProvisionHandler constructor failure flows.
@@ -85,8 +85,8 @@ def test_provision_handler_constructor_fail(component: str, action: str, method:
 
 
 @pytest.mark.parametrize('component, method, action',
-                         [('wazuh-manager', 'package', 'install'),
-                          ('wazuh-manager', 'assistant', 'uninstall'),
+                         [('cyb3rhq-manager', 'package', 'install'),
+                          ('cyb3rhq-manager', 'assistant', 'uninstall'),
                           ('indexer', 'source', 'install'),
 ])
 def test_provision_handler_get_templates_path(component: str, method: str, action:str):
@@ -109,10 +109,10 @@ def test_provision_handler_get_templates_path(component: str, method: str, actio
 
 
 @pytest.mark.parametrize('component, method, action, expected_list',
-                         [('wazuh-manager', 'package', 'install',
+                         [('cyb3rhq-manager', 'package', 'install',
                            ["set_repo.j2", "install.j2", "register.j2", "service.j2"]),
                           ('indexer', 'source', 'install', ['indexer.j2']),
-                          ('wazuh-manager', 'assistant', 'uninstall', []),
+                          ('cyb3rhq-manager', 'assistant', 'uninstall', []),
 ])
 def test_provision_handler_get_templates_order(component: str, method: str, action:str, expected_list: list):
     """Test ProvisionHandler._get_templates_order method.
@@ -142,8 +142,8 @@ def test_provision_handler_get_templates_order_fail():
 
 
 @pytest.mark.parametrize('component, method, action',
-                         [('wazuh-manager', 'package', 'install'),
-                          ('wazuh-manager', 'assistant', 'uninstall'),
+                         [('cyb3rhq-manager', 'package', 'install'),
+                          ('cyb3rhq-manager', 'assistant', 'uninstall'),
                           ('indexer', 'source', 'install'),
 ])
 def test_provision_handler_generate_dict(component: str, method: str, action:str):

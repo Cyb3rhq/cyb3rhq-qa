@@ -19,7 +19,7 @@
 
     - name: Configure local rules
       include_role:
-        name: manage_wazuh_configurations
+        name: manage_cyb3rhq_configurations
         tasks_from: write_local_rules.yaml
       vars:
         config_block: |
@@ -60,10 +60,10 @@
         line: <logall_json>yes</logall_json>
         backrefs: true
 
-    - name: Restart wazuh-manager
+    - name: Restart cyb3rhq-manager
       include_role:
-        name: manage_wazuh
-        tasks_from: restart_wazuh.yaml
+        name: manage_cyb3rhq
+        tasks_from: restart_cyb3rhq.yaml
       vars:
         os: linux
 
@@ -110,10 +110,10 @@
         dest: C:\temp
         remote_src: true
 
-    - name: Configure Wazuh to collect Sysmon events
+    - name: Configure Cyb3rhq to collect Sysmon events
       include_role:
-        name: manage_wazuh_configurations
-        tasks_from: write_wazuh_config.yaml
+        name: manage_cyb3rhq_configurations
+        tasks_from: write_cyb3rhq_config.yaml
       vars:
         config_block: |
           Add-Content 'C:\Program Files (x86)\ossec-agent\ossec.conf' "`n<ossec_config>"
@@ -125,10 +125,10 @@
           Add-Content 'C:\Program Files (x86)\ossec-agent\ossec.conf' "`n</ossec_config>"
         os: windows
 
-    - name: Restart wazuh-agent
+    - name: Restart cyb3rhq-agent
       include_role:
-        name: manage_wazuh
-        tasks_from: restart_wazuh.yaml
+        name: manage_cyb3rhq
+        tasks_from: restart_cyb3rhq.yaml
       vars:
         os: windows
 

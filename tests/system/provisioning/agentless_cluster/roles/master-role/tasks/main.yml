@@ -24,19 +24,19 @@
 
 - name: "Get manager package"
   ansible.builtin.get_url:
-    url: "https://{{package_repository}}.wazuh.com/{{repository}}/apt/pool/main/w/wazuh-manager/wazuh-manager_{{package_version}}-{{package_revision}}_amd64.deb"
-    dest: /tmp/wazuh-manager.deb
+    url: "https://{{package_repository}}.cyb3rhq.com/{{repository}}/apt/pool/main/w/cyb3rhq-manager/cyb3rhq-manager_{{package_version}}-{{package_revision}}_amd64.deb"
+    dest: /tmp/cyb3rhq-manager.deb
 
 - name: "Install manager package"
   ansible.builtin.apt:
-    deb: /tmp/wazuh-manager.deb
+    deb: /tmp/cyb3rhq-manager.deb
 
 - name: Copy ossec.conf file
   copy:
     src: ../files/ossec.conf
     dest: /var/ossec/etc/ossec.conf
-    owner: wazuh
-    group: wazuh
+    owner: cyb3rhq
+    group: cyb3rhq
     mode: '0644'
 
 - name: Set cluster key
@@ -46,7 +46,7 @@
     line: "<key>{{ cluster_key }}</key>"
     backrefs: yes
 
-- name: Set Wazuh Master IP
+- name: Set Cyb3rhq Master IP
   lineinfile:
     path: /var/ossec/etc/ossec.conf
     regexp: '<node>(.*)</node>'
@@ -57,7 +57,7 @@
   blockinfile:
     path: /var/ossec/etc/local_internal_options.conf
     block: |
-      wazuh_clusterd.debug=1
+      cyb3rhq_clusterd.debug=1
 
-- name: Restart Wazuh
-  command: /var/ossec/bin/wazuh-control restart
+- name: Restart Cyb3rhq
+  command: /var/ossec/bin/cyb3rhq-control restart

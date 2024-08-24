@@ -1,9 +1,9 @@
 ---
-wazuh-master:
-  - regex: '.*SendSync.*Receiving SendSync request \(authd\) from wazuh-worker1.*'
+cyb3rhq-master:
+  - regex: '.*SendSync.*Receiving SendSync request \(authd\) from cyb3rhq-worker1.*'
     path: "/var/ossec/logs/cluster.log"
     timeout: 60
-wazuh-worker1:
+cyb3rhq-worker1:
   - regex: '.*Connection received in local server*'
     path: "/var/ossec/logs/cluster.log"
     timeout: 100

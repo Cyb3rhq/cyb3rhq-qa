@@ -1,15 +1,15 @@
 '''
-copyright: Copyright (C) 2015-2022, Wazuh Inc.
+copyright: Copyright (C) 2015-2022, Cyb3rhq Inc.
 
-           Created by Wazuh, Inc. <info@wazuh.com>.
+           Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 
            This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 type: integration
 
 brief: These tests will check that the settings related to the API host address and listening port
-       are working correctly. The Wazuh API is an open source 'RESTful' API that allows for interaction
-       with the Wazuh manager from a web browser, command line tool like 'cURL' or any script
+       are working correctly. The Cyb3rhq API is an open source 'RESTful' API that allows for interaction
+       with the Cyb3rhq manager from a web browser, command line tool like 'cURL' or any script
        or program that can make web requests.
 
 components:
@@ -21,10 +21,10 @@ targets:
     - manager
 
 daemons:
-    - wazuh-apid
-    - wazuh-analysisd
-    - wazuh-syscheckd
-    - wazuh-db
+    - cyb3rhq-apid
+    - cyb3rhq-analysisd
+    - cyb3rhq-syscheckd
+    - cyb3rhq-db
 
 os_platform:
     - linux
@@ -41,8 +41,8 @@ os_version:
     - Ubuntu Bionic
 
 references:
-    - https://documentation.wazuh.com/current/user-manual/api/getting-started.html
-    - https://documentation.wazuh.com/current/user-manual/api/configuration.html#api-configuration-options
+    - https://documentation.cyb3rhq.com/current/user-manual/api/getting-started.html
+    - https://documentation.cyb3rhq.com/current/user-manual/api/configuration.html#api-configuration-options
 
 tags:
     - api
@@ -51,10 +51,10 @@ import os
 
 import pytest
 import requests
-from wazuh_testing.modules.api import event_monitor as evm
-from wazuh_testing.tools import API_LOG_FILE_PATH
-from wazuh_testing.tools.configuration import check_apply_test, get_api_conf
-from wazuh_testing.tools.monitoring import FileMonitor
+from cyb3rhq_testing.modules.api import event_monitor as evm
+from cyb3rhq_testing.tools import API_LOG_FILE_PATH
+from cyb3rhq_testing.tools.configuration import check_apply_test, get_api_conf
+from cyb3rhq_testing.tools.monitoring import FileMonitor
 
 # Marks
 
@@ -90,7 +90,7 @@ def test_host_port(expected_exception, tags_to_apply,
                  combinations of host and port, verify that the 'aiohttp' http framework correctly
                  publishes that value in the 'api.log' and check that the request returns the expected one.
 
-    wazuh_min_version: 4.2.0
+    cyb3rhq_min_version: 4.2.0
 
     tier: 0
 

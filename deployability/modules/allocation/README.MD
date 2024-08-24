@@ -2,7 +2,7 @@
 
 ### User documentation
 
-The Allocation module allows you to create and destroy VMs both locally and in AWS, it also gives the possibility of creating macOS VMs on Wazuh infrastructure or PowerPC VMs, as long as you have the necessary permissions to do so. VMs can be AMD64, ARM64, Windows, macOS (Intel and ARM), and PowerPC (CentOS and Debian).
+The Allocation module allows you to create and destroy VMs both locally and in AWS, it also gives the possibility of creating macOS VMs on Cyb3rhq infrastructure or PowerPC VMs, as long as you have the necessary permissions to do so. VMs can be AMD64, ARM64, Windows, macOS (Intel and ARM), and PowerPC (CentOS and Debian).
 
 #### Set the environment
 
@@ -19,13 +19,13 @@ To use this module, you should use a Debian-based system, we recommend using Ubu
   source {venv directory}/bin/activate
   ```
 
-2. Clone the `wazuh-qa` repository:
+2. Clone the `cyb3rhq-qa` repository:
 
   Navigate to the project directory and switch to the project branch:
 
   ```bash
-  git clone https://github.com/wazuh/wazuh-qa.git
-  cd wazuh-qa
+  git clone https://github.com/cyb3rhq/cyb3rhq-qa.git
+  cd cyb3rhq-qa
   git checkout {project-branch}
   ```
 
@@ -52,7 +52,7 @@ Now, it is possible to use the Worklow engine library to launch the provision mo
 
 1. Install the JobFlow engine and its launcher:
 
-  While in wazuh-qa:
+  While in cyb3rhq-qa:
 
   ```bash
   cd modules
@@ -177,7 +177,7 @@ If one wishes to execute the allocaation module without installing the JobFlow e
 
 1. Create
 
-  While in wazuh-qa/deployability
+  While in cyb3rhq-qa/deployability
 
 - Local deployment (Vagrant)
 
@@ -195,7 +195,7 @@ If one wishes to execute the allocaation module without installing the JobFlow e
 
   Example 2:
   ```bash
-  python3 modules/allocation/main.py --action create --provider vagrant --size micro --composite-name linux-ubuntu-22.04-amd64 --label-issue "https://github.com/wazuh/internal-devel-requests/issues/1115" --inventory-output "/tmp/dtt1-poc/agent-linux-ubuntu-22.04-amd64/inventory.yaml" --track-output "/tmp/dtt1-poc/agent-linux-ubuntu-22.04-amd64/track.yaml"
+  python3 modules/allocation/main.py --action create --provider vagrant --size micro --composite-name linux-ubuntu-22.04-amd64 --label-issue "https://github.com/cyb3rhq/internal-devel-requests/issues/1115" --inventory-output "/tmp/dtt1-poc/agent-linux-ubuntu-22.04-amd64/inventory.yaml" --track-output "/tmp/dtt1-poc/agent-linux-ubuntu-22.04-amd64/track.yaml"
   ```
 
 - AWS deployment
@@ -218,7 +218,7 @@ If one wishes to execute the allocaation module without installing the JobFlow e
 
   Example 2:
   ```bash
-  python3 modules/allocation/main.py --action create --provider aws --size small --composite-name linux-ubuntu-22.04-amd64 --inventory-output "/tmp/dtt1-poc/agent-linux-ubuntu-22.04-amd64/inventory.yaml" --track-output "/tmp/dtt1-poc/agent-linux-ubuntu-22.04-amd64/track.yaml" --label-termination-date "3d"  --label-team devops --label-issue "https://github.com/wazuh/internal-devel-requests/issues/1115"
+  python3 modules/allocation/main.py --action create --provider aws --size small --composite-name linux-ubuntu-22.04-amd64 --inventory-output "/tmp/dtt1-poc/agent-linux-ubuntu-22.04-amd64/inventory.yaml" --track-output "/tmp/dtt1-poc/agent-linux-ubuntu-22.04-amd64/track.yaml" --label-termination-date "3d"  --label-team devops --label-issue "https://github.com/cyb3rhq/internal-devel-requests/issues/1115"
   ```
 
   Example 3:
@@ -228,7 +228,7 @@ If one wishes to execute the allocaation module without installing the JobFlow e
 
 2. Delete
 
-  While in wazuh-qa/deployability
+  While in cyb3rhq-qa/deployability
 
   ```bash
   python3 modules/allocation/main.py --action delete --track-output '{{ track }}'
@@ -279,7 +279,7 @@ If one wishes to execute the allocaation module without installing the JobFlow e
     This argument allows us to provide a configuration file with all the VM definitions.
 
   - --track-output
-    This argument allows us to define which path we want the track file to write to. By default, it is saved in the instance directory, for example: **/tmp/wazuh-qa/allocation-test-4262/track.yml** <br>
+    This argument allows us to define which path we want the track file to write to. By default, it is saved in the instance directory, for example: **/tmp/cyb3rhq-qa/allocation-test-4262/track.yml** <br>
     Valid options:
       - Custom dir: **~/allocation-test**
       - Custom filename: **~/allocation-test/manager-track.yml**
@@ -290,7 +290,7 @@ If one wishes to execute the allocaation module without installing the JobFlow e
     >Note: this argument is mandatory for delete action.
 
   - --inventory-output
-    This argument allows us to define which path we want the inventory file to write to. By default, it is saved in the instance directory, for example: **/tmp/wazuh-qa/allocation-test-4262/inventory.yml** <br>
+    This argument allows us to define which path we want the inventory file to write to. By default, it is saved in the instance directory, for example: **/tmp/cyb3rhq-qa/allocation-test-4262/inventory.yml** <br>
     Valid options:
       - Custom dir: **~/allocation-test**
       - Custom filename: **~/allocation-test/manager-inventory.yml**
@@ -299,10 +299,10 @@ If one wishes to execute the allocaation module without installing the JobFlow e
       - The file name must contain **inventory** string for easy identification
 
   - --working-dir
-    This argument allows us to define in which directory the files referring to the VM will be generated. By default, **/tmp/wazuh-qa**
+    This argument allows us to define in which directory the files referring to the VM will be generated. By default, **/tmp/cyb3rhq-qa**
 
   - --label-issue
-    This argument is mandatory for the Vagrant deploy if the **--instance-name** is not specified. For AWS deploy, it is not mandatory. It allows to create a label to reference the created instance to an issue on GitHub. It has to be a GitHub URL of a Wazuh repository, for example: **https://github.com/wazuh/internal-devel-requests/issues/1008**
+    This argument is mandatory for the Vagrant deploy if the **--instance-name** is not specified. For AWS deploy, it is not mandatory. It allows to create a label to reference the created instance to an issue on GitHub. It has to be a GitHub URL of a Cyb3rhq repository, for example: **https://github.com/cyb3rhq/internal-devel-requests/issues/1008**
 
   - --label-team
     This argument it is mandatory for AWS deploy, allows you to set the team that owns the VM to be able to track it. The valid options are: **qa**, **core**, **framework**, **devops**, **frontend**, **operations**, **cloud**, **threat-intel**, **marketing**, **documentation**
@@ -350,30 +350,30 @@ python3 modules/allocation/main.py --action create --provider vagrant --size lar
 
 #### General-specific functions
 
-- **Launcher** ([/wazuh-qa/deployability/modules/allocation/main.py](main.py)): The entry point of the module. The command line or the JobFlow engine typically invokes this entry point.
+- **Launcher** ([/cyb3rhq-qa/deployability/modules/allocation/main.py](main.py)): The entry point of the module. The command line or the JobFlow engine typically invokes this entry point.
 
-- **Module functions** ([/wazuh-qa/deployability/modules/allocation/allocation.py](allocation.py)): Module-specific functions responsible for triggering the allocation.
+- **Module functions** ([/cyb3rhq-qa/deployability/modules/allocation/allocation.py](allocation.py)): Module-specific functions responsible for triggering the allocation.
 
-- **Static functions** ([/wazuh-qa/deployability/modules/allocation/static](static)): Templates and static information for infrastructure creation.
+- **Static functions** ([/cyb3rhq-qa/deployability/modules/allocation/static](static)): Templates and static information for infrastructure creation.
 
 #### Provider-specific functions
 
-- **AWS functions** ([/wazuh-qa/deployability/modules/allocation/aws](aws)): Module-specific functions responsible for triggering the allocation.
+- **AWS functions** ([/cyb3rhq-qa/deployability/modules/allocation/aws](aws)): Module-specific functions responsible for triggering the allocation.
 
-- **Vagrant functions** ([/wazuh-qa/deployability/modules/allocation/vagrant](vagrant)): Module-specific functions responsible for triggering the allocation.
+- **Vagrant functions** ([/cyb3rhq-qa/deployability/modules/allocation/vagrant](vagrant)): Module-specific functions responsible for triggering the allocation.
 
-- **Generic functions** ([/wazuh-qa/deployability/modules/allocation/generic](generic)): Module-specific functions responsible for triggering the allocation.
+- **Generic functions** ([/cyb3rhq-qa/deployability/modules/allocation/generic](generic)): Module-specific functions responsible for triggering the allocation.
 
 #### Each provider will contain
 
-- **Modeler** (`/wazuh-qa/deployability/modules/allocation/{provider}/models.py`)
-- **Credentials** (`/wazuh-qa/deployability/modules/allocation/{provider}/credentials.py`)
-- **Provider** (`/wazuh-qa/deployability/modules/allocation/{provider}/provider.py`)
-- **Information regarding the instance** (`/wazuh-qa/deployability/modules/allocation/{provider}/instance.py`)
+- **Modeler** (`/cyb3rhq-qa/deployability/modules/allocation/{provider}/models.py`)
+- **Credentials** (`/cyb3rhq-qa/deployability/modules/allocation/{provider}/credentials.py`)
+- **Provider** (`/cyb3rhq-qa/deployability/modules/allocation/{provider}/provider.py`)
+- **Information regarding the instance** (`/cyb3rhq-qa/deployability/modules/allocation/{provider}/instance.py`)
 
 #### Diagram
 
-![image](https://github.com/wazuh/wazuh-qa/assets/2949519/c673b3ec-ac6a-4ca0-b625-9f98be422f20)
+![image](https://github.com/cyb3rhq/cyb3rhq-qa/assets/2949519/c673b3ec-ac6a-4ca0-b625-9f98be422f20)
 
 
 [Allocation.drawio.zip](https://github.com/user-attachments/files/15792190/Allocation.drawio.zip)
@@ -392,4 +392,4 @@ Currently, the Allocation module may encounter the following issues:
 ### License
 
 
-WAZUH Copyright (C) 2015 Wazuh Inc. (License GPLv2)
+CYB3RHQ Copyright (C) 2015 Cyb3rhq Inc. (License GPLv2)

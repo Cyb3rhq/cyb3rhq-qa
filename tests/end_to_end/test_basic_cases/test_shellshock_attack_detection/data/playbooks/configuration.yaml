@@ -5,8 +5,8 @@
 
     - name: Configure a localfile instance to collect the logs from Apache
       include_role:
-        name: manage_wazuh_configurations
-        tasks_from: write_wazuh_config.yaml
+        name: manage_cyb3rhq_configurations
+        tasks_from: write_cyb3rhq_config.yaml
       vars:
         config_block: |
           <localfile>
@@ -15,10 +15,10 @@
           </localfile>
         os: linux
 
-    - name: Restart wazuh-manager
+    - name: Restart cyb3rhq-manager
       include_role:
-        name: manage_wazuh
-        tasks_from: restart_wazuh.yaml
+        name: manage_cyb3rhq
+        tasks_from: restart_cyb3rhq.yaml
       vars:
         os: linux
 

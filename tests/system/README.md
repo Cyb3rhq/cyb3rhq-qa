@@ -1,6 +1,6 @@
-# wazuh-qa
+# cyb3rhq-qa
 
-Wazuh - System quality assurance automation templates
+Cyb3rhq - System quality assurance automation templates
 
 ## Setting up a test environment
 
@@ -29,7 +29,7 @@ Now, the following tools will need to be installed:
 
 ### Dependencies
 
-In addition, we need the Wazuh-testing package. So first, we need to install all these Python dependencies, we can use
+In addition, we need the Cyb3rhq-testing package. So first, we need to install all these Python dependencies, we can use
 this command:
 
 ```shell script
@@ -38,16 +38,16 @@ pip3 install -r requirements.txt
 
 _**NOTE:** `jq` library can only be installed with `pip` on **Linux**_
 
-### Wazuh-Testing package
+### Cyb3rhq-Testing package
 
-We have a Python package at `wazuh-qa/deps/` with all the tools needed to run these tests. From file monitoring classes
+We have a Python package at `cyb3rhq-qa/deps/` with all the tools needed to run these tests. From file monitoring classes
 to callbacks or functions to create the test environment. Without installing this package, we cannot run these tests. It
 has the following structure:
 
 ```bash
-wazuh_testing
+cyb3rhq_testing
     ├── setup.py
-    └── wazuh_testing
+    └── cyb3rhq_testing
         ├── __init__.py
         ├── analysis.py
         ├── data
@@ -66,18 +66,18 @@ wazuh_testing
         │   ├── services.py
         │   ├── system.py
         │   └── time.py
-        └── wazuh_db.py
+        └── cyb3rhq_db.py
 ```
 
 #### setup.py
 
 Python module with the needed code to install this package into our Python interpreter.
 
-#### wazuh_testing
+#### cyb3rhq_testing
 
 ##### Python modules
 
-These are _analysis.py_, _fim.py_, _mitre.py_ and _wazuh_db.py_. They have very specific tools needed for each
+These are _analysis.py_, _fim.py_, _mitre.py_ and _cyb3rhq_db.py_. They have very specific tools needed for each
 capability.
 
 ##### data
@@ -96,7 +96,7 @@ Folder with all the general tools that could be used in every test. They are gro
 
 - **Monitoring**: everything related to monitoring a file.
 
-- **Services**: from controlling Wazuh services, daemons and socket to common processes.
+- **Services**: from controlling Cyb3rhq services, daemons and socket to common processes.
 
 - **System**: functions that allow us to perform operations on our system's hosts
 
@@ -105,16 +105,16 @@ Folder with all the general tools that could be used in every test. They are gro
 To install it:
 
 ```shell script
-cd wazuh-qa/deps/wazuh_testing
+cd cyb3rhq-qa/deps/cyb3rhq_testing
 pip3 install .Description
 ```
 
 _**NOTE:** It is important to reinstall this package every time we modify anything
-from `wazuh-qa/packages/wazuh_testing`_
+from `cyb3rhq-qa/packages/cyb3rhq_testing`_
 
 ```shell script
-cd wazuh-qa/deps/wazuh_testing
-pip3 uninstall -y wazuh_testing && pip3 install .
+cd cyb3rhq-qa/deps/cyb3rhq_testing
+pip3 uninstall -y cyb3rhq_testing && pip3 install .
 ```
 
 ## System tests
@@ -122,8 +122,8 @@ pip3 uninstall -y wazuh_testing && pip3 install .
 **DISCLAIMER:** this guide assumes you have a proper testing environment. If you do not, please check
 our [testing environment guide](#setting-up-a-test-environment).
 
-Our cluster system tests are located in `wazuh-qa/tests/system/`. They are organized by functionalities and each one may
-required an specific testing environment located in `wazuh-qa/tests/system/provisioning`:
+Our cluster system tests are located in `cyb3rhq-qa/tests/system/`. They are organized by functionalities and each one may
+required an specific testing environment located in `cyb3rhq-qa/tests/system/provisioning`:
 
 | Functionality                                                             | Required environment           |
 |---------------------------------------------------------------------------|--------------------------------|
@@ -187,7 +187,7 @@ specify which messages are expected in each of the nodes.
 ---
 # sample messages
 node_name:
-  - regex: ".*wazuh-master restarted.*"
+  - regex: ".*cyb3rhq-master restarted.*"
     path: "/var/ossec/logs/ossec.log"
     timeout: 60
 ```
@@ -236,10 +236,10 @@ You can specify a package as `package_repository`, `repository`, `package_versio
 ansible-playbook -i inventory.yml playbook.yml --extra-vars='{"package_repository":"packages", "repository": "4.x", "package_version": "4.4.0", "package_revision": "1"}'
 ```
 
-In the basic cluster, you also have to specify a branch from the Wazuh QA repository.
+In the basic cluster, you also have to specify a branch from the Cyb3rhq QA repository.
 
 ```shell script
-ansible-playbook -i inventory.yml playbook.yml --extra-vars='{"package_repository":"packages", "repository": "4.x", "package_version": "4.4.0", "package_revision": "1", "wazuh_qa_branch":"v4.3.0-rc1"}'
+ansible-playbook -i inventory.yml playbook.yml --extra-vars='{"package_repository":"packages", "repository": "4.x", "package_version": "4.4.0", "package_revision": "1", "cyb3rhq_qa_branch":"v4.3.0-rc1"}'
 ```
 
 We use [pytest](https://docs.pytest.org/en/latest/contents.html) to run our cluster system tests. Pytest will
@@ -248,7 +248,7 @@ is lacking from the closest one, it will look for the next one (if possible) unt
 means we need to run every test from the following path, where the general _conftest_ for cluster system tests is:
 
 ```shell script
-cd wazuh-qa/tests/system/cluster
+cd cyb3rhq-qa/tests/system/cluster
 ```
 
 To run any test, we just need to call `pytest` from `python3` using the following line:
@@ -342,27 +342,27 @@ ok: [localhost]
 TASK [docker_container] *********************************************************************************************************************************************************************************************************
 changed: [localhost]
 
-PLAY [Wazuh Master] *************************************************************************************************************************************************************************************************************
+PLAY [Cyb3rhq Master] *************************************************************************************************************************************************************************************************************
 
 TASK [Gathering Facts] **********************************************************************************************************************************************************************************************************
-ok: [wazuh-master]
+ok: [cyb3rhq-master]
 
 TASK [roles/master-role : Installing dependencies using apt] ********************************************************************************************************************************************************************
-changed: [wazuh-master]
+changed: [cyb3rhq-master]
 
-TASK [roles/master-role : Clone wazuh repository] *******************************************************************************************************************************************************************************
-changed: [wazuh-master]
+TASK [roles/master-role : Clone cyb3rhq repository] *******************************************************************************************************************************************************************************
+changed: [cyb3rhq-master]
 
 ...
 
 PLAY RECAP **********************************************************************************************************************************************************************************************************************
 localhost                  : ok=13   changed=7    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
-wazuh-agent1               : ok=9    changed=8    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
-wazuh-agent2               : ok=9    changed=8    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
-wazuh-agent3               : ok=9    changed=8    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
-wazuh-master               : ok=11   changed=10   unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
-wazuh-worker1              : ok=9    changed=8    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
-wazuh-worker2              : ok=9    changed=8    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+cyb3rhq-agent1               : ok=9    changed=8    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+cyb3rhq-agent2               : ok=9    changed=8    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+cyb3rhq-agent3               : ok=9    changed=8    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+cyb3rhq-master               : ok=11   changed=10   unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+cyb3rhq-worker1              : ok=9    changed=8    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+cyb3rhq-worker2              : ok=9    changed=8    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 
 
 ```
@@ -375,36 +375,36 @@ python3 -m pytest -vvsx test_agent_key_polling/test_agent_key_polling.py
 platform linux -- Python 3.7.5, pytest-4.5.0, py-1.8.1, pluggy-0.13.1 -- /usr/bin/python3
 cachedir: .pytest_cache
 metadata: {'Python': '3.7.5', 'Platform': 'Linux-5.3.0-7642-generic-x86_64-with-Ubuntu-19.10-eoan', 'Packages': {'pytest': '4.5.0', 'py': '1.8.1', 'pluggy': '0.13.1'}, 'Plugins': {'html': '2.0.1', 'tavern': '0.34.0', 'testinfra': '5.0.0', 'metadata': '1.8.0'}}
-rootdir: /home/adriiiprodri/Desktop/git/wazuh-qa/tests/system/cluster
+rootdir: /home/adriiiprodri/Desktop/git/cyb3rhq-qa/tests/system/cluster
 plugins: html-2.0.1, tavern-0.34.0, testinfra-5.0.0, metadata-1.8.0
 collected 1 item
 
-test_agent_key_polling/test_agent_key_polling.py::test_agent_key_polling 2020-03-31 09:42:46,087 - wazuh_testing - DEBUG - Add new file composer process for wazuh-master and path: /var/ossec/logs/ossec.log
-2020-03-31 09:42:46,089 - wazuh_testing - DEBUG - Add new file monitor process for wazuh-master and path: /var/ossec/logs/ossec.log
-2020-03-31 09:42:46,089 - wazuh_testing - DEBUG - Starting file composer for wazuh-master and path: /var/ossec/logs/ossec.log. Composite file in /home/adriiiprodri/Desktop/git/wazuh-qa/tests/system/cluster/test_agent_key_polling/tmp/wazuh-master_ossec.log.tmp
-2020-03-31 09:42:46,091 - wazuh_testing - DEBUG - Add new file composer process for wazuh-worker1 and path: /var/ossec/logs/ossec.log
-2020-03-31 09:42:46,092 - wazuh_testing - DEBUG - Starting QueueMonitor for wazuh-master and message: .*Agent key generated for agent 'wazuh-agent2'.*
-2020-03-31 09:42:46,092 - wazuh_testing - DEBUG - Add new file monitor process for wazuh-worker1 and path: /var/ossec/logs/ossec.log
-2020-03-31 09:42:46,093 - wazuh_testing - DEBUG - Starting file composer for wazuh-worker1 and path: /var/ossec/logs/ossec.log. Composite file in /home/adriiiprodri/Desktop/git/wazuh-qa/tests/system/cluster/test_agent_key_polling/tmp/wazuh-worker1_ossec.log.tmp
-2020-03-31 09:42:46,094 - wazuh_testing - DEBUG - Add new file composer process for wazuh-agent2 and path: /var/ossec/logs/ossec.log
-2020-03-31 09:42:46,095 - wazuh_testing - DEBUG - Starting QueueMonitor for wazuh-worker1 and message: .*Authentication error. Wrong key or corrupt payload. Message received from agent '002'.*
-2020-03-31 09:42:46,096 - wazuh_testing - DEBUG - Add new file monitor process for wazuh-agent2 and path: /var/ossec/logs/ossec.log
-2020-03-31 09:42:46,097 - wazuh_testing - DEBUG - Starting file composer for wazuh-agent2 and path: /var/ossec/logs/ossec.log. Composite file in /home/adriiiprodri/Desktop/git/wazuh-qa/tests/system/cluster/test_agent_key_polling/tmp/wazuh-agent2_ossec.log.tmp
-2020-03-31 09:42:46,099 - wazuh_testing - DEBUG - Starting QueueMonitor for wazuh-agent2 and message: .*Lost connection with manager. Setting lock.*
-2020-03-31 09:42:49,100 - wazuh_testing - DEBUG - Finishing QueueMonitor for wazuh-master and message: .*Agent key generated for agent 'wazuh-agent2'.*
-2020-03-31 09:42:49,101 - wazuh_testing - DEBUG - Finishing QueueMonitor for wazuh-worker1 and message: .*Authentication error. Wrong key or corrupt payload. Message received from agent '002'.*
-2020-03-31 09:42:49,106 - wazuh_testing - DEBUG - Finishing QueueMonitor for wazuh-agent2 and message: .*Lost connection with manager. Setting lock.*
-2020-03-31 09:42:49,107 - wazuh_testing - DEBUG - Starting QueueMonitor for wazuh-agent2 and message: .*Trying to connect to server \(wazuh-worker1.*
-2020-03-31 09:42:57,113 - wazuh_testing - DEBUG - Finishing QueueMonitor for wazuh-agent2 and message: .*Trying to connect to server \(wazuh-worker1.*
-2020-03-31 09:42:57,113 - wazuh_testing - DEBUG - Starting QueueMonitor for wazuh-agent2 and message: .*Connected to the server \(wazuh-worker1.*
-2020-03-31 09:42:57,113 - wazuh_testing - DEBUG - Finishing QueueMonitor for wazuh-agent2 and message: .*Connected to the server \(wazuh-worker1.*
-2020-03-31 09:42:58,117 - wazuh_testing - DEBUG - Cleaning temporal files...
-2020-03-31 09:42:58,118 - wazuh_testing - DEBUG - Checking results...
-2020-03-31 09:42:58,123 - wazuh_testing - DEBUG - Received from wazuh-master the expected message: 2020/03/31 09:42:47 wazuh-authd: INFO: Agent key generated for agent 'wazuh-agent2' (requested locally)
-2020-03-31 09:42:58,124 - wazuh_testing - DEBUG - Received from wazuh-worker1 the expected message: 2020/03/31 09:42:47 wazuh-remoted: WARNING: (1404): Authentication error. Wrong key or corrupt payload. Message received from agent '002' at 'any'.
-2020-03-31 09:42:58,125 - wazuh_testing - DEBUG - Received from wazuh-agent2 the expected message: 2020/03/31 09:42:47 wazuh-agentd: ERROR: (1137): Lost connection with manager. Setting lock.
-2020-03-31 09:42:58,125 - wazuh_testing - DEBUG - Received from wazuh-agent2 the expected message: 2020/03/31 09:42:56 wazuh-agentd: INFO: Trying to connect to server (wazuh-worker1/172.18.0.3:1514/tcp).
-2020-03-31 09:42:58,126 - wazuh_testing - DEBUG - Received from wazuh-agent2 the expected message: 2020/03/31 09:42:56 wazuh-agentd: INFO: (4102): Connected to the server (wazuh-worker1/172.18.0.3:1514/tcp).
+test_agent_key_polling/test_agent_key_polling.py::test_agent_key_polling 2020-03-31 09:42:46,087 - cyb3rhq_testing - DEBUG - Add new file composer process for cyb3rhq-master and path: /var/ossec/logs/ossec.log
+2020-03-31 09:42:46,089 - cyb3rhq_testing - DEBUG - Add new file monitor process for cyb3rhq-master and path: /var/ossec/logs/ossec.log
+2020-03-31 09:42:46,089 - cyb3rhq_testing - DEBUG - Starting file composer for cyb3rhq-master and path: /var/ossec/logs/ossec.log. Composite file in /home/adriiiprodri/Desktop/git/cyb3rhq-qa/tests/system/cluster/test_agent_key_polling/tmp/cyb3rhq-master_ossec.log.tmp
+2020-03-31 09:42:46,091 - cyb3rhq_testing - DEBUG - Add new file composer process for cyb3rhq-worker1 and path: /var/ossec/logs/ossec.log
+2020-03-31 09:42:46,092 - cyb3rhq_testing - DEBUG - Starting QueueMonitor for cyb3rhq-master and message: .*Agent key generated for agent 'cyb3rhq-agent2'.*
+2020-03-31 09:42:46,092 - cyb3rhq_testing - DEBUG - Add new file monitor process for cyb3rhq-worker1 and path: /var/ossec/logs/ossec.log
+2020-03-31 09:42:46,093 - cyb3rhq_testing - DEBUG - Starting file composer for cyb3rhq-worker1 and path: /var/ossec/logs/ossec.log. Composite file in /home/adriiiprodri/Desktop/git/cyb3rhq-qa/tests/system/cluster/test_agent_key_polling/tmp/cyb3rhq-worker1_ossec.log.tmp
+2020-03-31 09:42:46,094 - cyb3rhq_testing - DEBUG - Add new file composer process for cyb3rhq-agent2 and path: /var/ossec/logs/ossec.log
+2020-03-31 09:42:46,095 - cyb3rhq_testing - DEBUG - Starting QueueMonitor for cyb3rhq-worker1 and message: .*Authentication error. Wrong key or corrupt payload. Message received from agent '002'.*
+2020-03-31 09:42:46,096 - cyb3rhq_testing - DEBUG - Add new file monitor process for cyb3rhq-agent2 and path: /var/ossec/logs/ossec.log
+2020-03-31 09:42:46,097 - cyb3rhq_testing - DEBUG - Starting file composer for cyb3rhq-agent2 and path: /var/ossec/logs/ossec.log. Composite file in /home/adriiiprodri/Desktop/git/cyb3rhq-qa/tests/system/cluster/test_agent_key_polling/tmp/cyb3rhq-agent2_ossec.log.tmp
+2020-03-31 09:42:46,099 - cyb3rhq_testing - DEBUG - Starting QueueMonitor for cyb3rhq-agent2 and message: .*Lost connection with manager. Setting lock.*
+2020-03-31 09:42:49,100 - cyb3rhq_testing - DEBUG - Finishing QueueMonitor for cyb3rhq-master and message: .*Agent key generated for agent 'cyb3rhq-agent2'.*
+2020-03-31 09:42:49,101 - cyb3rhq_testing - DEBUG - Finishing QueueMonitor for cyb3rhq-worker1 and message: .*Authentication error. Wrong key or corrupt payload. Message received from agent '002'.*
+2020-03-31 09:42:49,106 - cyb3rhq_testing - DEBUG - Finishing QueueMonitor for cyb3rhq-agent2 and message: .*Lost connection with manager. Setting lock.*
+2020-03-31 09:42:49,107 - cyb3rhq_testing - DEBUG - Starting QueueMonitor for cyb3rhq-agent2 and message: .*Trying to connect to server \(cyb3rhq-worker1.*
+2020-03-31 09:42:57,113 - cyb3rhq_testing - DEBUG - Finishing QueueMonitor for cyb3rhq-agent2 and message: .*Trying to connect to server \(cyb3rhq-worker1.*
+2020-03-31 09:42:57,113 - cyb3rhq_testing - DEBUG - Starting QueueMonitor for cyb3rhq-agent2 and message: .*Connected to the server \(cyb3rhq-worker1.*
+2020-03-31 09:42:57,113 - cyb3rhq_testing - DEBUG - Finishing QueueMonitor for cyb3rhq-agent2 and message: .*Connected to the server \(cyb3rhq-worker1.*
+2020-03-31 09:42:58,117 - cyb3rhq_testing - DEBUG - Cleaning temporal files...
+2020-03-31 09:42:58,118 - cyb3rhq_testing - DEBUG - Checking results...
+2020-03-31 09:42:58,123 - cyb3rhq_testing - DEBUG - Received from cyb3rhq-master the expected message: 2020/03/31 09:42:47 cyb3rhq-authd: INFO: Agent key generated for agent 'cyb3rhq-agent2' (requested locally)
+2020-03-31 09:42:58,124 - cyb3rhq_testing - DEBUG - Received from cyb3rhq-worker1 the expected message: 2020/03/31 09:42:47 cyb3rhq-remoted: WARNING: (1404): Authentication error. Wrong key or corrupt payload. Message received from agent '002' at 'any'.
+2020-03-31 09:42:58,125 - cyb3rhq_testing - DEBUG - Received from cyb3rhq-agent2 the expected message: 2020/03/31 09:42:47 cyb3rhq-agentd: ERROR: (1137): Lost connection with manager. Setting lock.
+2020-03-31 09:42:58,125 - cyb3rhq_testing - DEBUG - Received from cyb3rhq-agent2 the expected message: 2020/03/31 09:42:56 cyb3rhq-agentd: INFO: Trying to connect to server (cyb3rhq-worker1/172.18.0.3:1514/tcp).
+2020-03-31 09:42:58,126 - cyb3rhq_testing - DEBUG - Received from cyb3rhq-agent2 the expected message: 2020/03/31 09:42:56 cyb3rhq-agentd: INFO: (4102): Connected to the server (cyb3rhq-worker1/172.18.0.3:1514/tcp).
 PASSED
 
 ======================================================================== 1 passed in 81.86 seconds ========================================================================

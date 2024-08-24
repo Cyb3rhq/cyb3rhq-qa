@@ -1,0 +1,99 @@
+---
+- include_vars: ../../vars/repo_vars.yml
+
+- include_vars: ../../vars/repo.yml
+  when: packages_repository == 'production'
+
+- include_vars: ../../vars/repo_pre-release.yml
+  when: packages_repository == 'pre-release'
+
+- include_vars: ../../vars/repo_staging.yml
+  when: packages_repository == 'staging'
+
+- import_tasks: RedHat.yml
+  when: ansible_os_family == 'RedHat'
+
+- import_tasks: Debian.yml
+  when: ansible_os_family == 'Debian'
+
+- name: Remove Dashboard configuration file
+  file:
+    # noqa 503
+    path: "{{ dashboard_conf_path }}/opensearch_dashboards.yml"
+    state: absent
+  tags: install
+
+- import_tasks: security_actions.yml
+
+- name: Copy Configuration File
+  template:
+    src: "templates/opensearch_dashboards.yml.j2"
+    dest: "{{ dashboard_conf_path }}/opensearch_dashboards.yml"
+    group: cyb3rhq-dashboard
+    owner: cyb3rhq-dashboard
+    mode: 0640
+    force: yes
+  notify: restart cyb3rhq-dashboard
+  tags:
+    - install
+    - configure
+
+- name: Ensuring Cyb3rhq dashboard directory owner
+  file:
+    # noqa 208
+    path: "/usr/share/cyb3rhq-dashboard"
+    state: directory
+    owner: cyb3rhq-dashboard
+    group: cyb3rhq-dashboard
+    recurse: yes
+
+- name: Wait for Cyb3rhq-Indexer port
+  wait_for: host={{ indexer_network_host }} port={{ indexer_http_port }}
+
+- name: Select correct API protocol
+  set_fact:
+    indexer_api_protocol: "{% if dashboard_security is defined and dashboard_security %}https{% else %}http{% endif %}"
+
+- name: Attempting to delete legacy Cyb3rhq index if exists
+  uri:
+    url: "{{ indexer_api_protocol }}://{{ indexer_network_host }}:{{ indexer_http_port }}/.cyb3rhq"
+    method: DELETE
+    user: "admin"
+    password: "{{ indexer_admin_password }}"
+    validate_certs: no
+    status_code: 200, 404
+
+- name: Create Cyb3rhq Plugin config directory
+  file:
+    path: /usr/share/cyb3rhq-dashboard/data/cyb3rhq/config/
+    state: directory
+    recurse: yes
+    owner: cyb3rhq-dashboard
+    group: cyb3rhq-dashboard
+    mode: 0751
+  changed_when: False
+
+- name: Configure Cyb3rhq Dashboard Plugin
+  template:
+    src: cyb3rhq.yml.j2
+    dest: /usr/share/cyb3rhq-dashboard/data/cyb3rhq/config/cyb3rhq.yml
+    owner: cyb3rhq-dashboard
+    group: cyb3rhq-dashboard
+    mode: 0751
+  changed_when: False
+
+- name: Configure opensearch.password in opensearch_dashboards.keystore
+  shell: >-
+    echo '{{ dashboard_password }}' | /usr/share/cyb3rhq-dashboard/bin/opensearch-dashboards-keystore --allow-root add -f --stdin opensearch.password
+  args:
+    executable: /bin/bash
+  become: yes
+
+- name: Ensure Cyb3rhq dashboard started and enabled
+  service:
+    name: cyb3rhq-dashboard
+    enabled: true
+    state: started
+
+- import_tasks: RMRedHat.yml
+  when: ansible_os_family == 'RedHat'

@@ -1,0 +1,113 @@
+---
+- name: Debian/Ubuntu | Install apt-transport-https, ca-certificates and acl
+  apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - gnupg
+      - acl
+    state: present
+    cache_valid_time: 3600
+    install_recommends: false
+  register: cyb3rhq_manager_https_packages_installed
+  until: cyb3rhq_manager_https_packages_installed is succeeded
+
+- name: Debian/Ubuntu | Installing Cyb3rhq repository key (Ubuntu 14)
+  become: true
+  shell: |
+    set -o pipefail
+    curl -s {{ cyb3rhq_manager_config.repo.gpg }} | apt-key add -
+  args:
+    warn: false
+    executable: /bin/bash
+  changed_when: false
+  when:
+    - ansible_distribution == "Ubuntu"
+    - ansible_distribution_major_version | int == 14
+    - not cyb3rhq_manager_sources_installation.enabled
+    - not cyb3rhq_custom_packages_installation_manager_enabled
+
+- name: Debian/Ubuntu | Installing Cyb3rhq repository key
+  apt_key:
+    url: "{{ cyb3rhq_manager_config.repo.gpg }}"
+    id: "{{ cyb3rhq_manager_config.repo.key_id }}"
+  when:
+    - not (ansible_distribution == "Ubuntu" and ansible_distribution_major_version | int == 14)
+    - not cyb3rhq_manager_sources_installation.enabled
+    - not cyb3rhq_custom_packages_installation_manager_enabled
+
+- name: Debian/Ubuntu | Add Cyb3rhq repositories
+  apt_repository:
+    filename: cyb3rhq_repo
+    repo: "{{ cyb3rhq_manager_config.repo.apt }}"
+    state: present
+    update_cache: true
+  changed_when: false
+  when:
+    - not cyb3rhq_manager_sources_installation.enabled
+    - not cyb3rhq_custom_packages_installation_manager_enabled
+
+- name: Debian/Ubuntu | Set Distribution CIS filename for Debian/Ubuntu
+  set_fact:
+    cis_distribution_filename: cis_debian_linux_rcl.txt
+
+- name: Debian/Ubuntu | Install OpenJDK-8 repo
+  apt_repository:
+    repo: 'ppa:openjdk-r/ppa'
+    state: present
+    update_cache: true
+  when:
+    - (ansible_distribution == "Ubuntu" and ansible_distribution_major_version | int == 14)
+
+- when:
+    - cyb3rhq_manager_config.cis_cat.disable == 'no'
+    - cyb3rhq_manager_config.cis_cat.install_java == 'yes'
+  block:
+    - name: Debian/Ubuntu | Install OpenJDK 1.8
+      apt: name=openjdk-8-jre state=present cache_valid_time=3600
+  tags:
+    - init
+
+- name: Debian/Ubuntu | Install OpenScap
+  apt:
+    name:
+      - libopenscap8
+      - xsltproc
+    state: present
+    cache_valid_time: 3600
+    install_recommends: false
+  register: cyb3rhq_manager_openscap_installed
+  until: cyb3rhq_manager_openscap_installed is succeeded
+  when: cyb3rhq_manager_config.openscap.disable == 'no'
+  tags:
+    - init
+
+- name: Debian/Ubuntu | Get OpenScap installed version
+  shell: "dpkg-query --showformat='${Version}' --show libopenscap8"
+  when: cyb3rhq_manager_config.openscap.disable == 'no'
+  register: openscap_version
+  changed_when: false
+  tags:
+    - config
+
+- name: Debian/Ubuntu | Check OpenScap version
+  shell: "dpkg --compare-versions '{{ openscap_version.stdout }}' '>=' '1.2'; echo $?"
+  when: cyb3rhq_manager_config.openscap.disable == 'no'
+  register: openscap_version_valid
+  changed_when: false
+  tags:
+    - config
+
+- name: Install dependencies to build from sources
+  apt:
+    name: ['make', 'gcc', 'automake', 'autoconf', 'libtool', 'tar', 'libssl-dev', 'g++']
+    state: present
+  when: cyb3rhq_manager_sources_installation.enabled
+
+- include_tasks: "installation_from_sources.yml"
+  when:
+    - cyb3rhq_manager_sources_installation.enabled
+
+- include_tasks: "installation_from_custom_packages.yml"
+  when:
+    - cyb3rhq_custom_packages_installation_manager_enabled

@@ -1,7 +1,7 @@
 '''
-copyright: Copyright (C) 2015-2023, Wazuh Inc.
+copyright: Copyright (C) 2015-2023, Cyb3rhq Inc.
 
-           Created by Wazuh, Inc. <info@wazuh.com>.
+           Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 
            This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 
@@ -22,7 +22,7 @@ targets:
     - agent
 
 daemons:
-    - wazuh-syscheckd
+    - cyb3rhq-syscheckd
 
 os_platform:
     - windows
@@ -38,8 +38,8 @@ os_version:
     - Windows XP
 
 references:
-    - https://documentation.wazuh.com/current/user-manual/capabilities/file-integrity/index.html
-    - https://documentation.wazuh.com/current/user-manual/reference/ossec-conf/syscheck.html#file-limit
+    - https://documentation.cyb3rhq.com/current/user-manual/capabilities/file-integrity/index.html
+    - https://documentation.cyb3rhq.com/current/user-manual/reference/ossec-conf/syscheck.html#file-limit
 
 pytest_args:
     - fim_mode:
@@ -55,16 +55,16 @@ tags:
 import os
 import time
 import pytest
-from wazuh_testing import LOG_FILE_PATH, T_10
-from wazuh_testing.tools.configuration import load_configuration_template, get_test_cases_data
-from wazuh_testing.tools.monitoring import FileMonitor, generate_monitoring_callback
-from wazuh_testing.modules import WINDOWS, TIER1
-from wazuh_testing.modules.fim import (registry_parser, KEY_WOW64_64KEY, REG_SZ,
+from cyb3rhq_testing import LOG_FILE_PATH, T_10
+from cyb3rhq_testing.tools.configuration import load_configuration_template, get_test_cases_data
+from cyb3rhq_testing.tools.monitoring import FileMonitor, generate_monitoring_callback
+from cyb3rhq_testing.modules import WINDOWS, TIER1
+from cyb3rhq_testing.modules.fim import (registry_parser, KEY_WOW64_64KEY, REG_SZ,
                                        WINDOWS_HKEY_LOCAL_MACHINE)
-from wazuh_testing.modules.fim import FIM_DEFAULT_LOCAL_INTERNAL_OPTIONS as local_internal_options
-from wazuh_testing.modules.fim.event_monitor import (CB_FIM_WILDCARD_EXPANDING, callback_key_event, get_messages,
+from cyb3rhq_testing.modules.fim import FIM_DEFAULT_LOCAL_INTERNAL_OPTIONS as local_internal_options
+from cyb3rhq_testing.modules.fim.event_monitor import (CB_FIM_WILDCARD_EXPANDING, callback_key_event, get_messages,
                                                      check_registry_crud_event, callback_value_event)
-from wazuh_testing.modules.fim.utils import (create_registry, modify_registry_value, delete_registry,
+from cyb3rhq_testing.modules.fim.utils import (create_registry, modify_registry_value, delete_registry,
                                              delete_registry_value)
 
 # Marks
@@ -90,26 +90,26 @@ t2_configurations = load_configuration_template(configurations_path, t2_configur
                                                 t2_configuration_metadata)
 
 # Variables
-wazuh_log_monitor = FileMonitor(LOG_FILE_PATH)
+cyb3rhq_log_monitor = FileMonitor(LOG_FILE_PATH)
 key_name = 'test_key'
 value_name = 'test_value'
 
 
 # Tests
 @pytest.mark.parametrize('configuration, metadata', zip(t1_configurations, t1_configuration_metadata), ids=t1_case_ids)
-def test_registry_key_wildcards(configuration, metadata, set_wazuh_configuration, truncate_monitored_files,
-                                configure_local_internal_options_function, restart_wazuh_function,
+def test_registry_key_wildcards(configuration, metadata, set_cyb3rhq_configuration, truncate_monitored_files,
+                                configure_local_internal_options_function, restart_cyb3rhq_function,
                                 wait_syscheck_start):
     '''
     description: Check the behavior of FIM when using wildcards to configure the path of registry keys, and validate
                  the keys creation, modification and deletion is detected correctly.
 
-    wazuh_min_version: 4.6.0
+    cyb3rhq_min_version: 4.6.0
 
     test_phases:
         - setup:
-            - Set wazuh configuration.
-            - Clean logs files and restart wazuh to apply the configuration.
+            - Set cyb3rhq configuration.
+            - Clean logs files and restart cyb3rhq to apply the configuration.
         - test:
             - Check that one or more keys are detected when the configured wildcard is expanded
             - Create a subkey inside the first monitored key and check
@@ -120,7 +120,7 @@ def test_registry_key_wildcards(configuration, metadata, set_wazuh_configuration
             - Wait for scan and check subkey has been detected as 'deleted'
         - teardown:
             - Restore configuration
-            - Stop wazuh
+            - Stop cyb3rhq
 
     tier: 1
 
@@ -131,9 +131,9 @@ def test_registry_key_wildcards(configuration, metadata, set_wazuh_configuration
         - metadata:
             type: dict
             brief: Test case data.
-        - set_wazuh_configuration:
+        - set_cyb3rhq_configuration:
             type: fixture
-            brief: Set wazuh's configuration.
+            brief: Set cyb3rhq's configuration.
         - truncate_monitored_files:
             type: fixture
             brief: Truncate the logs and alerts files.
@@ -194,7 +194,7 @@ def test_registry_key_wildcards(configuration, metadata, set_wazuh_configuration
 
 
 @pytest.mark.parametrize('configuration, metadata', zip(t2_configurations, t2_configuration_metadata), ids=t2_case_ids)
-def test_registry_value_wildcards(configuration, metadata, set_wazuh_configuration,
+def test_registry_value_wildcards(configuration, metadata, set_cyb3rhq_configuration,
                                   configure_local_internal_options_function, restart_syscheck_function,
                                   wait_syscheck_start):
     '''
@@ -202,12 +202,12 @@ def test_registry_value_wildcards(configuration, metadata, set_wazuh_configurati
                  when values are created inside a monitored key, creation, modification and deletion is detected
                  correctly.
 
-    wazuh_min_version: 4.5.0
+    cyb3rhq_min_version: 4.5.0
 
     test_phases:
         - setup:
-            - Set wazuh configuration.
-            - Clean logs files and restart wazuh to apply the configuration.
+            - Set cyb3rhq configuration.
+            - Clean logs files and restart cyb3rhq to apply the configuration.
         - test:
             - Check that one or more keys are detected when the configured wildcard is expanded
             - Create a registry_value inside the first monitored key and check
@@ -218,7 +218,7 @@ def test_registry_value_wildcards(configuration, metadata, set_wazuh_configurati
             - Wait for scan and check registry_value has been detected as 'deleted'
         - teardown:
             - Restore configuration
-            - Stop wazuh
+            - Stop cyb3rhq
 
     tier: 1
 
@@ -229,9 +229,9 @@ def test_registry_value_wildcards(configuration, metadata, set_wazuh_configurati
         - metadata:
             type: dict
             brief: Test case data.
-        - set_wazuh_configuration:
+        - set_cyb3rhq_configuration:
             type: fixture
-            brief: Set wazuh's configuration file.
+            brief: Set cyb3rhq's configuration file.
         - configure_local_internal_options_function:
             type: fixture
             brief: Set local_internal_options configuration.

@@ -5,22 +5,22 @@ The provision module includes pytest unit tests.
 ## Requirements
 
 - Make sure you have Python installed on your system. You can download it from [python.org](https://www.python.org/downloads/).
-- Clone the wazuh-qa repository in your local environment.
+- Clone the cyb3rhq-qa repository in your local environment.
 - Install the necessary dependencies by running:
 ```bash
-git clone https://github.com/wazuh/wazuh-qa.git -b [your-branch]
-cd wazuh-qa
+git clone https://github.com/cyb3rhq/cyb3rhq-qa.git -b [your-branch]
+cd cyb3rhq-qa
 pip install -r deployability/deps/requirements.txt
 pip install -r deployability/deps/remote_requirements.txt
 ```
 - Configure the `PYTHONPATH` variable with the full path to the directory `deployability`, for example if you've
-cloned the `wazuh-qa` repository into `/wazuh/wazuh-qa`, configure the `PYTHONPATH` in this way:
+cloned the `cyb3rhq-qa` repository into `/cyb3rhq/cyb3rhq-qa`, configure the `PYTHONPATH` in this way:
 ```bash
 > pwd
-/wazuh/wazuh-qa
+/cyb3rhq/cyb3rhq-qa
 > export PYTHONPATH=$PYTHONPATH:$PWD/deployability
 > echo $PYTHONPATH
-/wazuh/wazuh-qa/deployability
+/cyb3rhq/cyb3rhq-qa/deployability
 ```
 
 ## Test Structure
@@ -38,9 +38,9 @@ or directories. The output of this command looks like this:
 ```bash
 pytest -vv deployability/modules/provision/
 =================================================================================== test session starts ===================================================================================
-platform linux -- Python 3.10.13, pytest-8.0.1, pluggy-1.4.0 -- /home/marcelo/.pyenv/versions/wazuh-qa/bin/python
+platform linux -- Python 3.10.13, pytest-8.0.1, pluggy-1.4.0 -- /home/marcelo/.pyenv/versions/cyb3rhq-qa/bin/python
 cachedir: .pytest_cache
-rootdir: /home/marcelo/wazuh/wazuh-qa/deployability/modules
+rootdir: /home/marcelo/cyb3rhq/cyb3rhq-qa/deployability/modules
 collected 51 items
 
 deployability/modules/provision/tests/test_actions.py::test_action_constructor[install-package0] PASSED                                                                             [  1%]
@@ -49,28 +49,28 @@ deployability/modules/provision/tests/test_actions.py::test_action_constructor[i
 deployability/modules/provision/tests/test_actions.py::test_action_execute[logger_mock0] PASSED                                                                                     [  7%]
 deployability/modules/provision/tests/test_actions.py::test_action_get_os_family[logger_mock0] PASSED                                                                               [  9%]
 deployability/modules/provision/tests/test_actions.py::test_provision_handler_get_playbook PASSED                                                                                   [ 11%]
-deployability/modules/provision/tests/test_handler.py::test_provision_handler_constructor[logger_mock0-wazuh-manager-install-package] PASSED                                        [ 13%]
-deployability/modules/provision/tests/test_handler.py::test_provision_handler_constructor[logger_mock0-wazuh-manager-install-assistant] PASSED                                      [ 15%]
-deployability/modules/provision/tests/test_handler.py::test_provision_handler_constructor[logger_mock0-wazuh-manager-install-source] PASSED                                         [ 17%]
-deployability/modules/provision/tests/test_handler.py::test_provision_handler_constructor[logger_mock0-wazuh-manager-uninstall-package] PASSED                                      [ 19%]
-deployability/modules/provision/tests/test_handler.py::test_provision_handler_constructor[logger_mock0-wazuh-manager-uninstall-assistant] PASSED                                    [ 21%]
-deployability/modules/provision/tests/test_handler.py::test_provision_handler_constructor[logger_mock0-wazuh-manager-uninstall-source] PASSED                                       [ 23%]
-deployability/modules/provision/tests/test_handler.py::test_provision_handler_constructor[logger_mock0-wazuh-agent-uninstall-source] PASSED                                         [ 25%]
-deployability/modules/provision/tests/test_handler.py::test_provision_handler_constructor[logger_mock0-wazuh-agent-uninstall-assistant] PASSED                                      [ 27%]
-deployability/modules/provision/tests/test_handler.py::test_provision_handler_constructor_fail[wazuh-manager-INSTALL-package-Unsupported action: INSTALL] PASSED                    [ 29%]
-deployability/modules/provision/tests/test_handler.py::test_provision_handler_constructor_fail[wazuh-manager-UNINSTALL-assistant-Unsupported action: UNINSTALL] PASSED              [ 31%]
-deployability/modules/provision/tests/test_handler.py::test_provision_handler_constructor_fail[wazuh-manager-other-source-Unsupported action: other] PASSED                         [ 33%]
-deployability/modules/provision/tests/test_handler.py::test_provision_handler_constructor_fail[wazuh-manager-uninstall-other-Unsupported method: other] PASSED                      [ 35%]
-deployability/modules/provision/tests/test_handler.py::test_provision_handler_constructor_fail[indexer-uninstall-assistant-Assistant actions is only supported for Wazuh components.] PASSED [ 37%]
-deployability/modules/provision/tests/test_handler.py::test_provision_handler_get_templates_path[wazuh-manager-package-install] PASSED                                              [ 39%]
-deployability/modules/provision/tests/test_handler.py::test_provision_handler_get_templates_path[wazuh-manager-assistant-uninstall] PASSED                                          [ 41%]
+deployability/modules/provision/tests/test_handler.py::test_provision_handler_constructor[logger_mock0-cyb3rhq-manager-install-package] PASSED                                        [ 13%]
+deployability/modules/provision/tests/test_handler.py::test_provision_handler_constructor[logger_mock0-cyb3rhq-manager-install-assistant] PASSED                                      [ 15%]
+deployability/modules/provision/tests/test_handler.py::test_provision_handler_constructor[logger_mock0-cyb3rhq-manager-install-source] PASSED                                         [ 17%]
+deployability/modules/provision/tests/test_handler.py::test_provision_handler_constructor[logger_mock0-cyb3rhq-manager-uninstall-package] PASSED                                      [ 19%]
+deployability/modules/provision/tests/test_handler.py::test_provision_handler_constructor[logger_mock0-cyb3rhq-manager-uninstall-assistant] PASSED                                    [ 21%]
+deployability/modules/provision/tests/test_handler.py::test_provision_handler_constructor[logger_mock0-cyb3rhq-manager-uninstall-source] PASSED                                       [ 23%]
+deployability/modules/provision/tests/test_handler.py::test_provision_handler_constructor[logger_mock0-cyb3rhq-agent-uninstall-source] PASSED                                         [ 25%]
+deployability/modules/provision/tests/test_handler.py::test_provision_handler_constructor[logger_mock0-cyb3rhq-agent-uninstall-assistant] PASSED                                      [ 27%]
+deployability/modules/provision/tests/test_handler.py::test_provision_handler_constructor_fail[cyb3rhq-manager-INSTALL-package-Unsupported action: INSTALL] PASSED                    [ 29%]
+deployability/modules/provision/tests/test_handler.py::test_provision_handler_constructor_fail[cyb3rhq-manager-UNINSTALL-assistant-Unsupported action: UNINSTALL] PASSED              [ 31%]
+deployability/modules/provision/tests/test_handler.py::test_provision_handler_constructor_fail[cyb3rhq-manager-other-source-Unsupported action: other] PASSED                         [ 33%]
+deployability/modules/provision/tests/test_handler.py::test_provision_handler_constructor_fail[cyb3rhq-manager-uninstall-other-Unsupported method: other] PASSED                      [ 35%]
+deployability/modules/provision/tests/test_handler.py::test_provision_handler_constructor_fail[indexer-uninstall-assistant-Assistant actions is only supported for Cyb3rhq components.] PASSED [ 37%]
+deployability/modules/provision/tests/test_handler.py::test_provision_handler_get_templates_path[cyb3rhq-manager-package-install] PASSED                                              [ 39%]
+deployability/modules/provision/tests/test_handler.py::test_provision_handler_get_templates_path[cyb3rhq-manager-assistant-uninstall] PASSED                                          [ 41%]
 deployability/modules/provision/tests/test_handler.py::test_provision_handler_get_templates_path[indexer-source-install] PASSED                                                     [ 43%]
-deployability/modules/provision/tests/test_handler.py::test_provision_handler_get_templates_order[wazuh-manager-package-install-expected_list0] PASSED                              [ 45%]
+deployability/modules/provision/tests/test_handler.py::test_provision_handler_get_templates_order[cyb3rhq-manager-package-install-expected_list0] PASSED                              [ 45%]
 deployability/modules/provision/tests/test_handler.py::test_provision_handler_get_templates_order[indexer-source-install-expected_list1] PASSED                                     [ 47%]
-deployability/modules/provision/tests/test_handler.py::test_provision_handler_get_templates_order[wazuh-manager-assistant-uninstall-expected_list2] PASSED                          [ 49%]
+deployability/modules/provision/tests/test_handler.py::test_provision_handler_get_templates_order[cyb3rhq-manager-assistant-uninstall-expected_list2] PASSED                          [ 49%]
 deployability/modules/provision/tests/test_handler.py::test_provision_handler_get_templates_order_fail PASSED                                                                       [ 50%]
-deployability/modules/provision/tests/test_handler.py::test_provision_handler_generate_dict[wazuh-manager-package-install] PASSED                                                   [ 52%]
-deployability/modules/provision/tests/test_handler.py::test_provision_handler_generate_dict[wazuh-manager-assistant-uninstall] PASSED                                               [ 54%]
+deployability/modules/provision/tests/test_handler.py::test_provision_handler_generate_dict[cyb3rhq-manager-package-install] PASSED                                                   [ 52%]
+deployability/modules/provision/tests/test_handler.py::test_provision_handler_generate_dict[cyb3rhq-manager-assistant-uninstall] PASSED                                               [ 54%]
 deployability/modules/provision/tests/test_handler.py::test_provision_handler_generate_dict[indexer-source-install] PASSED                                                          [ 56%]
 deployability/modules/provision/tests/test_models.py::test_input_payload_constructor_components[True] PASSED                                                                        [ 58%]
 deployability/modules/provision/tests/test_models.py::test_input_payload_constructor_components[False] PASSED                                                                       [ 60%]
@@ -91,17 +91,17 @@ deployability/modules/provision/tests/test_provision.py::test_provision_load_ans
 deployability/modules/provision/tests/test_provision.py::test_provision_get_deps_ips[provision_mock0-True] PASSED                                                                   [ 90%]
 deployability/modules/provision/tests/test_provision.py::test_provision_get_deps_ips[provision_mock1-False] PASSED                                                                  [ 92%]
 deployability/modules/provision/tests/test_provision.py::test_provision_get_deps_ips_fail[logger_mock0-provision_mock0] PASSED                                                      [ 94%]
-deployability/modules/provision/tests/test_provision.py::test_provision_validate_component_deps[logger_mock0-provision_mock0-wazuh-agent-dependencies0] PASSED                      [ 96%]
-deployability/modules/provision/tests/test_provision.py::test_provision_validate_component_deps[logger_mock1-provision_mock1-wazuh-manager-dependencies1] PASSED                    [ 98%]
+deployability/modules/provision/tests/test_provision.py::test_provision_validate_component_deps[logger_mock0-provision_mock0-cyb3rhq-agent-dependencies0] PASSED                      [ 96%]
+deployability/modules/provision/tests/test_provision.py::test_provision_validate_component_deps[logger_mock1-provision_mock1-cyb3rhq-manager-dependencies1] PASSED                    [ 98%]
 deployability/modules/provision/tests/test_provision.py::test_provision_validate_component_deps_fail[provision_mock0] PASSED                                                        [100%]
 
 ==================================================================================== warnings summary =====================================================================================
 deployability/modules/provision/models.py:36
-  /home/marcelo/wazuh/wazuh-qa/deployability/modules/provision/models.py:36: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.5/migration/
+  /home/marcelo/cyb3rhq/cyb3rhq-qa/deployability/modules/provision/models.py:36: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.5/migration/
     @validator('dependencies', pre=True)
 
 deployability/modules/provision/models.py:64
-  /home/marcelo/wazuh/wazuh-qa/deployability/modules/provision/models.py:64: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.5/migration/
+  /home/marcelo/cyb3rhq/cyb3rhq-qa/deployability/modules/provision/models.py:64: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.5/migration/
     @validator('install', 'uninstall', pre=True)
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html

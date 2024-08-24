@@ -1,5 +1,5 @@
-# Copyright (C) 2015, Wazuh Inc.
-# Created by Wazuh, Inc. <info@wazuh.com>.
+# Copyright (C) 2015, Cyb3rhq Inc.
+# Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 # This program is a free software; you can redistribute it and/or modify it under the terms of GPLv2
 from typing import List, Optional
 from abc import abstractmethod
@@ -9,13 +9,13 @@ import yaml
 import time
 
 from modules.testing.utils import logger
-from .constants import WAZUH_CONF, WAZUH_ROOT, WAZUH_WINDOWS_CONF, WAZUH_MACOS_CONF
-from .executor import WazuhAPI, ConnectionManager
+from .constants import CYB3RHQ_CONF, CYB3RHQ_ROOT, CYB3RHQ_WINDOWS_CONF, CYB3RHQ_MACOS_CONF
+from .executor import Cyb3rhqAPI, ConnectionManager
 from .generic import HostInformation, CheckFiles
 
 
-class WazuhAgent:
-    """Root class for wazuh agents."""
+class Cyb3rhqAgent:
+    """Root class for cyb3rhq agents."""
     def __init__(self, inventory_path: str):
         self.inventory_path = inventory_path
         track_file = inventory_path.replace('inventory', 'track')
@@ -28,13 +28,13 @@ class WazuhAgent:
 
 
     @staticmethod
-    def install_agent(inventory_path, agent_name, wazuh_version, wazuh_revision, live) -> None:
+    def install_agent(inventory_path, agent_name, cyb3rhq_version, cyb3rhq_revision, live) -> None:
         if live == "False":
             s3_url = 'packages-dev'
             release = 'pre-release'
         else:
             s3_url = 'packages'
-            release = wazuh_version[:1] + ".x"
+            release = cyb3rhq_version[:1] + ".x"
 
         os_type = HostInformation.get_os_type(inventory_path)
         architecture = HostInformation.get_architecture(inventory_path)
@@ -45,53 +45,53 @@ class WazuhAgent:
 
             if distribution == 'rpm' and 'amd64' in architecture:
                 commands.extend([
-                    f"curl -o wazuh-agent-{wazuh_version}-1.x86_64.rpm https://{s3_url}.wazuh.com/{release}/yum/wazuh-agent-{wazuh_version}-1.x86_64.rpm && sudo WAZUH_MANAGER='MANAGER_IP' WAZUH_AGENT_NAME='{agent_name}' rpm -ihv wazuh-agent-{wazuh_version}-1.x86_64.rpm"
+                    f"curl -o cyb3rhq-agent-{cyb3rhq_version}-1.x86_64.rpm https://{s3_url}.cyb3rhq.com/{release}/yum/cyb3rhq-agent-{cyb3rhq_version}-1.x86_64.rpm && sudo CYB3RHQ_MANAGER='MANAGER_IP' CYB3RHQ_AGENT_NAME='{agent_name}' rpm -ihv cyb3rhq-agent-{cyb3rhq_version}-1.x86_64.rpm"
                 ])
             elif distribution == 'rpm' and 'arm64' in architecture:
                 commands.extend([
-                    f"curl -o wazuh-agent-{wazuh_version}-1.aarch64.rpm https://{s3_url}.wazuh.com/{release}/yum/wazuh-agent-{wazuh_version}-1.aarch64.rpm && sudo WAZUH_MANAGER='MANAGER_IP' WAZUH_AGENT_NAME='{agent_name}' rpm -ihv wazuh-agent-{wazuh_version}-1.aarch64.rpm"
+                    f"curl -o cyb3rhq-agent-{cyb3rhq_version}-1.aarch64.rpm https://{s3_url}.cyb3rhq.com/{release}/yum/cyb3rhq-agent-{cyb3rhq_version}-1.aarch64.rpm && sudo CYB3RHQ_MANAGER='MANAGER_IP' CYB3RHQ_AGENT_NAME='{agent_name}' rpm -ihv cyb3rhq-agent-{cyb3rhq_version}-1.aarch64.rpm"
                 ])
             elif distribution == 'deb' and 'amd64' in architecture:
                 commands.extend([
-                    f"wget https://{s3_url}.wazuh.com/{release}/apt/pool/main/w/wazuh-agent/wazuh-agent_{wazuh_version}-1_amd64.deb && sudo WAZUH_MANAGER='MANAGER_IP' WAZUH_AGENT_NAME='{agent_name}' dpkg -i ./wazuh-agent_{wazuh_version}-1_amd64.deb"
+                    f"wget https://{s3_url}.cyb3rhq.com/{release}/apt/pool/main/w/cyb3rhq-agent/cyb3rhq-agent_{cyb3rhq_version}-1_amd64.deb && sudo CYB3RHQ_MANAGER='MANAGER_IP' CYB3RHQ_AGENT_NAME='{agent_name}' dpkg -i ./cyb3rhq-agent_{cyb3rhq_version}-1_amd64.deb"
                 ])
             elif distribution == 'deb' and 'arm64' in architecture:
                 commands.extend([
-                    f"wget https://{s3_url}.wazuh.com/{release}/apt/pool/main/w/wazuh-agent/wazuh-agent_{wazuh_version}-1_arm64.deb && sudo WAZUH_MANAGER='MANAGER_IP' WAZUH_AGENT_NAME='{agent_name}' dpkg -i ./wazuh-agent_{wazuh_version}-1_arm64.deb"
+                    f"wget https://{s3_url}.cyb3rhq.com/{release}/apt/pool/main/w/cyb3rhq-agent/cyb3rhq-agent_{cyb3rhq_version}-1_arm64.deb && sudo CYB3RHQ_MANAGER='MANAGER_IP' CYB3RHQ_AGENT_NAME='{agent_name}' dpkg -i ./cyb3rhq-agent_{cyb3rhq_version}-1_arm64.deb"
                 ])
             system_commands = [
                     "systemctl daemon-reload",
-                    "systemctl enable wazuh-agent",
-                    "systemctl start wazuh-agent",
-                    "systemctl status wazuh-agent"
+                    "systemctl enable cyb3rhq-agent",
+                    "systemctl start cyb3rhq-agent",
+                    "systemctl status cyb3rhq-agent"
             ]
 
             commands.extend(system_commands)
         elif os_type == 'windows' :
             commands.extend([
-                f"Invoke-WebRequest -Uri https://{s3_url}.wazuh.com/{release}/windows/wazuh-agent-{wazuh_version}-1.msi "
-                "-OutFile $env:TEMP\wazuh-agent.msi"
+                f"Invoke-WebRequest -Uri https://{s3_url}.cyb3rhq.com/{release}/windows/cyb3rhq-agent-{cyb3rhq_version}-1.msi "
+                "-OutFile $env:TEMP\cyb3rhq-agent.msi"
             ])
             commands.extend([
-                "msiexec.exe /i $env:TEMP\wazuh-agent.msi /q "
-                f"WAZUH_MANAGER='MANAGER_IP' "
-                f"WAZUH_AGENT_NAME='{agent_name}' "
-                f"WAZUH_REGISTRATION_SERVER='MANAGER_IP' "
+                "msiexec.exe /i $env:TEMP\cyb3rhq-agent.msi /q "
+                f"CYB3RHQ_MANAGER='MANAGER_IP' "
+                f"CYB3RHQ_AGENT_NAME='{agent_name}' "
+                f"CYB3RHQ_REGISTRATION_SERVER='MANAGER_IP' "
             ])
-            commands.extend(["NET START WazuhSvc"])
+            commands.extend(["NET START Cyb3rhqSvc"])
 
         elif os_type == 'macos':
             if architecture == 'amd64':
                 commands.extend([
-                    f'curl -so wazuh-agent.pkg https://{s3_url}.wazuh.com/{release}/macos/wazuh-agent-{wazuh_version}-1.intel64.pkg && echo "WAZUH_MANAGER=\'MANAGER_IP\' && WAZUH_AGENT_NAME=\'{agent_name}\'" > /tmp/wazuh_envs && sudo installer -pkg ./wazuh-agent.pkg -target /'
+                    f'curl -so cyb3rhq-agent.pkg https://{s3_url}.cyb3rhq.com/{release}/macos/cyb3rhq-agent-{cyb3rhq_version}-1.intel64.pkg && echo "CYB3RHQ_MANAGER=\'MANAGER_IP\' && CYB3RHQ_AGENT_NAME=\'{agent_name}\'" > /tmp/cyb3rhq_envs && sudo installer -pkg ./cyb3rhq-agent.pkg -target /'
                 ])
             elif architecture == 'arm64':
                 commands.extend([
-                    f'curl -so wazuh-agent.pkg https://{s3_url}.wazuh.com/{release}/macos/wazuh-agent-{wazuh_version}-1.arm64.pkg && echo "WAZUH_MANAGER=\'MANAGER_IP\' && WAZUH_AGENT_NAME=\'{agent_name}\'" > /tmp/wazuh_envs && sudo installer -pkg ./wazuh-agent.pkg -target /'
+                    f'curl -so cyb3rhq-agent.pkg https://{s3_url}.cyb3rhq.com/{release}/macos/cyb3rhq-agent-{cyb3rhq_version}-1.arm64.pkg && echo "CYB3RHQ_MANAGER=\'MANAGER_IP\' && CYB3RHQ_AGENT_NAME=\'{agent_name}\'" > /tmp/cyb3rhq_envs && sudo installer -pkg ./cyb3rhq-agent.pkg -target /'
                 ])
             system_commands = [
-                    '/Library/Ossec/bin/wazuh-control start',
-                    '/Library/Ossec/bin/wazuh-control status'
+                    '/Library/Ossec/bin/cyb3rhq-control start',
+                    '/Library/Ossec/bin/cyb3rhq-control status'
             ]
             commands.extend(system_commands)
 
@@ -100,9 +100,9 @@ class WazuhAgent:
 
 
     @staticmethod
-    def install_agents(inventories_paths=[], wazuh_versions=[], wazuh_revisions=[], agent_names=[], live=[]) -> None:
+    def install_agents(inventories_paths=[], cyb3rhq_versions=[], cyb3rhq_revisions=[], agent_names=[], live=[]) -> None:
         for index, inventory_path in enumerate(inventories_paths):
-            WazuhAgent.install_agent(inventory_path, wazuh_versions[index], wazuh_revisions[index], agent_names[index], live[index])
+            Cyb3rhqAgent.install_agent(inventory_path, cyb3rhq_versions[index], cyb3rhq_revisions[index], agent_names[index], live[index])
 
 
     @staticmethod
@@ -123,14 +123,14 @@ class WazuhAgent:
             try:
                 host_ip = HostInformation.get_internal_ip_from_aws_dns(manager_host) if 'amazonaws' in manager_host else manager_host
                 commands = [
-                    f"sed -i 's/<address>MANAGER_IP<\/address>/<address>{host_ip}<\/address>/g' {WAZUH_CONF}",
-                    "systemctl restart wazuh-agent"
+                    f"sed -i 's/<address>MANAGER_IP<\/address>/<address>{host_ip}<\/address>/g' {CYB3RHQ_CONF}",
+                    "systemctl restart cyb3rhq-agent"
                 ]
                 ConnectionManager.execute_commands(inventory_path, commands)
             except Exception as e:
                 raise Exception(f'Error registering agent. Error executing: {commands} with error: {e}')
 
-            result = ConnectionManager.execute_commands(inventory_path, f'cat {WAZUH_CONF}')
+            result = ConnectionManager.execute_commands(inventory_path, f'cat {CYB3RHQ_CONF}')
             assert host_ip in result.get('output'), logger.error(f'Error configuring the Manager IP ({host_ip}) in: {HostInformation.get_os_name_and_version_from_inventory(inventory_path)} agent')
 
         elif os_type == 'macos':
@@ -140,29 +140,29 @@ class WazuhAgent:
                 else:
                     host_ip = HostInformation.get_public_ip_from_aws_dns(manager_host)
                 commands = [
-                    f"sed -i '.bak' 's/<address>MANAGER_IP<\/address>/<address>{host_ip}<\/address>/g' {WAZUH_MACOS_CONF}",
-                    "/Library/Ossec/bin/wazuh-control restart"
+                    f"sed -i '.bak' 's/<address>MANAGER_IP<\/address>/<address>{host_ip}<\/address>/g' {CYB3RHQ_MACOS_CONF}",
+                    "/Library/Ossec/bin/cyb3rhq-control restart"
                 ]
                 ConnectionManager.execute_commands(inventory_path, commands)
             except Exception as e:
                 raise Exception(f'Error registering agent. Error executing: {commands} with error: {e}')
 
-            result = ConnectionManager.execute_commands(inventory_path, f'cat {WAZUH_MACOS_CONF}').get('output')
+            result = ConnectionManager.execute_commands(inventory_path, f'cat {CYB3RHQ_MACOS_CONF}').get('output')
             assert host_ip in result, logger.error(f'Error configuring the Manager IP ({host_ip}) in: {HostInformation.get_os_name_and_version_from_inventory(inventory_path)} agent')
 
         elif os_type == 'windows':
             try:
                 host_ip = HostInformation.get_internal_ip_from_aws_dns(manager_host) if 'amazonaws' in manager_host else manager_host
                 commands = [
-                    f'(Get-Content -Path "{WAZUH_WINDOWS_CONF}" -Raw) -replace "<address>MANAGER_IP</address>", "<address>{host_ip}</address>" | Set-Content -Path "{WAZUH_WINDOWS_CONF}"',
-                    "NET START WazuhSvc"
+                    f'(Get-Content -Path "{CYB3RHQ_WINDOWS_CONF}" -Raw) -replace "<address>MANAGER_IP</address>", "<address>{host_ip}</address>" | Set-Content -Path "{CYB3RHQ_WINDOWS_CONF}"',
+                    "NET START Cyb3rhqSvc"
                 ]
 
                 ConnectionManager.execute_commands(inventory_path, commands)
             except Exception as e:
                 raise Exception(f'Error registering agent. Error executing: {commands} with error: {e}')
 
-            result = ConnectionManager.execute_commands(inventory_path, f'Get-Content "{WAZUH_WINDOWS_CONF}"')
+            result = ConnectionManager.execute_commands(inventory_path, f'Get-Content "{CYB3RHQ_WINDOWS_CONF}"')
             assert host_ip in result.get('output'), logger.error(f'Error configuring the Manager IP ({host_ip}) in: {HostInformation.get_os_name_and_version_from_inventory(inventory_path)} agent')
 
     @staticmethod
@@ -170,31 +170,31 @@ class WazuhAgent:
         os_type = HostInformation.get_os_type(inventory_path)
         if os_type == 'linux':
             commands = [
-                f"sed -i 's/<protocol>[^<]*<\/protocol>/<protocol>{protocol}<\/protocol>/g' {WAZUH_CONF}",
-                "systemctl restart wazuh-agent"
+                f"sed -i 's/<protocol>[^<]*<\/protocol>/<protocol>{protocol}<\/protocol>/g' {CYB3RHQ_CONF}",
+                "systemctl restart cyb3rhq-agent"
             ]
             ConnectionManager.execute_commands(inventory_path, commands)
-            result = ConnectionManager.execute_commands(inventory_path, f'cat {WAZUH_CONF}')
+            result = ConnectionManager.execute_commands(inventory_path, f'cat {CYB3RHQ_CONF}')
             assert protocol in result.get('output'), logger.error(f'Error configuring the protocol ({protocol}) in: {HostInformation.get_os_name_and_version_from_inventory(inventory_path)} agent')
 
         elif os_type == 'macos':
             commands = [
-                f"sed -i '' 's/<protocol>[^<]*<\/protocol>/<protocol>{protocol}<\/protocol>/g' {WAZUH_MACOS_CONF}",
-                "/Library/Ossec/bin/wazuh-control restart"
+                f"sed -i '' 's/<protocol>[^<]*<\/protocol>/<protocol>{protocol}<\/protocol>/g' {CYB3RHQ_MACOS_CONF}",
+                "/Library/Ossec/bin/cyb3rhq-control restart"
             ]
             ConnectionManager.execute_commands(inventory_path, commands)
-            assert protocol in ConnectionManager.execute_commands(inventory_path, f'cat {WAZUH_MACOS_CONF}').get('output'), logger.error(f'Error configuring the protocol ({protocol}) in: {HostInformation.get_os_name_and_version_from_inventory(inventory_path)} agent')
+            assert protocol in ConnectionManager.execute_commands(inventory_path, f'cat {CYB3RHQ_MACOS_CONF}').get('output'), logger.error(f'Error configuring the protocol ({protocol}) in: {HostInformation.get_os_name_and_version_from_inventory(inventory_path)} agent')
 
         elif os_type == 'windows':
             commands = [
-                f"(Get-Content -Path '{WAZUH_WINDOWS_CONF}') -replace '<protocol>[^<]*<\/protocol>', '<protocol>{protocol}</protocol>' | Set-Content -Path '{WAZUH_WINDOWS_CONF}'"
+                f"(Get-Content -Path '{CYB3RHQ_WINDOWS_CONF}') -replace '<protocol>[^<]*<\/protocol>', '<protocol>{protocol}</protocol>' | Set-Content -Path '{CYB3RHQ_WINDOWS_CONF}'"
             ]
             ConnectionManager.execute_commands(inventory_path, commands)
-            result = ConnectionManager.execute_commands(inventory_path, f'Get-Content -Path "{WAZUH_WINDOWS_CONF}"')
+            result = ConnectionManager.execute_commands(inventory_path, f'Get-Content -Path "{CYB3RHQ_WINDOWS_CONF}"')
             assert protocol in result.get('output'), logger.error(f'Error configuring the protocol ({protocol}) in: {HostInformation.get_os_name_and_version_from_inventory(inventory_path)} agent')
 
     @staticmethod
-    def uninstall_agent(inventory_path, wazuh_version=None, wazuh_revision=None) -> None:
+    def uninstall_agent(inventory_path, cyb3rhq_version=None, cyb3rhq_revision=None) -> None:
         os_type = HostInformation.get_os_type(inventory_path)
         commands = []
 
@@ -204,40 +204,40 @@ class WazuhAgent:
 
             if os_name == 'opensuse' or os_name == 'suse':
                     commands.extend([
-                        "zypper remove --no-confirm wazuh-agent",
+                        "zypper remove --no-confirm cyb3rhq-agent",
                         "rm -r /var/ossec"
                     ])
             else:
                 if distribution == 'deb':
                         commands.extend([
-                            "apt-get remove --purge wazuh-agent -y"
+                            "apt-get remove --purge cyb3rhq-agent -y"
                         ])
                 elif distribution == 'rpm':
                     commands.extend([
-                        "yum remove wazuh-agent -y",
-                        f"rm -rf {WAZUH_ROOT}"
+                        "yum remove cyb3rhq-agent -y",
+                        f"rm -rf {CYB3RHQ_ROOT}"
                     ])
             system_commands = [
-                    "systemctl disable wazuh-agent",
+                    "systemctl disable cyb3rhq-agent",
                     "systemctl daemon-reload"
             ]
             commands.extend(system_commands)
 
         elif os_type == 'windows':
             commands.extend([
-                f"msiexec.exe /x $env:TEMP\wazuh-agent.msi /qn"
+                f"msiexec.exe /x $env:TEMP\cyb3rhq-agent.msi /qn"
             ])
 
         elif os_type == 'macos':
             commands.extend([
-                "/Library/Ossec/bin/wazuh-control stop",
+                "/Library/Ossec/bin/cyb3rhq-control stop",
                 "/bin/rm -r /Library/Ossec",
-                "/bin/launchctl unload /Library/LaunchDaemons/com.wazuh.agent.plist",
-                "/bin/rm -f /Library/LaunchDaemons/com.wazuh.agent.plist",
-                "/bin/rm -rf /Library/StartupItems/WAZUH",
-                "/usr/bin/dscl . -delete '/Users/wazuh'",
-                "/usr/bin/dscl . -delete '/Groups/wazuh'",
-                "/usr/sbin/pkgutil --forget com.wazuh.pkg.wazuh-agent"
+                "/bin/launchctl unload /Library/LaunchDaemons/com.cyb3rhq.agent.plist",
+                "/bin/rm -f /Library/LaunchDaemons/com.cyb3rhq.agent.plist",
+                "/bin/rm -rf /Library/StartupItems/CYB3RHQ",
+                "/usr/bin/dscl . -delete '/Users/cyb3rhq'",
+                "/usr/bin/dscl . -delete '/Groups/cyb3rhq'",
+                "/usr/sbin/pkgutil --forget com.cyb3rhq.pkg.cyb3rhq-agent"
             ])
 
         logger.info(f'Uninstalling Agent in {HostInformation.get_os_name_and_version_from_inventory(inventory_path)}')
@@ -245,19 +245,19 @@ class WazuhAgent:
 
 
     @staticmethod
-    def uninstall_agents( inventories_paths=[], wazuh_version: Optional[List[str]]=None, wazuh_revision: Optional[List[str]]=None) -> None:
+    def uninstall_agents( inventories_paths=[], cyb3rhq_version: Optional[List[str]]=None, cyb3rhq_revision: Optional[List[str]]=None) -> None:
         for index, inventory_path in enumerate(inventories_paths):
-            WazuhAgent.uninstall_agent(inventory_path, wazuh_version[index], wazuh_revision[index])
+            Cyb3rhqAgent.uninstall_agent(inventory_path, cyb3rhq_version[index], cyb3rhq_revision[index])
 
 
     @staticmethod
-    def _install_agent_callback(wazuh_params, agent_name, agent_params):
-        WazuhAgent.install_agent(agent_params, agent_name, wazuh_params['wazuh_version'], wazuh_params['wazuh_revision'], wazuh_params['live'])
+    def _install_agent_callback(cyb3rhq_params, agent_name, agent_params):
+        Cyb3rhqAgent.install_agent(agent_params, agent_name, cyb3rhq_params['cyb3rhq_version'], cyb3rhq_params['cyb3rhq_revision'], cyb3rhq_params['live'])
 
 
     @staticmethod
-    def _uninstall_agent_callback(wazuh_params, agent_params):
-        WazuhAgent.uninstall_agent(agent_params, wazuh_params['wazuh_version'], wazuh_params['wazuh_revision'])
+    def _uninstall_agent_callback(cyb3rhq_params, agent_params):
+        Cyb3rhqAgent.uninstall_agent(agent_params, cyb3rhq_params['cyb3rhq_version'], cyb3rhq_params['cyb3rhq_revision'])
 
 
     @staticmethod
@@ -340,35 +340,35 @@ class WazuhAgent:
         return result
 
     @staticmethod
-    def perform_install_and_scan_for_agent(agent_params, agent_name, wazuh_params) -> None:
+    def perform_install_and_scan_for_agent(agent_params, agent_name, cyb3rhq_params) -> None:
         """
         Coordinates the action of install the agent and compares the checkfiles
 
         Args:
             agent_params (str): agent parameters
-            wazuh_params (str): wazuh parameters
+            cyb3rhq_params (str): cyb3rhq parameters
 
         """
-        action_callback = lambda: WazuhAgent._install_agent_callback(wazuh_params, agent_name, agent_params)
-        result = WazuhAgent.perform_action_and_scan(agent_params, action_callback)
+        action_callback = lambda: Cyb3rhqAgent._install_agent_callback(cyb3rhq_params, agent_name, agent_params)
+        result = Cyb3rhqAgent.perform_action_and_scan(agent_params, action_callback)
         logger.info(f'Pre and post install checkfile comparison in {HostInformation.get_os_name_and_version_from_inventory(agent_params)}: {result}')
-        WazuhAgent.assert_results(result, agent_params)
+        Cyb3rhqAgent.assert_results(result, agent_params)
 
 
     @staticmethod
-    def perform_uninstall_and_scan_for_agent(agent_params, wazuh_params) -> None:
+    def perform_uninstall_and_scan_for_agent(agent_params, cyb3rhq_params) -> None:
         """
         Coordinates the action of uninstall the agent and compares the checkfiles
 
         Args:
             agent_params (str): agent parameters
-            wazuh_params (str): wazuh parameters
+            cyb3rhq_params (str): cyb3rhq parameters
 
         """
-        action_callback = lambda: WazuhAgent._uninstall_agent_callback(wazuh_params, agent_params)
-        result = WazuhAgent.perform_action_and_scan(agent_params, action_callback)
+        action_callback = lambda: Cyb3rhqAgent._uninstall_agent_callback(cyb3rhq_params, agent_params)
+        result = Cyb3rhqAgent.perform_action_and_scan(agent_params, action_callback)
         logger.info(f'Pre and post uninstall checkfile comparison in {HostInformation.get_os_name_and_version_from_inventory(agent_params)}: {result}')
-        WazuhAgent.assert_results(result, agent_params)
+        Cyb3rhqAgent.assert_results(result, agent_params)
 
 
     @staticmethod
@@ -413,23 +413,23 @@ class WazuhAgent:
         os_type = HostInformation.get_os_type(agent_params)
 
         if os_type == 'linux':
-            result = ConnectionManager.execute_commands(agent_params, 'pgrep wazuh')
+            result = ConnectionManager.execute_commands(agent_params, 'pgrep cyb3rhq')
             if result.get('success'):
                 return bool([int(number) for number in result.get('output').splitlines()])
             else:
                 return False
 
         if os_type == 'macos':
-            result = ConnectionManager.execute_commands(agent_params, 'pgrep wazuh')
+            result = ConnectionManager.execute_commands(agent_params, 'pgrep cyb3rhq')
             if result.get('success'):
                 return bool([int(number) for number in result.get('output').splitlines()])
             else:
                 return False
 
         elif os_type == 'windows':
-            result = ConnectionManager.execute_commands(agent_params, 'Get-Process -Name "wazuh-agent" | Format-Table -HideTableHeaders  ProcessName')
+            result = ConnectionManager.execute_commands(agent_params, 'Get-Process -Name "cyb3rhq-agent" | Format-Table -HideTableHeaders  ProcessName')
             if result.get('success'):
-                return 'wazuh-agent' in result.get('output')
+                return 'cyb3rhq-agent' in result.get('output')
             else:
                 return False
 
@@ -486,14 +486,14 @@ class WazuhAgent:
             return False
 
 
-    def get_agents_information(wazuh_api: WazuhAPI) -> list:
+    def get_agents_information(cyb3rhq_api: Cyb3rhqAPI) -> list:
         """
         Get information about agents.
 
         Returns:
             List: Information about agents.
         """
-        response = requests.get(f"{wazuh_api.api_url}/agents", headers=wazuh_api.headers, verify=False)
+        response = requests.get(f"{cyb3rhq_api.api_url}/agents", headers=cyb3rhq_api.headers, verify=False)
 
         try:
             return eval(response.text)['data']['affected_items']
@@ -502,7 +502,7 @@ class WazuhAgent:
             return f"Unexpected error: {e}"
 
 
-    def get_agent_status(wazuh_api: WazuhAPI, agent_name) -> str:
+    def get_agent_status(cyb3rhq_api: Cyb3rhqAPI, agent_name) -> str:
         """
         Function to get the status of an agent given its name.
 
@@ -513,7 +513,7 @@ class WazuhAgent:
         Returns:
         - str: Status of the agent if found in the data, otherwise returns None.
         """
-        response = requests.get(f"{wazuh_api.api_url}/agents", headers=wazuh_api.headers, verify=False)
+        response = requests.get(f"{cyb3rhq_api.api_url}/agents", headers=cyb3rhq_api.headers, verify=False)
 
         for agent in eval(response.text)['data']['affected_items']:
             if agent.get('name') == agent_name:
@@ -524,7 +524,7 @@ class WazuhAgent:
         return None
 
 
-    def get_agent_ip_status_and_name_by_id(wazuh_api: WazuhAPI, identifier):
+    def get_agent_ip_status_and_name_by_id(cyb3rhq_api: Cyb3rhqAPI, identifier):
         """
         Get IP status and name by ID.
 
@@ -535,7 +535,7 @@ class WazuhAgent:
             List: IP, name, and status of the agent.
         """
         try:
-            agents_information = wazuh_api.get_agents_information()
+            agents_information = cyb3rhq_api.get_agents_information()
             for element in agents_information:
                 if element['id'] == identifier:
                     return [element['ip'], element['name'], element['status']]
@@ -544,7 +544,7 @@ class WazuhAgent:
             return [None, None, None]
 
 
-    def get_agent_os_version_by_name(wazuh_api: WazuhAPI, agent_name):
+    def get_agent_os_version_by_name(cyb3rhq_api: Cyb3rhqAPI, agent_name):
         """
         Get Agent os version by Agent name
 
@@ -554,7 +554,7 @@ class WazuhAgent:
         Returns:
             str: Os version.
         """
-        response = requests.get(f"{wazuh_api.api_url}/agents", headers=wazuh_api.headers, verify=False)
+        response = requests.get(f"{cyb3rhq_api.api_url}/agents", headers=cyb3rhq_api.headers, verify=False)
         try:
             for agent_data in eval(response.text)['data']['affected_items']:
                 if agent_data.get('name') == agent_name:
@@ -564,7 +564,7 @@ class WazuhAgent:
             return f"Unexpected error: {e}"
 
 
-    def get_agent_os_name_by_name(wazuh_api: WazuhAPI, agent_name):
+    def get_agent_os_name_by_name(cyb3rhq_api: Cyb3rhqAPI, agent_name):
         """
         Get Agent os name by Agent name
 
@@ -574,7 +574,7 @@ class WazuhAgent:
         Returns:
             str: Os name.
         """
-        response = requests.get(f"{wazuh_api.api_url}/agents", headers=wazuh_api.headers, verify=False)
+        response = requests.get(f"{cyb3rhq_api.api_url}/agents", headers=cyb3rhq_api.headers, verify=False)
         try:
             for agent_data in eval(response.text)['data']['affected_items']:
                 if agent_data.get('name') == agent_name:
@@ -585,12 +585,12 @@ class WazuhAgent:
         return None
 
 
-def add_agent_to_manager(wazuh_api: WazuhAPI, name, ip) -> str:
+def add_agent_to_manager(cyb3rhq_api: Cyb3rhqAPI, name, ip) -> str:
     """
     Add an agent to the manager.
 
     Args:
-        wazuh_api (WazuhAPI): Instance of WazuhAPI class.
+        cyb3rhq_api (Cyb3rhqAPI): Instance of Cyb3rhqAPI class.
         name (str): Name of the agent.
         ip (str): IP address of the agent.
 
@@ -598,50 +598,50 @@ def add_agent_to_manager(wazuh_api: WazuhAPI, name, ip) -> str:
         str: Response text.
     """
     try:
-        response = requests.post(f"{wazuh_api.api_url}/agents", json={"name": name, "ip": ip}, headers=wazuh_api.headers, verify=False)
+        response = requests.post(f"{cyb3rhq_api.api_url}/agents", json={"name": name, "ip": ip}, headers=cyb3rhq_api.headers, verify=False)
         return response.text
     except Exception as e:
         logger.error(f"Unexpected error: {e}")
         return f"Unexpected error: {e}"
 
 
-def restart_agents(wazuh_api: WazuhAPI) -> str:
+def restart_agents(cyb3rhq_api: Cyb3rhqAPI) -> str:
     """
     Restart agents.
 
     Args:
-        wazuh_api (WazuhAPI): Instance of WazuhAPI class.
+        cyb3rhq_api (Cyb3rhqAPI): Instance of Cyb3rhqAPI class.
 
     Returns:
         str: Response text.
     """
     try:
-        response = requests.put(f"{wazuh_api.api_url}/agents/restart", headers=wazuh_api.headers, verify=False)
+        response = requests.put(f"{cyb3rhq_api.api_url}/agents/restart", headers=cyb3rhq_api.headers, verify=False)
         return response.text
     except Exception as e:
         logger.error(f"Unexpected error: {e}")
         return f"Unexpected error: {e}"
 
 
-def agent_status_report(wazuh_api: WazuhAPI) -> dict:
+def agent_status_report(cyb3rhq_api: Cyb3rhqAPI) -> dict:
     """
     Get agent status report.
 
     Args:
-        wazuh_api (WazuhAPI): Instance of WazuhAPI class.
+        cyb3rhq_api (Cyb3rhqAPI): Instance of Cyb3rhqAPI class.
 
     Returns:
         Dict: Agent status report.
     """
     try:
-        response = requests.get(f"{wazuh_api.api_url}/agents/summary/status", headers=wazuh_api.headers, verify=False)
+        response = requests.get(f"{cyb3rhq_api.api_url}/agents/summary/status", headers=cyb3rhq_api.headers, verify=False)
         return eval(response.text)['data']
     except Exception as e:
         logger.error(f"Unexpected error: {e}")
         return {}
 
 
-class LinuxAgent(WazuhAgent):
+class LinuxAgent(Cyb3rhqAgent):
     """Linux Agent Class."""
 
     @staticmethod
@@ -708,7 +708,7 @@ class LinuxAgent(WazuhAgent):
         return os_version
 
 
-class WindowsAgent(WazuhAgent):
+class WindowsAgent(Cyb3rhqAgent):
     """Windows Agent Class."""
 
     def get_os_version(self) -> str:
@@ -724,7 +724,7 @@ class WindowsAgent(WazuhAgent):
 
         return os_version
 
-class MacOsAgent(WazuhAgent):
+class MacOsAgent(Cyb3rhqAgent):
     """MacOS Agent Class."""
 
     def get_os_version(self) -> str:
@@ -745,14 +745,14 @@ __platform_map = {
 }
 
 
-def get_agent_from_inventory(inventory_path: str) -> WazuhAgent:
-    """Create a new WazuhAgent instance from the inventory path information."""
+def get_agent_from_inventory(inventory_path: str) -> Cyb3rhqAgent:
+    """Create a new Cyb3rhqAgent instance from the inventory path information."""
     track_file = inventory_path.replace('inventory', 'track')
     with open(track_file, 'r', encoding='utf-8') as yaml_file:
         inventory_dict = yaml.safe_load(yaml_file)
 
     os_type = inventory_dict.get('platform', None)
-    agent_class: WazuhAgent = __platform_map.get(os_type, None)
+    agent_class: Cyb3rhqAgent = __platform_map.get(os_type, None)
 
     if not agent_class:
         raise ValueError(f"Invalid OS type {os_type}")

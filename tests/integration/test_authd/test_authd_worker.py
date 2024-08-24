@@ -1,7 +1,7 @@
 '''
-copyright: Copyright (C) 2015-2022, Wazuh Inc.
+copyright: Copyright (C) 2015-2022, Cyb3rhq Inc.
 
-           Created by Wazuh, Inc. <info@wazuh.com>.
+           Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 
            This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 
@@ -16,8 +16,8 @@ targets:
     - manager
 
 daemons:
-    - wazuh-authd
-    - wazuh-clusterd
+    - cyb3rhq-authd
+    - cyb3rhq-clusterd
 
 os_platform:
     - linux
@@ -41,11 +41,11 @@ import subprocess
 import time
 
 import pytest
-from wazuh_testing.cluster import FERNET_KEY, CLUSTER_DATA_HEADER_SIZE, cluster_msg_build
-from wazuh_testing.tools import WAZUH_PATH, CLUSTER_LOGS_PATH
-from wazuh_testing.tools.configuration import load_wazuh_configurations
-from wazuh_testing.tools.monitoring import ManInTheMiddle
-from wazuh_testing.tools.file import read_yaml
+from cyb3rhq_testing.cluster import FERNET_KEY, CLUSTER_DATA_HEADER_SIZE, cluster_msg_build
+from cyb3rhq_testing.tools import CYB3RHQ_PATH, CLUSTER_LOGS_PATH
+from cyb3rhq_testing.tools.configuration import load_cyb3rhq_configurations
+from cyb3rhq_testing.tools.monitoring import ManInTheMiddle
+from cyb3rhq_testing.tools.file import read_yaml
 
 
 # Marks
@@ -69,7 +69,7 @@ class WorkerMID(ManInTheMiddle):
             message = data[CLUSTER_DATA_HEADER_SIZE:]
             response = cluster_msg_build(command=b'send_sync', counter=2, payload=bytes(self.cluster_output.encode()),
                                          encrypt=False)[0]
-            print(f'Received message from wazuh-authd: {message}')
+            print(f'Received message from cyb3rhq-authd: {message}')
             print(f'Response to send: {self.cluster_output}')
             self.pause()
             return response
@@ -85,22 +85,22 @@ class WorkerMID(ManInTheMiddle):
 
 test_data_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data')
 message_tests = read_yaml(os.path.join(test_data_path, 'worker_messages.yaml'))
-configurations_path = os.path.join(test_data_path, 'wazuh_authd_configuration.yaml')
+configurations_path = os.path.join(test_data_path, 'cyb3rhq_authd_configuration.yaml')
 params = [{'FERNET_KEY': FERNET_KEY}]
 metadata = [{'fernet_key': FERNET_KEY}]
-configurations = load_wazuh_configurations(configurations_path, __name__, params=params, metadata=metadata)
+configurations = load_cyb3rhq_configurations(configurations_path, __name__, params=params, metadata=metadata)
 
 
 # Variables
 log_monitor_paths = [CLUSTER_LOGS_PATH]
-cluster_socket_path = os.path.join(os.path.join(WAZUH_PATH, 'queue', 'cluster', 'c-internal.sock'))
+cluster_socket_path = os.path.join(os.path.join(CYB3RHQ_PATH, 'queue', 'cluster', 'c-internal.sock'))
 ossec_authd_socket_path = ("localhost", 1515)
 receiver_sockets_params = [(ossec_authd_socket_path, 'AF_INET', 'SSL_TLSv1_2')]
 test_case_ids = [f"{test_case['name'].lower().replace(' ', '-')}" for test_case in message_tests]
 
 mitm_master = WorkerMID(address=cluster_socket_path, family='AF_UNIX', connection_protocol='TCP')
 
-monitored_sockets_params = [('wazuh-clusterd', mitm_master, True), ('wazuh-authd', None, True)]
+monitored_sockets_params = [('cyb3rhq-clusterd', mitm_master, True), ('cyb3rhq-authd', None, True)]
 receiver_sockets, monitored_sockets, log_monitors = None, None, None  # Set in the fixtures
 
 
@@ -145,7 +145,7 @@ def test_ossec_auth_messages(get_configuration, set_up_groups, configure_environ
         Checks that every message from the agent is correctly formatted for master,
         and every master response is correctly parsed for agent.
 
-    wazuh_min_version:
+    cyb3rhq_min_version:
         4.2.0
 
     tier: 0

@@ -1,7 +1,7 @@
 '''
-copyright: Copyright (C) 2015-2022, Wazuh Inc.
+copyright: Copyright (C) 2015-2022, Cyb3rhq Inc.
 
-           Created by Wazuh, Inc. <info@wazuh.com>.
+           Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 
            This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 
@@ -19,8 +19,8 @@ targets:
     - agent
 
 daemons:
-    - wazuh-logcollector
-    - wazuh-analysisd
+    - cyb3rhq-logcollector
+    - cyb3rhq-analysisd
 
 os_platform:
     - linux
@@ -29,8 +29,8 @@ os_version:
     - CentOS 8
 
 references:
-    - https://github.com/wazuh/wazuh-automation/wiki/Wazuh-demo:-Execution-guide#netcat
-    - https://documentation.wazuh.com/current/proof-of-concept-guide/detect-unauthorized-processes-netcat.html
+    - https://github.com/cyb3rhq/cyb3rhq-automation/wiki/Cyb3rhq-demo:-Execution-guide#netcat
+    - https://documentation.cyb3rhq.com/current/proof-of-concept-guide/detect-unauthorized-processes-netcat.html
 
 tags:
     - demo
@@ -41,10 +41,10 @@ import json
 import re
 import pytest
 
-from wazuh_testing.tools import configuration as config
-from wazuh_testing import end_to_end as e2e
-from wazuh_testing import event_monitor as evm
-from wazuh_testing.modules import TIER0, LINUX
+from cyb3rhq_testing.tools import configuration as config
+from cyb3rhq_testing import end_to_end as e2e
+from cyb3rhq_testing import event_monitor as evm
+from cyb3rhq_testing.modules import TIER0, LINUX
 
 
 # Test cases data
@@ -71,25 +71,25 @@ def test_unauthorized_processes_detection(configure_environment, metadata, get_i
     description: Check that an alert is generated if an unauthorized process is running.
 
     test_phases:
-        - Set a custom Wazuh configuration.
+        - Set a custom Cyb3rhq configuration.
         - Run netcat command to generate the event.
         - Check in the alerts.json log that the expected alert has been triggered and get its timestamp.
         - Check that the obtained alert from alerts.json has been indexed.
 
-    wazuh_min_version: 4.4.0
+    cyb3rhq_min_version: 4.4.0
 
     tier: 0
 
     parameters:
         - configurate_environment:
             type: fixture
-            brief: Set the wazuh configuration according to the configuration playbook.
+            brief: Set the cyb3rhq configuration according to the configuration playbook.
         - metadata:
             type: dict
-            brief: Wazuh configuration metadata.
+            brief: Cyb3rhq configuration metadata.
         - get_indexer_credentials:
             type: fixture
-            brief: Get the wazuh indexer credentials.
+            brief: Get the cyb3rhq indexer credentials.
         - generate_events:
             type: fixture
             brief: Generate events that will trigger the alert according to the generate_events playbook.

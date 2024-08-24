@@ -1,9 +1,9 @@
-wazuh-master:
+cyb3rhq-master:
   access:
     max_login_attempts: 9999
-wazuh-worker1:
+cyb3rhq-worker1:
   access:
     max_login_attempts: 9999
-wazuh-worker2:
+cyb3rhq-worker2:
   access:
     max_login_attempts: 9999

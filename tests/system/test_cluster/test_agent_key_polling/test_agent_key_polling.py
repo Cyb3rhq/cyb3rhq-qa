@@ -1,19 +1,19 @@
-# Copyright (C) 2015-2022, Wazuh Inc.
-# Created by Wazuh, Inc. <info@wazuh.com>.
+# Copyright (C) 2015-2022, Cyb3rhq Inc.
+# Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 # This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 import os
 
 import pytest
-from wazuh_testing.tools import WAZUH_LOGS_PATH
-from wazuh_testing.tools.system_monitoring import HostMonitor
-from wazuh_testing.tools.system import HostManager
+from cyb3rhq_testing.tools import CYB3RHQ_LOGS_PATH
+from cyb3rhq_testing.tools.system_monitoring import HostMonitor
+from cyb3rhq_testing.tools.system import HostManager
 
 
 pytestmark = [pytest.mark.cluster, pytest.mark.basic_cluster_env]
 
 # Hosts
-testinfra_hosts = ["wazuh-master", "wazuh-worker1", "wazuh-agent2"]
+testinfra_hosts = ["cyb3rhq-master", "cyb3rhq-worker1", "cyb3rhq-agent2"]
 
 inventory_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
                               'provisioning', 'basic_cluster', 'inventory.yml')
@@ -29,19 +29,19 @@ def configure_environment(host_manager):
     host_manager : system.HostManager
         Instance of HostManager
     """
-    host_manager.move_file(host='wazuh-master',
+    host_manager.move_file(host='cyb3rhq-master',
                            src_path=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'files/fetch_keys.py'),
                            dest_path='/tmp/fetch_keys.py')
     host_manager.apply_config(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/config.yaml'),
-                              clear_files=[os.path.join(WAZUH_LOGS_PATH, 'ossec.log')],
-                              restart_services=['wazuh'])
-    host_manager.add_block_to_file(host='wazuh-master', path='/var/ossec/etc/client.keys', replace='NOTVALIDKEY',
-                                   after='wazuh-agent2 any ', before='2\n')
-    host_manager.clear_file(host='wazuh-agent2', file_path=os.path.join(WAZUH_LOGS_PATH, 'ossec.log'))
-    agent2_id = host_manager.run_shell(host='wazuh-master',
-                                       cmd='/var/ossec/bin/manage_agents -l | grep "wazuh-agent2" | '
+                              clear_files=[os.path.join(CYB3RHQ_LOGS_PATH, 'ossec.log')],
+                              restart_services=['cyb3rhq'])
+    host_manager.add_block_to_file(host='cyb3rhq-master', path='/var/ossec/etc/client.keys', replace='NOTVALIDKEY',
+                                   after='cyb3rhq-agent2 any ', before='2\n')
+    host_manager.clear_file(host='cyb3rhq-agent2', file_path=os.path.join(CYB3RHQ_LOGS_PATH, 'ossec.log'))
+    agent2_id = host_manager.run_shell(host='cyb3rhq-master',
+                                       cmd='/var/ossec/bin/manage_agents -l | grep "cyb3rhq-agent2" | '
                                            'grep -o "[0-9][0-9][0-9]"')
-    host_manager.run_shell(host='wazuh-master', cmd=f'/var/ossec/bin/manage_agents -r {agent2_id}')
+    host_manager.run_shell(host='cyb3rhq-master', cmd=f'/var/ossec/bin/manage_agents -r {agent2_id}')
 
 
 def test_agent_key_polling():

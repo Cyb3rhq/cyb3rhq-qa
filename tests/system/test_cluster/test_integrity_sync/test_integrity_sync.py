@@ -1,5 +1,5 @@
-# Copyright (C) 2015-2022, Wazuh Inc.
-# Created by Wazuh, Inc. <info@wazuh.com>.
+# Copyright (C) 2015-2022, Cyb3rhq Inc.
+# Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 # This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 import json
@@ -11,15 +11,15 @@ from secrets import token_hex
 import pytest
 import yaml
 
-from wazuh_testing.tools import WAZUH_PATH, PYTHON_PATH, WAZUH_LOGS_PATH
-from wazuh_testing.tools.system_monitoring import HostMonitor
-from wazuh_testing.tools.system import HostManager
+from cyb3rhq_testing.tools import CYB3RHQ_PATH, PYTHON_PATH, CYB3RHQ_LOGS_PATH
+from cyb3rhq_testing.tools.system_monitoring import HostMonitor
+from cyb3rhq_testing.tools.system import HostManager
 
 
 pytestmark = [pytest.mark.cluster, pytest.mark.agentless_cluster_env]
 
 # Hosts
-test_hosts = ['wazuh-master', 'wazuh-worker1', 'wazuh-worker2']
+test_hosts = ['cyb3rhq-master', 'cyb3rhq-worker1', 'cyb3rhq-worker2']
 worker_hosts = test_hosts[1:]
 test_data_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data')
 configuration = yaml.safe_load(open(os.path.join(test_data_path, 'cluster_json.yaml')))
@@ -31,31 +31,31 @@ inventory_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os
 
 time_to_sync = 21
 host_manager = HostManager(inventory_path)
-client_keys_path = os.path.join(WAZUH_PATH, 'etc', 'client.keys')
+client_keys_path = os.path.join(CYB3RHQ_PATH, 'etc', 'client.keys')
 
 # Subdirectories to be synchronized.
-directories_to_create = [os.path.join(WAZUH_PATH, 'etc', 'shared', 'test_group'),
-                         os.path.join(WAZUH_PATH, 'var', 'multigroups', 'test_dir')]
+directories_to_create = [os.path.join(CYB3RHQ_PATH, 'etc', 'shared', 'test_group'),
+                         os.path.join(CYB3RHQ_PATH, 'var', 'multigroups', 'test_dir')]
 
 # Files that, after created in the master node, should be present in all nodes.
-files_to_sync = [os.path.join(WAZUH_PATH, 'etc', 'lists', 'test_file'),
-                 os.path.join(WAZUH_PATH, 'etc', 'rules', 'test_file'),
-                 os.path.join(WAZUH_PATH, 'etc', 'decoders', 'test_file'),
+files_to_sync = [os.path.join(CYB3RHQ_PATH, 'etc', 'lists', 'test_file'),
+                 os.path.join(CYB3RHQ_PATH, 'etc', 'rules', 'test_file'),
+                 os.path.join(CYB3RHQ_PATH, 'etc', 'decoders', 'test_file'),
                  os.path.join(directories_to_create[1], 'merged.mg'),
                  os.path.join(directories_to_create[0], 'test_file')]
 
 # Files inside directories where not 'all' files have to be synchronized, according to cluster.json.
-files_not_to_sync = [os.path.join(WAZUH_PATH, 'etc', 'test_file'),
-                     os.path.join(WAZUH_PATH, 'etc', 'lists', 'ar.conf'),
-                     os.path.join(WAZUH_PATH, 'etc', 'lists', 'ossec.conf'),
-                     os.path.join(WAZUH_PATH, 'etc', 'lists', 'test.tmp'),
-                     os.path.join(WAZUH_PATH, 'etc', 'lists', 'test.lock'),
-                     os.path.join(WAZUH_PATH, 'etc', 'lists', 'test.swp'),
+files_not_to_sync = [os.path.join(CYB3RHQ_PATH, 'etc', 'test_file'),
+                     os.path.join(CYB3RHQ_PATH, 'etc', 'lists', 'ar.conf'),
+                     os.path.join(CYB3RHQ_PATH, 'etc', 'lists', 'ossec.conf'),
+                     os.path.join(CYB3RHQ_PATH, 'etc', 'lists', 'test.tmp'),
+                     os.path.join(CYB3RHQ_PATH, 'etc', 'lists', 'test.lock'),
+                     os.path.join(CYB3RHQ_PATH, 'etc', 'lists', 'test.swp'),
                      os.path.join(directories_to_create[1], 'test_file')]
 
 # Directories where to create big files.
-tmp_size_test_path = os.path.join(WAZUH_PATH, 'tmp')
-dst_size_test_path = os.path.join(WAZUH_PATH, 'etc', 'rules')
+tmp_size_test_path = os.path.join(CYB3RHQ_PATH, 'tmp')
+dst_size_test_path = os.path.join(CYB3RHQ_PATH, 'etc', 'rules')
 big_file_name = 'test_file_too_big'
 file_prefix = 'test_file_'
 
@@ -90,8 +90,8 @@ def update_cluster_json():
         cluster_conf['intervals']['communication'].update(configuration)
         host_manager.modify_file_content(host=host, path=cluster_json, content=json.dumps(cluster_conf, indent=4))
         # Clear log and restart manager.
-        host_manager.clear_file(host=host, file_path=os.path.join(WAZUH_LOGS_PATH, 'cluster.log'))
-        host_manager.control_service(host=host, service='wazuh', state='restarted')
+        host_manager.clear_file(host=host, file_path=os.path.join(CYB3RHQ_LOGS_PATH, 'cluster.log'))
+        host_manager.control_service(host=host, service='cyb3rhq', state='restarted')
 
     yield
 
@@ -102,7 +102,7 @@ def update_cluster_json():
         # Remove created files
         for file in [tmp_size_test_path, os.path.join(dst_size_test_path, 'test_*')]:
             host_manager.run_shell(host, f"rm -rf {file}")
-        host_manager.control_service(host=host, service='wazuh-manager', state='restarted')
+        host_manager.control_service(host=host, service='cyb3rhq-manager', state='restarted')
 
 
 # Tests
@@ -120,12 +120,12 @@ def test_missing_file(clean_files):
     # Create subdirectories in the master node.
     for subdir in directories_to_create:
         host_manager.run_command(test_hosts[0], f"mkdir {subdir}")
-        host_manager.run_command(test_hosts[0], f"chown wazuh:wazuh {subdir}")
+        host_manager.run_command(test_hosts[0], f"chown cyb3rhq:cyb3rhq {subdir}")
 
     # Create all specified files inside the master node.
     for file in files_to_sync + files_not_to_sync + [agent_conf_file]:
         host_manager.run_command(test_hosts[0], f"dd if=/dev/urandom of={file} bs=1M count=2")
-        host_manager.run_command(test_hosts[0], f"chown wazuh:wazuh {file}")
+        host_manager.run_command(test_hosts[0], f"chown cyb3rhq:cyb3rhq {file}")
 
     # Wait until synchronization is completed. Master -> worker1 & worker2.
     time.sleep(time_to_sync)
@@ -219,10 +219,10 @@ def test_extra_files(clean_files):
     for host in worker_hosts:
         for subdir in directories_to_create:
             host_manager.run_command(test_hosts[0], f"mkdir {subdir}")
-            host_manager.run_command(test_hosts[0], f"chown wazuh:wazuh {subdir}")
+            host_manager.run_command(test_hosts[0], f"chown cyb3rhq:cyb3rhq {subdir}")
         for file in files_to_sync:
             host_manager.run_command(host, f"touch {file}")
-            host_manager.run_command(test_hosts[0], f"chown wazuh:wazuh {file}")
+            host_manager.run_command(test_hosts[0], f"chown cyb3rhq:cyb3rhq {file}")
 
     time.sleep(time_to_sync)
 
@@ -252,11 +252,11 @@ def test_zip_size_limit(clean_files, update_cluster_json):
     # Create a tmp folder and all files inside in the master node.
     host_manager.run_command(test_hosts[0], f"mkdir {tmp_size_test_path}")
     host_manager.run_command(test_hosts[0], f"fallocate -l {too_big_size} {tmp_size_test_path}/{big_file_name}")
-    host_manager.run_command(test_hosts[0], f"chown wazuh:wazuh {tmp_size_test_path}/{big_file_name}")
+    host_manager.run_command(test_hosts[0], f"chown cyb3rhq:cyb3rhq {tmp_size_test_path}/{big_file_name}")
     host_manager.run_shell(test_hosts[0],
                            f"for i in `seq 1 140`; do fallocate -l 1M {tmp_size_test_path}/{file_prefix}$i; done")
     host_manager.run_shell(test_hosts[0],
-                           f"for i in `seq 1 140`; do chown wazuh:wazuh {tmp_size_test_path}/{file_prefix}$i; done")
+                           f"for i in `seq 1 140`; do chown cyb3rhq:cyb3rhq {tmp_size_test_path}/{file_prefix}$i; done")
 
     # Move files from tmp folder to destination folder. This way, all files are synced at the same time.
     host_manager.run_shell(test_hosts[0], f"mv {os.path.join(tmp_size_test_path, 'test_*')} {dst_size_test_path}")

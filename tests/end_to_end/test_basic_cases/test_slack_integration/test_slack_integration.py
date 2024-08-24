@@ -1,7 +1,7 @@
 '''
-copyright: Copyright (C) 2015-2022, Wazuh Inc.
+copyright: Copyright (C) 2015-2022, Cyb3rhq Inc.
 
-           Created by Wazuh, Inc. <info@wazuh.com>.
+           Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 
            This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 
@@ -18,9 +18,9 @@ targets:
     - manager
 
 daemons:
-    - wazuh-logcollector
-    - wazuh-integratord
-    - wazuh-analysisd
+    - cyb3rhq-logcollector
+    - cyb3rhq-integratord
+    - cyb3rhq-analysisd
 
 os_platform:
     - linux
@@ -29,8 +29,8 @@ os_version:
     - CentOS 8
 
 references:
-    - https://github.com/wazuh/wazuh-automation/wiki/Wazuh-demo:-Execution-guide#slack
-    - https://documentation.wazuh.com/current/proof-of-concept-guide/poc-integrate-slack.html
+    - https://github.com/cyb3rhq/cyb3rhq-automation/wiki/Cyb3rhq-demo:-Execution-guide#slack
+    - https://documentation.cyb3rhq.com/current/proof-of-concept-guide/poc-integrate-slack.html
 tags:
     - demo
     - slack
@@ -42,12 +42,12 @@ import re
 import pytest
 from tempfile import gettempdir
 
-import wazuh_testing as fw
-from wazuh_testing.tools.file import remove_file
-from wazuh_testing import end_to_end as e2e
-from wazuh_testing import event_monitor as evm
-from wazuh_testing.tools import configuration as config
-from wazuh_testing.modules import TIER0, LINUX
+import cyb3rhq_testing as fw
+from cyb3rhq_testing.tools.file import remove_file
+from cyb3rhq_testing import end_to_end as e2e
+from cyb3rhq_testing import event_monitor as evm
+from cyb3rhq_testing.tools import configuration as config
+from cyb3rhq_testing.modules import TIER0, LINUX
 
 
 # Test cases data
@@ -84,7 +84,7 @@ def remove_slack_log():
     remove_file(slack_messages_log)
 
 
-@pytest.mark.skip(reason='https://github.com/wazuh/wazuh-qa/issues/3286')
+@pytest.mark.skip(reason='https://github.com/cyb3rhq/cyb3rhq-qa/issues/3286')
 @pytest.mark.parametrize('metadata', metadata, ids=cases_ids)
 @pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
 def test_slack_integration(metadata, configure_environment, get_indexer_credentials, get_manager_ip, generate_events,
@@ -93,26 +93,26 @@ def test_slack_integration(metadata, configure_environment, get_indexer_credenti
     description: Check that an alert is generated and sent to Slack.
 
     test_phases:
-        - Set a custom Wazuh configuration.
+        - Set a custom Cyb3rhq configuration.
         - Execute a brute force attack to generate the event.
         - Check in the alerts.json log that the expected alert has been triggered and get its timestamp.
         - Check that the obtained alert from alerts.json has been indexed.
         - Check that the alert was sent to Slack.
 
-    wazuh_min_version: 4.4.0
+    cyb3rhq_min_version: 4.4.0
 
     tier: 0
 
     parameters:
         - configurate_environment:
             type: fixture
-            brief: Set the wazuh configuration according to the configuration playbook.
+            brief: Set the cyb3rhq configuration according to the configuration playbook.
         - metadata:
             type: dict
-            brief: Wazuh configuration metadata.
+            brief: Cyb3rhq configuration metadata.
         - get_indexer_credentials:
             type: fixture
-            brief: Get the wazuh indexer credentials.
+            brief: Get the cyb3rhq indexer credentials.
         - generate_events:
             type: fixture
             brief: Generate events that will trigger the alert according to the generate_events playbook.

@@ -1,9 +1,9 @@
-# wazuh-qa
+# cyb3rhq-qa
 
-Wazuh - Manager Agents provisioning
+Cyb3rhq - Manager Agents provisioning
 
 ## Enviroment description
-This enviroment sets a Manager with three (3) agents. Each agent has a especific version. It is designed to allow testing on different versions of the wazuh agent working in conjunction with a specific version of the wazuh manager.
+This enviroment sets a Manager with three (3) agents. Each agent has a especific version. It is designed to allow testing on different versions of the cyb3rhq agent working in conjunction with a specific version of the cyb3rhq manager.
 
 ## Setting up the provisioning
 
@@ -66,7 +66,7 @@ following structure:
 #### Vars
 
 This folder contains the variables used to configure our environment. Variables like the cluster key or the agent key.
-- **agent#-package**: link to the wazuh agent package  to be installed on each agent host. (currently versions 4.1.5, 4.2.2 and 4.2.5)
+- **agent#-package**: link to the cyb3rhq agent package  to be installed on each agent host. (currently versions 4.1.5, 4.2.2 and 4.2.5)
 
 ## Environment
 
@@ -77,9 +77,9 @@ The base environment defined for Docker provisioning is
 
 | Agent        | Reports to    |
 |--------------|---------------|
-| wazuh-agent1 | wazuh-manager |
-| wazuh-agent2 | wazuh-manager |
-| wazuh-agent3 | wazuh-manager |
+| cyb3rhq-agent1 | cyb3rhq-manager |
+| cyb3rhq-agent2 | cyb3rhq-manager |
+| cyb3rhq-agent3 | cyb3rhq-manager |
 
 ## Environment management
 
@@ -135,167 +135,167 @@ ok: [localhost]
 TASK [docker_container] ****************************************************************************************************************************
 changed: [localhost]
 
-PLAY [Wazuh Manager] ************************************************************************************************************************
+PLAY [Cyb3rhq Manager] ************************************************************************************************************************
 
 TASK [Gathering Facts] ************************************************************************************************************************
-ok: [wazuh-manager]
+ok: [cyb3rhq-manager]
 
 TASK [roles/manager-role : Check and update debian repositories] ******************************************************************************************
-changed: [wazuh-manager]
+changed: [cyb3rhq-manager]
 
 TASK [roles/manager-role : Installing dependencies using apt] *********************************************************************************************
-changed: [wazuh-manager]
+changed: [cyb3rhq-manager]
 
-TASK [roles/manager-role : Clone wazuh repository] ********************************************************************************************************
-changed: [wazuh-manager]
+TASK [roles/manager-role : Clone cyb3rhq repository] ********************************************************************************************************
+changed: [cyb3rhq-manager]
 
 TASK [roles/manager-role : Install manager] ***************************************************************************************************************
-changed: [wazuh-manager]
+changed: [cyb3rhq-manager]
 
 TASK [roles/manager-role : Copy ossec.conf file] **********************************************************************************************************
-changed: [wazuh-manager]
+changed: [cyb3rhq-manager]
 
 TASK [roles/manager-role : Set cluster key] ***************************************************************************************************************
-changed: [wazuh-manager]
+changed: [cyb3rhq-manager]
 
-TASK [roles/manager-role : Set Wazuh Manager IP] **********************************************************************************************************
-changed: [wazuh-manager]
+TASK [roles/manager-role : Set Cyb3rhq Manager IP] **********************************************************************************************************
+changed: [cyb3rhq-manager]
 
-TASK [roles/manager-role : Stop Wazuh] ********************************************************************************************************************
-changed: [wazuh-manager]
+TASK [roles/manager-role : Stop Cyb3rhq] ********************************************************************************************************************
+changed: [cyb3rhq-manager]
 
 TASK [roles/manager-role : Remove client.keys] ************************************************************************************************************
-changed: [wazuh-manager]
+changed: [cyb3rhq-manager]
 
 TASK [roles/manager-role : enable execd debug mode] *******************************************************************************************************
-changed: [wazuh-manager]
+changed: [cyb3rhq-manager]
 
 TASK [roles/manager-role : Register agents] ***************************************************************************************************************
-changed: [wazuh-manager]
+changed: [cyb3rhq-manager]
 
-TASK [roles/manager-role : Start Wazuh] *******************************************************************************************************************
-changed: [wazuh-manager]
+TASK [roles/manager-role : Start Cyb3rhq] *******************************************************************************************************************
+changed: [cyb3rhq-manager]
 
-PLAY [Wazuh Agent1] **********************************************************************************************************************
+PLAY [Cyb3rhq Agent1] **********************************************************************************************************************
 
 TASK [Gathering Facts] **********************************************************************************************************************
-ok: [wazuh-agent1]
+ok: [cyb3rhq-agent1]
 
 TASK [roles/agent-role : Check and update debian repositories] ********************************************************************************************
-changed: [wazuh-agent1]
+changed: [cyb3rhq-agent1]
 
 TASK [roles/agent-role : Installing dependencies using apt] ***********************************************************************************************
-changed: [wazuh-agent1]
+changed: [cyb3rhq-agent1]
 
 TASK [roles/agent-role : Create log source] ***************************************************************************************************************
-changed: [wazuh-agent1]
+changed: [cyb3rhq-agent1]
 
 TASK [roles/agent-role : Download package] ****************************************************************************************************************
-changed: [wazuh-agent1]
+changed: [cyb3rhq-agent1]
 
 TASK [roles/agent-role : Install agent] *******************************************************************************************************************
-changed: [wazuh-agent1]
+changed: [cyb3rhq-agent1]
 
 TASK [roles/agent-role : Copy ossec.conf file] ************************************************************************************************************
-changed: [wazuh-agent1]
+changed: [cyb3rhq-agent1]
 
 TASK [roles/agent-role : enable execd debug mode] *********************************************************************************************************
-changed: [wazuh-agent1]
+changed: [cyb3rhq-agent1]
 
 TASK [roles/agent-role : Remove client.keys] **************************************************************************************************************
-changed: [wazuh-agent1]
+changed: [cyb3rhq-agent1]
 
 TASK [roles/agent-role : Register agents] *****************************************************************************************************************
-changed: [wazuh-agent1]
+changed: [cyb3rhq-agent1]
 
-TASK [roles/agent-role : Set Wazuh Manager IP] ************************************************************************************************************
-changed: [wazuh-agent1]
+TASK [roles/agent-role : Set Cyb3rhq Manager IP] ************************************************************************************************************
+changed: [cyb3rhq-agent1]
 
-TASK [roles/agent-role : Restart Wazuh] *******************************************************************************************************************
-changed: [wazuh-agent1]
+TASK [roles/agent-role : Restart Cyb3rhq] *******************************************************************************************************************
+changed: [cyb3rhq-agent1]
 
-PLAY [Wazuh Agent2] ***************************************************************************************************************************
+PLAY [Cyb3rhq Agent2] ***************************************************************************************************************************
 
 TASK [Gathering Facts] ***************************************************************************************************************************
-ok: [wazuh-agent2]
+ok: [cyb3rhq-agent2]
 
 TASK [roles/agent-role : Check and update debian repositories] ******************************************************************************************** 
-changed: [wazuh-agent2]
+changed: [cyb3rhq-agent2]
 
 TASK [roles/agent-role : Installing dependencies using apt] ***********************************************************************************************
-changed: [wazuh-agent2]
+changed: [cyb3rhq-agent2]
 
 TASK [roles/agent-role : Create log source] ***************************************************************************************************************
-changed: [wazuh-agent2]
+changed: [cyb3rhq-agent2]
 
 TASK [roles/agent-role : Download package] ****************************************************************************************************************
-changed: [wazuh-agent2]
+changed: [cyb3rhq-agent2]
 
 TASK [roles/agent-role : Install agent] *******************************************************************************************************************
-changed: [wazuh-agent2]
+changed: [cyb3rhq-agent2]
 
 TASK [roles/agent-role : Copy ossec.conf file] ************************************************************************************************************
-changed: [wazuh-agent2]
+changed: [cyb3rhq-agent2]
 
 TASK [roles/agent-role : enable execd debug mode] *********************************************************************************************************
-changed: [wazuh-agent2]
+changed: [cyb3rhq-agent2]
 
 TASK [roles/agent-role : Remove client.keys] **************************************************************************************************************
-changed: [wazuh-agent2]
+changed: [cyb3rhq-agent2]
 
 TASK [roles/agent-role : Register agents] *****************************************************************************************************************
-changed: [wazuh-agent2]
+changed: [cyb3rhq-agent2]
 
-TASK [roles/agent-role : Set Wazuh Manager IP] ************************************************************************************************************
-changed: [wazuh-agent2]
+TASK [roles/agent-role : Set Cyb3rhq Manager IP] ************************************************************************************************************
+changed: [cyb3rhq-agent2]
 
-TASK [roles/agent-role : Restart Wazuh] *******************************************************************************************************************
-changed: [wazuh-agent2]
+TASK [roles/agent-role : Restart Cyb3rhq] *******************************************************************************************************************
+changed: [cyb3rhq-agent2]
 
-PLAY [Wazuh Agent3] **********************************************************************************************************************
+PLAY [Cyb3rhq Agent3] **********************************************************************************************************************
 
 TASK [Gathering Facts] *************************************************************************************************************************
-ok: [wazuh-agent3]
+ok: [cyb3rhq-agent3]
 
 TASK [roles/agent-role : Check and update debian repositories] *******************************************************************************************
-changed: [wazuh-agent3]
+changed: [cyb3rhq-agent3]
 
 TASK [roles/agent-role : Installing dependencies using apt] ***********************************************************************************************
-changed: [wazuh-agent3]
+changed: [cyb3rhq-agent3]
 
 TASK [roles/agent-role : Create log source] ***************************************************************************************************************
-changed: [wazuh-agent3]
+changed: [cyb3rhq-agent3]
 
 TASK [roles/agent-role : Download package] ****************************************************************************************************************
-changed: [wazuh-agent3]
+changed: [cyb3rhq-agent3]
 
 TASK [roles/agent-role : Install agent] *******************************************************************************************************************
-changed: [wazuh-agent3]
+changed: [cyb3rhq-agent3]
 
 TASK [roles/agent-role : Copy ossec.conf file] ************************************************************************************************************
-changed: [wazuh-agent3]
+changed: [cyb3rhq-agent3]
 
 TASK [roles/agent-role : enable execd debug mode] *********************************************************************************************************
-changed: [wazuh-agent3]
+changed: [cyb3rhq-agent3]
 
 TASK [roles/agent-role : Remove client.keys] **************************************************************************************************************
-changed: [wazuh-agent3]
+changed: [cyb3rhq-agent3]
 
 TASK [roles/agent-role : Register agents] *****************************************************************************************************************
-changed: [wazuh-agent3]
+changed: [cyb3rhq-agent3]
 
-TASK [roles/agent-role : Set Wazuh Manager IP] ************************************************************************************************************
-changed: [wazuh-agent3]
+TASK [roles/agent-role : Set Cyb3rhq Manager IP] ************************************************************************************************************
+changed: [cyb3rhq-agent3]
 
-TASK [roles/agent-role : Restart Wazuh] *******************************************************************************************************************
-changed: [wazuh-agent3]
+TASK [roles/agent-role : Restart Cyb3rhq] *******************************************************************************************************************
+changed: [cyb3rhq-agent3]
 
 PLAY RECAP ************************************************************************************************************************************************
 localhost                  : ok=9    changed=4    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
-wazuh-agent1               : ok=12   changed=11   unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
-wazuh-agent2               : ok=12   changed=11   unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
-wazuh-agent3               : ok=12   changed=11   unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
-wazuh-manager              : ok=13   changed=12   unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+cyb3rhq-agent1               : ok=12   changed=11   unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+cyb3rhq-agent2               : ok=12   changed=11   unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+cyb3rhq-agent3               : ok=12   changed=11   unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+cyb3rhq-manager              : ok=13   changed=12   unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
 =============================================================================== 
 Playbook run took 0 days, 0 hours, 15 minutes, 47 seconds 
 

@@ -1,0 +1,33 @@
+# REQUIRED VARIABLES
+# -------------------
+#
+# GENERIC:
+#  - (String) os: Target operating system
+
+- name: Get installation type
+  become: true
+  shell: /var/ossec/bin/cyb3rhq-control info
+  register: cyb3rhq_info
+  when: os == 'linux'
+
+- name: Restart manager service on linux
+  become: true
+  service:
+    name: cyb3rhq-manager
+    state: restarted
+  when: (os == 'linux' and 'server' in cyb3rhq_info.stdout)
+
+- name: Restart agent service on linux
+  become: true
+  service:
+    name: cyb3rhq-agent
+    state: restarted
+  when: (os == 'linux' and 'agent' in cyb3rhq_info.stdout)
+
+- name: Restart cyb3rhq on Windows
+  win_shell: |
+    net stop Cyb3rhq
+    net start Cyb3rhq
+  args:
+    executable: powershell.exe
+  when: os == 'windows'

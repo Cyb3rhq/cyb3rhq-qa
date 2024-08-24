@@ -1,16 +1,16 @@
 '''
-copyright: Copyright (C) 2015-2022, Wazuh Inc.
+copyright: Copyright (C) 2015-2022, Cyb3rhq Inc.
 
-           Created by Wazuh, Inc. <info@wazuh.com>.
+           Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 
            This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 type: integration
 
-brief: The 'wazuh-logtest' tool allows the testing and verification of rules and decoders against provided log examples
-       remotely inside a sandbox in 'wazuh-analysisd'. This functionality is provided by the manager, whose work
+brief: The 'cyb3rhq-logtest' tool allows the testing and verification of rules and decoders against provided log examples
+       remotely inside a sandbox in 'cyb3rhq-analysisd'. This functionality is provided by the manager, whose work
        parameters are configured in the ossec.conf file in the XML rule_test section. Test logs can be evaluated through
-       the 'wazuh-logtest' tool or by making requests via RESTful API. These tests will check if the logtest
+       the 'cyb3rhq-logtest' tool or by making requests via RESTful API. These tests will check if the logtest
        configuration is valid. Also checks rules, decoders, decoders, alerts matching logs correctly.
 
 components:
@@ -22,7 +22,7 @@ targets:
     - manager
 
 daemons:
-    - wazuh-analysisd
+    - cyb3rhq-analysisd
 
 os_platform:
     - linux
@@ -39,9 +39,9 @@ os_version:
     - Ubuntu Bionic
 
 references:
-    - https://documentation.wazuh.com/current/user-manual/reference/tools/wazuh-logtest.html
-    - https://documentation.wazuh.com/current/user-manual/capabilities/wazuh-logtest/index.html
-    - https://documentation.wazuh.com/current/user-manual/reference/daemons/wazuh-analysisd.html
+    - https://documentation.cyb3rhq.com/current/user-manual/reference/tools/cyb3rhq-logtest.html
+    - https://documentation.cyb3rhq.com/current/user-manual/capabilities/cyb3rhq-logtest/index.html
+    - https://documentation.cyb3rhq.com/current/user-manual/reference/daemons/cyb3rhq-analysisd.html
 
 tags:
     - logtest_configuration
@@ -53,13 +53,13 @@ import re
 
 import pytest
 import yaml
-from wazuh_testing.tools import (WAZUH_PATH, LOGTEST_SOCKET_PATH,
-                                 WAZUH_UNIX_USER, LOG_FILE_PATH,
-                                 LOCAL_RULES_PATH, WAZUH_UNIX_GROUP)
-from wazuh_testing.logtest import callback_logtest_started
-from wazuh_testing.tools.services import control_service
-from wazuh_testing.tools.monitoring import FileMonitor
-from wazuh_testing.tools.file import truncate_file
+from cyb3rhq_testing.tools import (CYB3RHQ_PATH, LOGTEST_SOCKET_PATH,
+                                 CYB3RHQ_UNIX_USER, LOG_FILE_PATH,
+                                 LOCAL_RULES_PATH, CYB3RHQ_UNIX_GROUP)
+from cyb3rhq_testing.logtest import callback_logtest_started
+from cyb3rhq_testing.tools.services import control_service
+from cyb3rhq_testing.tools.monitoring import FileMonitor
+from cyb3rhq_testing.tools.file import truncate_file
 
 
 # Marks
@@ -87,7 +87,7 @@ local_rules_debug_messages = ['Trying rule: 880000 - Parent rules verbose', '*Ru
 def configure_rules_list(get_configuration, request):
     """Configure a custom rules for testing.
 
-    Restart Wazuh is not needed for applying the configuration, is optional.
+    Restart Cyb3rhq is not needed for applying the configuration, is optional.
     """
 
     # save current rules
@@ -96,13 +96,13 @@ def configure_rules_list(get_configuration, request):
     file_test = get_configuration['rule_file']
     # copy test rules
     shutil.copy(test_data_path + file_test, LOCAL_RULES_PATH)
-    shutil.chown(LOCAL_RULES_PATH, WAZUH_UNIX_USER, WAZUH_UNIX_GROUP)
+    shutil.chown(LOCAL_RULES_PATH, CYB3RHQ_UNIX_USER, CYB3RHQ_UNIX_GROUP)
 
     yield
 
     # restore previous configuration
     shutil.move(LOCAL_RULES_PATH + '.cpy', LOCAL_RULES_PATH)
-    shutil.chown(LOCAL_RULES_PATH, WAZUH_UNIX_USER, WAZUH_UNIX_GROUP)
+    shutil.chown(LOCAL_RULES_PATH, CYB3RHQ_UNIX_USER, CYB3RHQ_UNIX_GROUP)
 
 
 @pytest.fixture(scope='module', params=test_cases, ids=[test_case['name'] for test_case in test_cases])
@@ -120,8 +120,8 @@ def wait_for_logtest_startup(request):
 
 @pytest.fixture(scope='module')
 def restart_required_logtest_daemons():
-    """Wazuh logtests daemons handler."""
-    required_logtest_daemons = ['wazuh-analysisd']
+    """Cyb3rhq logtests daemons handler."""
+    required_logtest_daemons = ['cyb3rhq-analysisd']
 
     truncate_file(LOG_FILE_PATH)
 
@@ -139,11 +139,11 @@ def test_rules_verbose(get_configuration, restart_required_logtest_daemons,
                        configure_rules_list, wait_for_logtest_startup,
                        connect_to_sockets_function):
     '''
-    description: Check if 'wazuh-logtest' works correctly in 'verbose' mode for rules debugging. To do this, it sends
+    description: Check if 'cyb3rhq-logtest' works correctly in 'verbose' mode for rules debugging. To do this, it sends
                  the inputs through a socket, receives and decodes the message. Then, it checks
                  if any invalid token or session token is not caught.
 
-    wazuh_min_version: 4.2.0
+    cyb3rhq_min_version: 4.2.0
 
     tier: 0
 
@@ -153,10 +153,10 @@ def test_rules_verbose(get_configuration, restart_required_logtest_daemons,
             brief: Get configuration from the module.
         - restart_required_logtest_daemons:
             type: fixture
-            brief: Wazuh logtests daemons handler.
+            brief: Cyb3rhq logtests daemons handler.
         - configure_rules_list:
             type: fixture
-            brief: Configure a custom rules for testing. Restart Wazuh is not needed for applying the configuration
+            brief: Configure a custom rules for testing. Restart Cyb3rhq is not needed for applying the configuration
                    is optional.
         - wait_for_logtest_startup:
             type: fixture

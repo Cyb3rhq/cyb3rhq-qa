@@ -1,26 +1,26 @@
-# Copyright (C) 2015-2021, Wazuh Inc.
-# Created by Wazuh, Inc. <info@wazuh.com>.
+# Copyright (C) 2015-2021, Cyb3rhq Inc.
+# Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 # This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 import pytest
 from shutil import copyfile
 import sys
 
 if sys.platform != 'win32':
-    from wazuh_testing.tools import LOGCOLLECTOR_FILE_STATUS_PATH
+    from cyb3rhq_testing.tools import LOGCOLLECTOR_FILE_STATUS_PATH
 
-from wazuh_testing.tools import LOG_FILE_PATH, WAZUH_LOCAL_INTERNAL_OPTIONS
-import wazuh_testing.tools.configuration as conf
-from wazuh_testing.logcollector import LOGCOLLECTOR_DEFAULT_LOCAL_INTERNAL_OPTIONS
-from wazuh_testing.tools.file import truncate_file
-from wazuh_testing.tools.monitoring import FileMonitor
-from wazuh_testing.tools.services import control_service
-from wazuh_testing.tools.remoted_sim import RemotedSimulator
-from wazuh_testing.tools.authd_sim import AuthdSimulator
-from wazuh_testing.tools import CLIENT_CUSTOM_KEYS_PATH, CLIENT_CUSTOM_CERT_PATH, get_service
+from cyb3rhq_testing.tools import LOG_FILE_PATH, CYB3RHQ_LOCAL_INTERNAL_OPTIONS
+import cyb3rhq_testing.tools.configuration as conf
+from cyb3rhq_testing.logcollector import LOGCOLLECTOR_DEFAULT_LOCAL_INTERNAL_OPTIONS
+from cyb3rhq_testing.tools.file import truncate_file
+from cyb3rhq_testing.tools.monitoring import FileMonitor
+from cyb3rhq_testing.tools.services import control_service
+from cyb3rhq_testing.tools.remoted_sim import RemotedSimulator
+from cyb3rhq_testing.tools.authd_sim import AuthdSimulator
+from cyb3rhq_testing.tools import CLIENT_CUSTOM_KEYS_PATH, CLIENT_CUSTOM_CERT_PATH, get_service
 from os.path import exists
 from os import remove
 
-DAEMON_NAME = "wazuh-logcollector"
+DAEMON_NAME = "cyb3rhq-logcollector"
 
 
 @pytest.fixture(scope='module')
@@ -29,7 +29,7 @@ def restart_logcollector(get_configuration, request):
     control_service('stop', daemon=DAEMON_NAME)
     truncate_file(LOG_FILE_PATH)
     file_monitor = FileMonitor(LOG_FILE_PATH)
-    setattr(request.module, 'wazuh_log_monitor', file_monitor)
+    setattr(request.module, 'cyb3rhq_log_monitor', file_monitor)
     control_service('start', daemon=DAEMON_NAME)
 
 
@@ -92,10 +92,10 @@ def truncate_log_file():
 
 @pytest.fixture(scope='module')
 def restart_monitord():
-    wazuh_component = get_service()
+    cyb3rhq_component = get_service()
 
     """Reset log file and start a new monitor."""
-    if wazuh_component == 'wazuh-manager':
-        control_service('restart', daemon='wazuh-monitord')
+    if cyb3rhq_component == 'cyb3rhq-manager':
+        control_service('restart', daemon='cyb3rhq-monitord')
     else:
-        control_service('restart', daemon='wazuh-agentd')
+        control_service('restart', daemon='cyb3rhq-agentd')

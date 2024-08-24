@@ -1,11 +1,11 @@
 import os
 import pytest
 
-from wazuh_testing import LOG_FILE_PATH, CIS_RULESET_PATH
-from wazuh_testing.modules import sca
-from wazuh_testing.modules.sca import event_monitor as evm
-from wazuh_testing.tools.file import copy, delete_file, copy_files_in_folder, delete_path_recursively
-from wazuh_testing.tools.monitoring import FileMonitor
+from cyb3rhq_testing import LOG_FILE_PATH, CIS_RULESET_PATH
+from cyb3rhq_testing.modules import sca
+from cyb3rhq_testing.modules.sca import event_monitor as evm
+from cyb3rhq_testing.tools.file import copy, delete_file, copy_files_in_folder, delete_path_recursively
+from cyb3rhq_testing.tools.monitoring import FileMonitor
 
 
 # Variables
@@ -18,8 +18,8 @@ def wait_for_sca_enabled():
     '''
     Wait for the sca module to start.
     '''
-    wazuh_monitor = FileMonitor(LOG_FILE_PATH)
-    evm.check_sca_enabled(wazuh_monitor)
+    cyb3rhq_monitor = FileMonitor(LOG_FILE_PATH)
+    evm.check_sca_enabled(cyb3rhq_monitor)
 
 
 @pytest.fixture()

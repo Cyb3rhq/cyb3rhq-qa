@@ -5,14 +5,14 @@ import pytest
 import ssl
 import socket
 
-from wazuh_testing.tools import WAZUH_PATH, CLIENT_KEYS_PATH, get_version
-from wazuh_testing.tools.monitoring import ManInTheMiddle
-from wazuh_testing.tools.security import CertificateController
-from wazuh_testing.tools.utils import get_host_name
-from wazuh_testing.tools.configuration import load_wazuh_configurations, set_section_wazuh_conf, write_wazuh_conf
+from cyb3rhq_testing.tools import CYB3RHQ_PATH, CLIENT_KEYS_PATH, get_version
+from cyb3rhq_testing.tools.monitoring import ManInTheMiddle
+from cyb3rhq_testing.tools.security import CertificateController
+from cyb3rhq_testing.tools.utils import get_host_name
+from cyb3rhq_testing.tools.configuration import load_cyb3rhq_configurations, set_section_cyb3rhq_conf, write_cyb3rhq_conf
 
 test_data_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data')
-configurations_path = os.path.join(test_data_path, 'wazuh_enrollment_conf.yaml')
+configurations_path = os.path.join(test_data_path, 'cyb3rhq_enrollment_conf.yaml')
 
 # Default data
 
@@ -20,13 +20,13 @@ MANAGER_ADDRESS = '127.0.0.1'
 MANAGER_PORT = 1515
 
 folder = 'etc' if platform.system() == 'Linux' else ''
-AUTHDPASS_PATH = os.path.join(WAZUH_PATH, folder, 'authd.pass')
-SERVER_KEY_PATH = os.path.join(WAZUH_PATH, folder, 'manager.key')
-SERVER_CERT_PATH = os.path.join(WAZUH_PATH, folder, 'manager.cert')
-SERVER_PEM_PATH = os.path.join(WAZUH_PATH, folder, 'manager.pem')
-AGENT_KEY_PATH = os.path.join(WAZUH_PATH, folder, 'agent.key')
-AGENT_CERT_PATH = os.path.join(WAZUH_PATH, folder, 'agent.cert')
-AGENT_PEM_PATH = os.path.join(WAZUH_PATH, folder, 'agent.pem')
+AUTHDPASS_PATH = os.path.join(CYB3RHQ_PATH, folder, 'authd.pass')
+SERVER_KEY_PATH = os.path.join(CYB3RHQ_PATH, folder, 'manager.key')
+SERVER_CERT_PATH = os.path.join(CYB3RHQ_PATH, folder, 'manager.cert')
+SERVER_PEM_PATH = os.path.join(CYB3RHQ_PATH, folder, 'manager.pem')
+AGENT_KEY_PATH = os.path.join(CYB3RHQ_PATH, folder, 'agent.key')
+AGENT_CERT_PATH = os.path.join(CYB3RHQ_PATH, folder, 'agent.cert')
+AGENT_PEM_PATH = os.path.join(CYB3RHQ_PATH, folder, 'agent.pem')
 
 CONFIG_PATHS = {
     'SERVER_PEM_PATH': SERVER_PEM_PATH,
@@ -137,7 +137,7 @@ def set_password(get_current_test_case):
             f.write(get_current_test_case['password_file_content'])
 
 
-# Wazuh conf
+# Cyb3rhq conf
 
 def get_temp_yaml(param):
     """
@@ -158,18 +158,18 @@ def get_temp_yaml(param):
 
 
 @pytest.fixture(scope='function')
-def override_wazuh_conf(get_current_test_case, request):
+def override_cyb3rhq_conf(get_current_test_case, request):
     """
-    Re-writes Wazuh configuration file with new configurations from the test case.
+    Re-writes Cyb3rhq configuration file with new configurations from the test case.
     """
     test_name = request.node.originalname
     configuration = get_current_test_case.get('configuration', {})
     parse_configuration_string(configuration)
     # Configuration for testing
     temp = get_temp_yaml(configuration)
-    conf = load_wazuh_configurations(temp, test_name, )
+    conf = load_cyb3rhq_configurations(temp, test_name, )
     os.remove(temp)
 
-    test_config = set_section_wazuh_conf(conf[0]['sections'])
+    test_config = set_section_cyb3rhq_conf(conf[0]['sections'])
     # Set new configuration
-    write_wazuh_conf(test_config)
+    write_cyb3rhq_conf(test_config)

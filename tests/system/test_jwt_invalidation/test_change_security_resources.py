@@ -1,16 +1,16 @@
-# Copyright (C) 2015-2021, Wazuh Inc.
-# Created by Wazuh, Inc. <info@wazuh.com>.
+# Copyright (C) 2015-2021, Cyb3rhq Inc.
+# Created by Cyb3rhq, Inc. <info@cyb3rhq.com>.
 # This program is free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 import os
 
 import pytest
-from wazuh_testing.tools.system import HostManager
+from cyb3rhq_testing.tools.system import HostManager
 
 
 pytestmark = [pytest.mark.agentless_cluster_env]
 
-test_hosts = ['wazuh-master', 'wazuh-worker1', 'wazuh-worker2']
+test_hosts = ['cyb3rhq-master', 'cyb3rhq-worker1', 'cyb3rhq-worker2']
 inventory_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                               'provisioning', 'agentless_cluster', 'inventory.yml')
 default_api_conf = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'api_configurations', 'default.yaml')

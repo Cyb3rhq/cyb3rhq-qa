@@ -2,7 +2,7 @@
 
 ### User documentation
 
-The test module runs tests on the different components of Wazuh.
+The test module runs tests on the different components of Cyb3rhq.
 It is designed so that you can perform installations, actions on components and uninstallations, performing validations at each step.
 This module must receive allocated and provisioned infrastructure. (From Allocation and Provision modules)
 
@@ -32,13 +32,13 @@ To use this module, you should use a Debian-based system, we recommend using Ubu
 	 source {venv directory}/bin/activate
 	```
 
-3. Clone the `wazuh-qa` repository:
+3. Clone the `cyb3rhq-qa` repository:
 
 	Navigate to the project directory and switch to the project branch:
 
 	```bash
-   git clone https://github.com/wazuh/wazuh-qa.git
-	cd wazuh-qa
+   git clone https://github.com/cyb3rhq/cyb3rhq-qa.git
+	cd cyb3rhq-qa
 	git checkout {project-branch}
 	```
 
@@ -50,7 +50,7 @@ To use this module, you should use a Debian-based system, we recommend using Ubu
 
 5. Install the JobFlow engine and its launcher:
 
-	While in wazuh-qa:
+	While in cyb3rhq-qa:
 
 	```bash
 	cd modules
@@ -70,7 +70,7 @@ To use this module, you should use a Debian-based system, we recommend using Ubu
 
       It will be necessary to create a fixture (YAML file) where the infrastructure, provisioning, and tests to be executed will be declared.
 
-      >Note: It is possible to find some fixture examples in '[deployability/modules/jobflow/examples/](https://github.com/wazuh/wazuh-qa/tree/master/deployability/modules/jobflow/examples)'
+      >Note: It is possible to find some fixture examples in '[deployability/modules/jobflow/examples/](https://github.com/cyb3rhq/cyb3rhq-qa/tree/master/deployability/modules/jobflow/examples)'
 
       Example:
 
@@ -96,12 +96,12 @@ To use this module, you should use a Debian-based system, we recommend using Ubu
               args:
                 - modules/testing/main.py
                 - targets:
-                  - wazuh-1: "{working-dir}/manager-linux-ubuntu-22.04-amd64/inventory.yaml"
+                  - cyb3rhq-1: "{working-dir}/manager-linux-ubuntu-22.04-amd64/inventory.yaml"
                   - agent-1: "{working-dir}/agent-linux-redhat-8-amd64/inventory.yaml"
                 - tests: "install,registration,restart,stop,uninstall"
                 - component: "agent"
-                - wazuh-version: "4.7.1"
-                - wazuh-revision: "40709"
+                - cyb3rhq-version: "4.7.1"
+                - cyb3rhq-revision: "40709"
                 - live: "True"
           depends-on:
             - "allocate-{agent}"
@@ -196,31 +196,31 @@ To use this module, you should use a Debian-based system, we recommend using Ubu
 
 #### B. Direct execution
 
-To execute the testing module without installing the JobFlow engine, it can be done by using the launcher ('[module/testing/main.py](https://github.com/wazuh/wazuh-qa/tree/master/deployability/modules/testing/main.py)'):
+To execute the testing module without installing the JobFlow engine, it can be done by using the launcher ('[module/testing/main.py](https://github.com/cyb3rhq/cyb3rhq-qa/tree/master/deployability/modules/testing/main.py)'):
 
 1. Execution
 
-  While in 'wazuh-qa/deployability'
+  While in 'cyb3rhq-qa/deployability'
 
   ```bash
-  python3  modules/testing/main.py --wazuh-revision '{{ wazuh_revision }}' --wazuh-version '{{ wazuh_version }}' --component {{ component }} --tests 'install,restart,stop,uninstall' --targets '{"wazuh-1":"{{ inventory }}"}' --targets '{"wazuh-2":"{{ inventory }}"}' --live 'True'
+  python3  modules/testing/main.py --cyb3rhq-revision '{{ cyb3rhq_revision }}' --cyb3rhq-version '{{ cyb3rhq_version }}' --component {{ component }} --tests 'install,restart,stop,uninstall' --targets '{"cyb3rhq-1":"{{ inventory }}"}' --targets '{"cyb3rhq-2":"{{ inventory }}"}' --live 'True'
   ```
 
   Examples:
   ```bash
-  python3  modules/testing/main.py --wazuh-revision '40714' --wazuh-version '4.7.3' --component 'manager' --tests 'install,restart,stop,uninstall' --targets '{"wazuh-1":"/tmp/dtt1-poc/manager-linux-ubuntu-22.04-amd64/inventory.yml"}' --targets '{"wazuh-2":"/tmp/dtt1-poc/manager-linux-redhat-8-amd64/inventory.yml"}' --live 'True'
+  python3  modules/testing/main.py --cyb3rhq-revision '40714' --cyb3rhq-version '4.7.3' --component 'manager' --tests 'install,restart,stop,uninstall' --targets '{"cyb3rhq-1":"/tmp/dtt1-poc/manager-linux-ubuntu-22.04-amd64/inventory.yml"}' --targets '{"cyb3rhq-2":"/tmp/dtt1-poc/manager-linux-redhat-8-amd64/inventory.yml"}' --live 'True'
   ```
 
   ```bash
-  python3  modules/testing/main.py --wazuh-revision '40714' --wazuh-version '4.7.3' --component 'agent' --tests 'install,registration,restart,stop,uninstall' --targets '{"wazuh-1":"/tmp/dtt1-poc/manager-linux-ubuntu-22.04-amd64/inventory.yml"}' --targets '{"agent-1":"/tmp/dtt1-poc/agent-linux-redhat-8-amd64/inventory.yml"}' --targets '{"agent-2":"/tmp/dtt1-poc/agent-linux-redhat-9-amd64/inventory.yml"}' --targets '{"agent-3":"/tmp/dtt1-poc/agent-linux-centos-7-amd64/inventory.yml"}' --live 'True'
+  python3  modules/testing/main.py --cyb3rhq-revision '40714' --cyb3rhq-version '4.7.3' --component 'agent' --tests 'install,registration,restart,stop,uninstall' --targets '{"cyb3rhq-1":"/tmp/dtt1-poc/manager-linux-ubuntu-22.04-amd64/inventory.yml"}' --targets '{"agent-1":"/tmp/dtt1-poc/agent-linux-redhat-8-amd64/inventory.yml"}' --targets '{"agent-2":"/tmp/dtt1-poc/agent-linux-redhat-9-amd64/inventory.yml"}' --targets '{"agent-3":"/tmp/dtt1-poc/agent-linux-centos-7-amd64/inventory.yml"}' --live 'True'
   ```
 
   #### To be considered:
-  wazuh-1: This is the master node
-  wazuh-{number}: They are the workers
+  cyb3rhq-1: This is the master node
+  cyb3rhq-{number}: They are the workers
   agent-{number}: They are the agents
 
-  >If the manager component is tested, 'wazuh-' components must be entered in target.
+  >If the manager component is tested, 'cyb3rhq-' components must be entered in target.
    If the agent component is tested, there must be a master and the rest must be 'agent-'
 
 ---
@@ -243,45 +243,45 @@ In both cases, the following information will be required:
         args:
           - modules/testing/main.py
           - targets:
-            - wazuh-1: "{working-dir}/manager-linux-ubuntu-22.04-amd64/inventory.yaml"
+            - cyb3rhq-1: "{working-dir}/manager-linux-ubuntu-22.04-amd64/inventory.yaml"
             - agent-1: "{working-dir}/agent-linux-redhat-8-amd64/inventory.yaml"
           - tests: "install,registration,restart,stop,uninstall"
           - component: "agent"
-          - wazuh-version: "4.7.3"
-          - wazuh-revision: "40714"
+          - cyb3rhq-version: "4.7.3"
+          - cyb3rhq-revision: "40714"
           - live: "True"
     depends-on:
       - "allocate-{agent}"
       - "allocate-manager"
 ```
-In the exposed fixture fragment, the execution of the testing module launcher (`testing/main.py`), it is necessary to provide the inventory, dependencies, component, tests to execute, Wazuh version, Wazuh revision, and whether the repository is live or not (if not, it will look for information in packages-dev pre-release).
+In the exposed fixture fragment, the execution of the testing module launcher (`testing/main.py`), it is necessary to provide the inventory, dependencies, component, tests to execute, Cyb3rhq version, Cyb3rhq revision, and whether the repository is live or not (if not, it will look for information in packages-dev pre-release).
 
 For manual execution, an example command would be:
 
   ```bash
-  python3  modules/testing/main.py --wazuh-revision '40714' --wazuh-version '4.7.3' --component 'agent' --tests 'install,registration,restart,stop,uninstall' --targets '{"wazuh-1":"/tmp/dtt1-poc/manager-linux-ubuntu-22.04-amd64/inventory.yml"}' --targets '{"agent-1":"/tmp/dtt1-poc/agent-linux-redhat-8-amd64/inventory.yml"}' --live 'True'
+  python3  modules/testing/main.py --cyb3rhq-revision '40714' --cyb3rhq-version '4.7.3' --component 'agent' --tests 'install,registration,restart,stop,uninstall' --targets '{"cyb3rhq-1":"/tmp/dtt1-poc/manager-linux-ubuntu-22.04-amd64/inventory.yml"}' --targets '{"agent-1":"/tmp/dtt1-poc/agent-linux-redhat-8-amd64/inventory.yml"}' --live 'True'
   ```
 
 The module is composed of:
 
-- **Launcher** ('[/wazuh-qa/deployability/modules/testing/main.py](https://github.com/wazuh/wazuh-qa/tree/master/deployability/modules/testing/main.py)'): Entry point for the workflow or the user who wishes to execute a test.
+- **Launcher** ('[/cyb3rhq-qa/deployability/modules/testing/main.py](https://github.com/cyb3rhq/cyb3rhq-qa/tree/master/deployability/modules/testing/main.py)'): Entry point for the workflow or the user who wishes to execute a test.
 
-- **Parameter validator** ('[/wazuh-qa/deployability/modules/testing/models.py](https://github.com/wazuh/wazuh-qa/tree/master/deployability/modules/testing/models.py)'): Validator for parameters entered by the JobFlow or the user.
+- **Parameter validator** ('[/cyb3rhq-qa/deployability/modules/testing/models.py](https://github.com/cyb3rhq/cyb3rhq-qa/tree/master/deployability/modules/testing/models.py)'): Validator for parameters entered by the JobFlow or the user.
 
-- **Module functions** ('[/wazuh-qa/deployability/modules/testing/testing.py](https://github.com/wazuh/wazuh-qa/tree/master/deployability/modules/testing/testing.py)'): Module-specific functions responsible for triggering the test.
+- **Module functions** ('[/cyb3rhq-qa/deployability/modules/testing/testing.py](https://github.com/cyb3rhq/cyb3rhq-qa/tree/master/deployability/modules/testing/testing.py)'): Module-specific functions responsible for triggering the test.
 
-- **Executor** ('[/wazuh-qa/deployability/modules/provision/actions.py](https://github.com/wazuh/wazuh-qa/tree/master/deployability/modules/provision/actions.py)'): Executes the provision using Actions in the generic module.
+- **Executor** ('[/cyb3rhq-qa/deployability/modules/provision/actions.py](https://github.com/cyb3rhq/cyb3rhq-qa/tree/master/deployability/modules/provision/actions.py)'): Executes the provision using Actions in the generic module.
 
-- **Playbooks** ('[/wazuh-qa/deployability/modules/tests/playbooks](https://github.com/wazuh/wazuh-qa/tree/master/deployability/modules/tests/playbooks)'): Contains setup, execution, and post-test cleanup playbooks.
+- **Playbooks** ('[/cyb3rhq-qa/deployability/modules/tests/playbooks](https://github.com/cyb3rhq/cyb3rhq-qa/tree/master/deployability/modules/tests/playbooks)'): Contains setup, execution, and post-test cleanup playbooks.
 
-- **Tests** ('[/wazuh-qa/deployability/modules/tests](https://github.com/wazuh/wazuh-qa/tree/master/deployability/modules/tests/)'): Contains the test_agent and test_manager directories where the tests to be executed are located.
+- **Tests** ('[/cyb3rhq-qa/deployability/modules/tests](https://github.com/cyb3rhq/cyb3rhq-qa/tree/master/deployability/modules/tests/)'): Contains the test_agent and test_manager directories where the tests to be executed are located.
 
-- **Helpers** ('[/wazuh-qa/deployability/modules/tests/helpers](https://github.com/wazuh/wazuh-qa/tree/master/deployability/modules/tests/helpers)'): Contains files that enable the execution of the test.
+- **Helpers** ('[/cyb3rhq-qa/deployability/modules/tests/helpers](https://github.com/cyb3rhq/cyb3rhq-qa/tree/master/deployability/modules/tests/helpers)'): Contains files that enable the execution of the test.
 
-- **Conftest** ('[/wazuh-qa/deployability/modules/tests/conftest.py](https://github.com/wazuh/wazuh-qa/tree/master/deployability/modules/tests/conftest.py)'): Contains information that will be transferred from the parameter validator to the tests.
+- **Conftest** ('[/cyb3rhq-qa/deployability/modules/tests/conftest.py](https://github.com/cyb3rhq/cyb3rhq-qa/tree/master/deployability/modules/tests/conftest.py)'): Contains information that will be transferred from the parameter validator to the tests.
 
 
-![image](https://github.com/wazuh/wazuh-qa/assets/2949519/f2c08ca6-5505-40d7-a9eb-6ab37b3d1ba5)
+![image](https://github.com/cyb3rhq/cyb3rhq-qa/assets/2949519/f2c08ca6-5505-40d7-a9eb-6ab37b3d1ba5)
 
 
 The testing module receives the infrastructure generated and provisioned by the allocation and provision modules. The module has the ability to execute actions on the hosts as well as perform the necessary validation.
@@ -300,4 +300,4 @@ Install must come at the beginning followed by registration Uninstall must come 
 
 ### License
 
-WAZUH Copyright (C) 2015 Wazuh Inc.  (License GPLv2)
+CYB3RHQ Copyright (C) 2015 Cyb3rhq Inc.  (License GPLv2)

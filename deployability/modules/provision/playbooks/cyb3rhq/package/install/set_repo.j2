@@ -1,0 +1,37 @@
+
+{% if ansible_os_family.lower() in ['debian'] %}
+
+- name: Update packages cache
+  command: apt-get update -y
+
+- name: Install packages
+  command: apt-get -y install curl gnupg apt-transport-https
+
+- name: Install GPG key
+  shell: "curl -s https://{{ 'packages.cyb3rhq.com' if live else 'packages-dev.cyb3rhq.com' }}/key/GPG-KEY-CYB3RHQ | gpg --no-default-keyring --keyring gnupg-ring:/usr/share/keyrings/cyb3rhq.gpg --import && chmod 644 /usr/share/keyrings/cyb3rhq.gpg"
+
+- name: Add Cyb3rhq repository
+  shell: "echo \"deb [signed-by=/usr/share/keyrings/cyb3rhq.gpg] https://{{ 'packages.cyb3rhq.com' if live else 'packages-dev.cyb3rhq.com' }}/{{ '4.x' if live else 'pre-release' }}/apt/ {{ 'stable' if live else 'unstable' }} main\" | tee -a /etc/apt/sources.list.d/cyb3rhq.list"
+
+- name: Update package information
+  command: "apt-get update"
+{% endif %}
+
+{% if ansible_os_family.lower() in ['redhat', 'oraclelinux', 'amazon', 'centos'] %}
+- name: Update packages cache
+  command: yum makecache
+
+- name: Import the GPG key
+  command: "rpm --import https://{{ 'packages.cyb3rhq.com' if live else 'packages-dev.cyb3rhq.com' }}/key/GPG-KEY-CYB3RHQ"
+
+- name: Add Cyb3rhq repository
+  shell: "echo -e '[cyb3rhq]\ngpgcheck=1\ngpgkey=https://{{ 'packages.cyb3rhq.com' if live else 'packages-dev.cyb3rhq.com' }}/key/GPG-KEY-CYB3RHQ\nenabled=1\nname=EL-$releasever - Cyb3rhq\nbaseurl=https://{{ 'packages.cyb3rhq.com' if live else 'packages-dev.cyb3rhq.com' }}/{{ '4.x' if live else 'pre-release' }}/yum/\nprotect=1' | tee /etc/yum.repos.d/cyb3rhq.repo"
+{% endif %}
+
+{% if ansible_os_family.lower() in ['suse']%}
+- name: Import the GPG key
+  command: "rpm --import https://{{ 'packages.cyb3rhq.com' if live else 'packages-dev.cyb3rhq.com' }}/key/GPG-KEY-CYB3RHQ"
+- name: Add Cyb3rhq repository
+  shell: "echo -e '[cyb3rhq]\ngpgcheck=1\ngpgkey=https://{{ 'packages.cyb3rhq.com' if live else 'packages-dev.cyb3rhq.com' }}/key/GPG-KEY-CYB3RHQ\nenabled=1\nname=EL-$releasever - Cyb3rhq\nbaseurl=https://{{ 'packages.cyb3rhq.com' if live else 'packages-dev.cyb3rhq.com' }}/{{ '4.x' if live else 'pre-release' }}/yum/\nprotect=1' | tee /etc/zypp/repos.d/cyb3rhq.repo"
+
+{% endif %}
