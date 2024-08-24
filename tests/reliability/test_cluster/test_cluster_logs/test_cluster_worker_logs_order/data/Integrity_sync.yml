@@ -1,0 +1,31 @@
+# Root
+- log_id: root
+  parent: null
+  tag: 'Integrity sync root'
+
+# Common logs
+- log_id: log0
+  parent: root
+  tag: 'Starting.*'
+- log_id: log10
+  parent: log0
+  tag: 'Files to create: [0-9]* \| Files to update: [0-9]* \| Files to delete: [0-9]*.*'
+
+# Sync is needed.
+- log_id: log11
+  parent: log10
+  tag: 'Worker does not meet integrity checks. Actions required.*'
+- log_id: log12
+  parent: log11
+  tag: 'Updating local files: Start.*'
+- log_id: log13
+  parent: log12
+  tag: 'Updating local files: End.'
+- log_id: log14
+  parent: log13
+  tag: 'Finished in .*'
+
+# No sync needed.
+- log_id: log62
+  parent: log10
+  tag: 'Finished in .*'

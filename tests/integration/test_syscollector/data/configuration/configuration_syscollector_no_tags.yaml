@@ -1,0 +1,29 @@
+- sections:
+    - section: wodle
+      attributes:
+        - name: syscollector
+
+    - section: syscheck
+      elements:
+        - disabled:
+            value: 'yes'
+
+    - section: vulnerability-detection
+      elements:
+        - enabled:
+            value: 'no'
+
+    - section: indexer
+      elements:
+        - enabled:
+            value: 'no'
+
+    - section: rootcheck
+      elements:
+        - disabled:
+            value: 'yes'
+
+    - section: sca
+      elements:
+        - enabled:
+            value: 'no'
